@@ -1,0 +1,11 @@
+public {{formatNameUpper}} get{{originalNameUpper}}AsResource(int index) {
+  return {{formatNameUpper}}.parse(get{{originalNameUpper}}(index));
+}
+
+public java.lang.List<{{formatNameUpper}}> get{{originalNameUpper}}ListAsResources() {
+  java.lang.List<{{formatNameUpper}}> list = new java.util.ArrayList<>();
+  for (int i = 0; i < getNameCount(); i++) {
+    list.add(get{{originalNameUpper}}AsResource(i));
+  }
+  return list;
+}
