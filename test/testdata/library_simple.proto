@@ -1,0 +1,100 @@
+// (-- This file defines the Library API for One Platform Service
+// Definition Codelab. You can find more details about the codelab
+// at http://go/api-definition-codelab --)
+
+syntax = "proto3";
+
+package google.example.library.v1;
+
+import "proto/resource_name_format.proto";
+import "google/api/annotations.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "LibraryProto";
+option java_package = "com.google.example.library.v1";
+
+option (google.gapic.format) = { format_name: 'ShelfName', format_string: 'bookShelves/{bookShelf}' };
+option (google.gapic.format) = { format_name: 'BookName', format_string: 'bookShelves/{bookShelf}/book/{book}' };
+
+service LibraryService {
+
+  // Creates a shelf, and returns the new Shelf.
+  rpc CreateShelf(CreateShelfRequest) returns (Shelf) {
+    option (google.api.http) = { post: "/v1/bookShelves" body: "shelf" };
+  }
+
+  // Gets a shelf.
+  rpc GetShelf(GetShelfRequest) returns (Shelf) {
+    option (google.api.http) = { get: "/v1/{name=bookShelves/*}" };
+  }
+
+  // Creates a book.
+  rpc CreateBook(CreateBookRequest) returns (Book) {
+    option (google.api.http) = { post: "/v1/{name=bookShelves/*}/books" body: "book" };
+  }
+
+  // Gets a book.
+  rpc GetBook(GetBookRequest) returns (Book) {
+    option (google.api.http) = { get: "/v1/{name=bookShelves/*/books/*}" };
+  }
+
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse) {
+  }
+}
+
+message ListBooksRequest {
+  repeated string name = 1 [(google.gapic.format_name) = "BookName"];
+}
+
+message ListBooksResponse {
+  repeated string name = 1 [(google.gapic.format_name) = "BookName"];
+}
+
+// A Shelf contains a collection of books with a theme.
+message Shelf {
+  // The resource name of the shelf.
+  // Shelf names have the form `bookShelves/{shelf_id}`.
+  string name = 1 [(google.gapic.format_name) = "ShelfName"];
+
+  // The theme of the shelf
+  string theme = 2;
+}
+
+// Request message for LibraryService.CreateShelf.
+message CreateShelfRequest {
+  // The shelf to create.
+  Shelf shelf = 1;
+}
+
+// Request message for LibraryService.GetShelf.
+message GetShelfRequest {
+  // The name of the shelf to retrieve.
+  string name = 1 [(google.gapic.format_name) = "ShelfName"];
+
+  // To test 'options' parameter name conflict.
+  string options = 4;
+}
+
+// A single book in the library.
+message Book {
+  // The resource name of the book.
+  // Book names have the form `bookShelves/{shelf_id}/books/{book_id}`.
+  string name = 1 [(google.gapic.format_name) = "BookName"];
+
+  // The name of the book author.
+  string author = 2;
+}
+
+// Request message for LibraryService.CreateBook.
+message CreateBookRequest {
+  // The name of the shelf in which the book is created.
+  string name = 1 [(google.gapic.format_name) = "BookName"];
+
+  // The book to create.
+  Book book = 2;
+}
+
+message GetBookRequest {
+  // The name of the book to retrieve.
+  string name = 1 [(google.gapic.format_name) = "BookName"];
+}

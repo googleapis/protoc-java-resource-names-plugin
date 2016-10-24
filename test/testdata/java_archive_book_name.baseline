@@ -1,0 +1,134 @@
+ * Copyright 2016, Google Inc.
+
+package sandbox.resourcenames.types;
+
+import com.google.api.pathtemplate.PathTemplate;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import sandbox.resourcenames.global.ResourceName;
+import sandbox.resourcenames.global.ResourceNameType;
+
+public class ArchiveBookName implements ResourceName {
+
+  private static final PathTemplate PATH_TEMPLATE =
+      PathTemplate.createWithoutUrlEncoding("archives/archive_id/books/book_id");
+
+  private final String archiveId;
+  private final String bookId;
+
+  public String getArchiveId() {
+    return archiveId;
+  }
+
+  public String getBookId() {
+    return bookId;
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public Builder toBuilder() {
+    return new Builder(this);
+  }
+  
+  private ArchiveBookName(Builder builder) {
+    this.archiveId = Preconditions.checkNotNull(builder.getArchiveId());
+    this.bookId = Preconditions.checkNotNull(builder.getBookId());
+  }
+
+  public static ArchiveBookName create(String shelfId, String bookId) {
+    return newBuilder().setArchiveId(shelfId).setBookId(bookId).build();
+  }
+  
+  public static ArchiveBookName parse(String formattedString) {
+    ImmutableMap<String, String> matchMap =
+        PATH_TEMPLATE.validatedMatch(formattedString, "Error in ArchiveBookName.parse");
+    return create(matchMap.get("archive_id"), matchMap.get("book_id"));
+  }
+
+  public static boolean isParsableFrom(String formattedString) {
+    return PATH_TEMPLATE.matches(formattedString);
+  }
+  
+  @Override
+  public ResourceNameType getType() {
+    return ArchiveBookNameType.instance();
+  }
+  
+  @Override
+  public String toString() {
+    return PATH_TEMPLATE.instantiate("archive_id", archiveId, "book_id", bookId);
+  }
+  
+  /////////////////////////////////////////////////////////////////////////////////
+  // Optional extras
+
+  public static ArchiveBookName createFrom(ResourceName resourceName) {
+    return parse(resourceName.toString());
+  }
+
+  public static boolean isCreatableFrom(ResourceName resourceName) {
+    return isParsableFrom(resourceName.toString());
+  }
+  
+  /////////////////////////////////////////////////////////////////////////////////
+
+  public static class Builder {
+    private String archiveId;
+    private String bookId;
+
+    public String getArchiveId() {
+      return archiveId;
+    }
+
+    public String getBookId() {
+      return bookId;
+    }
+
+    public Builder setArchiveId(String shelfId) {
+      this.archiveId = shelfId;
+      return this;
+    }
+
+    public Builder setBookId(String bookId) {
+      this.bookId = bookId;
+      return this;
+    }
+
+    private Builder() {}
+    
+    private Builder(ArchiveBookName archiveBookName) {
+      this.archiveId = archiveBookName.archiveId;
+      this.bookId = archiveBookName.bookId;
+    }
+
+    public ArchiveBookName build() {
+      return new ArchiveBookName(this);
+    }
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof ArchiveBookName) {
+      ArchiveBookName that = (ArchiveBookName) o;
+      return (this.archiveId.equals(that.archiveId))
+        && (this.bookId.equals(that.bookId));
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int h = 1;
+    h *= 1000003;
+    h ^= archiveId.hashCode();
+    h *= 1000003;
+    h ^= bookId.hashCode();
+    return h;
+  }
+}
+
