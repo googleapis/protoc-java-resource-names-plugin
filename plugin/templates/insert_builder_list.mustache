@@ -1,27 +1,27 @@
-public Builder set{{originalNameUpper}}WithResource(int index, {{formatNameUpper}} value) {
-  return set{{originalNameUpper}}(index, value.toString());
+public Builder set{{fieldNameUpper}}With{{resourceTypeClassName}}(int index, {{resourceTypeClassName}} value) {
+  return set{{fieldNameUpper}}(index, value.toString());
 }
 
-public Builder add{{originalNameUpper}}WithResource({{formatNameUpper}} value) {
-  return add{{originalNameUpper}}(value.toString());
+public Builder add{{fieldNameUpper}}With{{resourceTypeClassName}}({{resourceTypeClassName}} value) {
+  return add{{fieldNameUpper}}(value.toString());
 }
 
-public Builder addAll{{originalNameUpper}}WithResources(java.lang.Iterable<java.lang.String> values) {
-  java.lang.List<{{formatNameUpper}}> list = new java.util.ArrayList<>();
+public Builder addAll{{fieldNameUpper}}With{{resourceTypeClassName}}(java.lang.Iterable<java.lang.String> values) {
+  java.lang.List<{{resourceTypeClassName}}> list = new java.util.ArrayList<>();
   for (java.lang.String value : values) {
     list.add(value.toString());
   }
-  return addAll{{originalNameUpper}}(list);
+  return addAll{{fieldNameUpper}}(list);
 }
 
-public {{formatNameUpper}} get{{originalNameUpper}}AsResource(int index) {
-  return {{formatNameUpper}}.parse(get{{originalNameUpper}}(index));
+public {{resourceTypeClassName}} get{{fieldNameUpper}}As{{resourceTypeClassName}}(int index) {
+  return {{resourceTypeClassName}}.parse(get{{fieldNameUpper}}(index));
 }
 
-public java.lang.List<{{formatNameUpper}}> get{{originalNameUpper}}ListAsResources() {
-  java.lang.List<{{formatNameUpper}}> list = new java.util.ArrayList<>();
+public java.lang.List<{{resourceTypeClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}() {
+  java.lang.List<{{resourceTypeClassName}}> list = new java.util.ArrayList<>();
   for (int i = 0; i < getNameCount(); i++) {
-    list.add(get{{originalNameUpper}}AsResource(i));
+    list.add(get{{fieldNameUpper}}As{{resourceTypeClassName}}(i));
   }
   return list;
 }

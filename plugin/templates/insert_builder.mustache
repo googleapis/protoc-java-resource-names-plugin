@@ -1,7 +1,7 @@
-public final Builder set{{originalNameUpper}}WithResource({{formatNameUpper}} value) {
-  return set{{originalNameUpper}}(value.toString());
+public final Builder set{{fieldNameUpper}}With{{resourceTypeClassName}}({{resourceTypeClassName}} value) {
+  return set{{fieldNameUpper}}(value.toString());
 }
 
-public final {{formatNameUpper}} get{{originalNameUpper}}AsResource() {
-  return {{formatNameUpper}}.parse(get{{originalNameUpper}}());
+public final {{resourceTypeClassName}} get{{fieldNameUpper}}As{{resourceTypeClassName}}() {
+  return {{resourceTypeClassName}}.parse(get{{fieldNameUpper}}());
 }
