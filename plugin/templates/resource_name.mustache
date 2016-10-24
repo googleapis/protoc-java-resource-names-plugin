@@ -12,17 +12,18 @@
  * the License.
  */
 
-package {{packageName}};
+package {{resourceNameTypePackageName}};
 
 import com.google.common.base.Preconditions;
 import com.google.api.gax.protobuf.PathTemplate;
 import com.google.common.collect.ImmutableMap;
-
+import {{resourceNameGlobalPackageName}}.ResourceName;
+import {{resourceNameGlobalPackageName}}.ResourceNameType;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{formatNameUpper}} {
+public class {{formatNameUpper}} implements ResourceName {
 
   private static final PathTemplate PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("{{formatString}}");
@@ -62,6 +63,15 @@ public class {{formatNameUpper}} {
         PATH_TEMPLATE.validatedMatch(
             formattedString, "Error in {{formatNameUpper}}.parse");
     return create({{#parameterList}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameterList}});
+  }
+
+  public static boolean isParsableFrom(String formattedString) {
+    return PATH_TEMPLATE.matches(formattedString);
+  }
+
+  @Override
+  public ResourceNameType getType() {
+    return {{typeNameUpper}}.instance();
   }
 
   @Override

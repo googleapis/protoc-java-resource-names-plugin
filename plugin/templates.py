@@ -28,7 +28,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from google.gax import path_template
-from src import protoutils
+from plugin.utils import protoutils
 
 
 def get_lower(s):

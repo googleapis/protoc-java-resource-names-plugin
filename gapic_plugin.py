@@ -36,10 +36,12 @@ import pystache
 from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
 
-from src import templates, protoutils, resource_name_format_pb2
+from plugin import templates
+from plugin.utils import protoutils
+from plugin.generated import resource_name_format_pb2
 
 
-TEMPLATE_LOCATION = 'templates'
+TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
 
 def generate_resource_name_types(response, format_dict):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
