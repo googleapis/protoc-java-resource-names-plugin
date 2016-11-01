@@ -23,7 +23,7 @@ import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{formatNameUpper}} implements ResourceName {
+public class {{className}} implements ResourceName {
 
   private static final PathTemplate PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("{{formatString}}");
@@ -46,21 +46,21 @@ public class {{formatNameUpper}} implements ResourceName {
     return new Builder(this);
   }
 
-  private {{formatNameUpper}}(Builder builder) {
+  private {{className}}(Builder builder) {
     {{#formatFields}}
     {{lower}} = Preconditions.checkNotNull(builder.get{{upper}}());
     {{/formatFields}}
   }
 
-  public static {{formatNameUpper}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
+  public static {{className}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
     return newBuilder(){{#formatFields}}
       .set{{upper}}({{lower}}){{/formatFields}}
       .build();
   }
 
-  public static {{formatNameUpper}} parse(String formattedString) {
+  public static {{className}} parse(String formattedString) {
     ImmutableMap<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(formattedString, "Error in {{formatNameUpper}}.parse");
+        PATH_TEMPLATE.validatedMatch(formattedString, "Error in {{className}}.parse");
     return create({{#parameterList}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameterList}});
   }
 
@@ -101,14 +101,14 @@ public class {{formatNameUpper}} implements ResourceName {
     private Builder() {
     }
 
-    private Builder({{formatNameUpper}} {{formatNameLower}}) {
+    private Builder({{className}} {{formatNameLower}}) {
       {{#formatFields}}
       {{lower}} = {{formatNameLower}}.{{lower}};
       {{/formatFields}}
     }
 
-    public {{formatNameUpper}} build() {
-      return new {{formatNameUpper}}(this);
+    public {{className}} build() {
+      return new {{className}}(this);
     }
   }
 
@@ -117,8 +117,8 @@ public class {{formatNameUpper}} implements ResourceName {
     if (o == this) {
       return true;
     }
-    if (o instanceof {{formatNameUpper}}) {
-      {{formatNameUpper}} that = ({{formatNameUpper}}) o;
+    if (o instanceof {{className}}) {
+      {{className}} that = ({{className}}) o;
       return {{#parameterList}}{{#not_first}}
           && {{/not_first}}(this.{{parameter}}.equals(that.{{parameter}})){{/parameterList}};
     }

@@ -12,18 +12,19 @@
  * the License.
  */
 
-package {{resourceNameOneofPackageName}};
+package {{package}};
 
 import {{resourceNameGlobalPackageName}}.ResourceName;
 import {{resourceNameGlobalPackageName}}.ResourceNameType;
 {{#resourceTypes}}
 import {{resourceNameTypePackageName}}.{{resourceTypeClassName}};
 {{/resourceTypes}}
+import {{resourceNameTypePackageName}}.UntypedResourceName;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{oneofClassName}} implements ResourceName {
+public class {{className}} implements ResourceName {
 
   private final String rawValue;
 
@@ -50,21 +51,22 @@ public class {{oneofClassName}} implements ResourceName {
     return getValue().getType();
   }
 
-  private {{oneofClassName}}(String rawValue) {
+  private {{className}}(String rawValue) {
     this.rawValue = rawValue;
   }
 
-  public static {{oneofClassName}} parse(String formattedString) {
-    return new {{oneofClassName}}(formattedString);
+  public static {{className}} parse(String formattedString) {
+    return new {{className}}(formattedString);
   }
 
   {{#resourceTypes}}
-  public static {{oneofClassName}} from({{resourceTypeClassName}} {{resourceTypeVarName}}) {
-    return {{oneofClassName}}.parse({{resourceTypeVarName}}.toString());
+  public static {{className}} from({{resourceTypeClassName}} {{resourceTypeVarName}}) {
+    return {{className}}.parse({{resourceTypeVarName}}.toString());
   }
   {{/resourceTypes}}
 
-  public static {{oneofClassName}} fromUntyped(UntypedResourceName untypedResourceName) {
-    return BookNameOneOf.parse(untypedResourceName.toString());
+  public static {{className}} fromUntyped(UntypedResourceName untypedResourceName) {
+    return {{className}}.parse(untypedResourceName.toString());
   }
 }
+

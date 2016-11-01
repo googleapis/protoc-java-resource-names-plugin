@@ -44,6 +44,16 @@ class ResourceNameBase(object):
   def resourceNameGlobalPackageName(self):
     return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
 
+  def filename(self):
+    class_dir = self.package().replace('.', os.path.sep)
+    return os.path.join(class_dir, self.className() + '.java')
+
+  def className(self):
+    raise NotImplementedError('className must be implemented by child')
+
+  def package(self):
+    raise NotImplementedError('package must be implemented by child')
+
 
 class ResourceName(ResourceNameBase):
 
@@ -76,7 +86,7 @@ class ResourceName(ResourceNameBase):
         } for f in self.parameter_list]
     self.format_string = collection_config.name_pattern
 
-  def formatNameUpper(self):
+  def className(self):
     return self.format_name_upper
 
   def formatNameLower(self):
@@ -94,31 +104,34 @@ class ResourceName(ResourceNameBase):
   def formatString(self):
     return self.format_string
 
-  def filename(self):
-    class_dir = RESOURCE_NAMES_TYPE_PACKAGE_JAVA.replace('.', os.path.sep)
-    return os.path.join(class_dir, self.format_name_upper + '.java')
+  def package(self):
+    return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
 
 
 class ResourceNameOneof(ResourceNameBase):
 
   def __init__(self, oneof, proto_file):
-    entity_name = oneof.entity_name
+    entity_name = casingutils.remove_suffix(oneof.oneof_name, '_oneof')
     self.oneof_class_name = casingutils.get_oneof_class_name(entity_name)
     self.resource_types = [
         {
             'resourceTypeClassName': casingutils.get_resource_type_class_name(
-                entity_name),
+                resource_type),
             'resourceTypeVarName': casingutils.get_resource_type_var_name(
-                entity_name),
+                resource_type),
         } for resource_type in oneof.resource_type_list]
+    self.oneof_package_name = 'defaultpackage'
+    for opt in protoutils.get_named_options(proto_file, 'java_package'):
+      self.oneof_package_name = opt[1]
+      break
 
-  def oneofClassName(self):
+  def className(self):
     return self.oneof_class_name
 
   def resourceTypes(self):
     return self.resource_types
 
-  def resourceNameOneofPackageName(self):
+  def package(self):
     return self.oneof_package_name
 
 
@@ -129,8 +142,11 @@ class ResourceNameType(ResourceNameBase):
     self.type_name_upper = casingutils.get_resource_type_type_class_name(
         entity_name)
 
-  def typeNameUpper(self):
+  def className(self):
     return self.type_name_upper
+
+  def package(self):
+    return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
 
 
 class ResourceNameInvalid(ResourceNameBase):
@@ -140,8 +156,11 @@ class ResourceNameInvalid(ResourceNameBase):
         invalid_config.entity_name)
     self.invalid_value = invalid_config.invalid_value
 
-  def formatNameUpper(self):
+  def className(self):
     return self.format_name_upper
 
   def invalidValue(self):
     return self.invalid_value
+
+  def package(self):
+    return RESOURCE_NAMES_TYPE_PACKAGE_JAVA

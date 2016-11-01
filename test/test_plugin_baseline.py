@@ -70,15 +70,20 @@ def test_resource_name_generation():
                           include_dirs,
                           os.path.join(TEST_DIR, 'library_simple.proto'),
                           'java')
-  generated_output_dir = os.path.join(TEST_OUTPUT_DIR,
-                                      'com',
-                                      'google',
-                                      'example',
-                                      'library',
-                                      'v1')
   resources = ['book', 'shelf', 'archived_book']
   generated_class_dir = resource_name.RESOURCE_NAMES_TYPE_PACKAGE_JAVA.replace('.', os.path.sep)
   for resource in resources:
     generated_class = casingutils.lower_underscore_to_upper_camel(resource) + 'Name.java'
     generated_class_path = os.path.join(TEST_OUTPUT_DIR, generated_class_dir, generated_class)
     check_output(generated_class_path, 'java_' + resource + '_name')
+
+  generated_output_dir = os.path.join('com',
+                                      'google',
+                                      'example',
+                                      'library',
+                                      'v1')
+  oneofs = ['book']
+  for oneof in oneofs:
+    generated_oneof = casingutils.lower_underscore_to_upper_camel(oneof) + 'NameOneof.java'
+    generated_oneof_path = os.path.join(TEST_OUTPUT_DIR, generated_output_dir, generated_oneof)
+    check_output(generated_oneof_path, 'java_' + oneof + '_name_oneof')

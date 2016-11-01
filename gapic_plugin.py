@@ -42,10 +42,16 @@ from plugin.utils import protoutils, gapicutils
 
 TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
 
-def generate_resource_name_types(response, gapic_config):
+def generate_resource_name_types(response, gapic_config, proto_file):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
   for collection_config in gapic_config.collection_configs.values():
     resource = resource_name.ResourceName(collection_config)
+    f = response.file.add()
+    f.name = resource.filename()
+    f.content = renderer.render(resource)
+
+  for oneof_config in gapic_config.collection_oneofs.values():
+    resource = resource_name.ResourceNameOneof(oneof_config, proto_file)
     f = response.file.add()
     f.name = resource.filename()
     f.content = renderer.render(resource)
@@ -111,15 +117,21 @@ if __name__ == '__main__':
   request = plugin.CodeGeneratorRequest()
   request.ParseFromString(data)
 
-  gapic_config = gapicutils.read_from_gapic_yaml(request.parameter)
+  # Expect only one proto on the command line
+  if len(request.file_to_generate) != 1:
+    raise ValueError('expected 1 proto file on the command line, got:' + str(request.file_to_generate))
+  proto_file_name = request.file_to_generate[0]
+  for pf in request.proto_file:
+    if pf.name == proto_file_name:
+      proto_file = pf
+      break
 
-  format_dict = protoutils.get_format_dict(request)
-  formatted_field_list = list(protoutils.get_formatted_field_list(request, format_dict))
+  gapic_config = gapicutils.read_from_gapic_yaml(request.parameter)
 
   # Generate output
   response = plugin.CodeGeneratorResponse()
 
-  generate_resource_name_types(response, gapic_config)
+  generate_resource_name_types(response, gapic_config, proto_file)
   #generate_get_set_injection(response, gapic_config, request)
 
   # Serialise response message

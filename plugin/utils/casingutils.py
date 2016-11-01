@@ -46,6 +46,12 @@ def lower_camel_to_upper_camel(lower_camel_str):
   return lower_camel_str[0].upper() + lower_camel_str[1:]
 
 
+def remove_suffix(original, suffix):
+  if original.endswith(suffix):
+    return original[:-len(suffix)]
+  return original
+
+
 def get_resource_type_class_name(entity_name):
   name = '_'.join([entity_name, 'name'])
   return lower_underscore_to_upper_camel(name)
