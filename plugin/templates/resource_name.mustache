@@ -60,8 +60,7 @@ public class {{formatNameUpper}} implements ResourceName {
 
   public static {{formatNameUpper}} parse(String formattedString) {
     ImmutableMap<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(
-            formattedString, "Error in {{formatNameUpper}}.parse");
+        PATH_TEMPLATE.validatedMatch(formattedString, "Error in {{formatNameUpper}}.parse");
     return create({{#parameterList}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameterList}});
   }
 
@@ -120,8 +119,8 @@ public class {{formatNameUpper}} implements ResourceName {
     }
     if (o instanceof {{formatNameUpper}}) {
       {{formatNameUpper}} that = ({{formatNameUpper}}) o;
-      return {{#parameterList}}{{#not_first}}&& {{/not_first}}(this.{{parameter}}.equals(that.{{parameter}})
-        {{/parameterList}};
+      return {{#parameterList}}{{#not_first}}
+          && {{/not_first}}(this.{{parameter}}.equals(that.{{parameter}})){{/parameterList}};
     }
     return false;
   }
@@ -136,3 +135,4 @@ public class {{formatNameUpper}} implements ResourceName {
     return h;
   }
 }
+

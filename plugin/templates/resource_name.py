@@ -27,6 +27,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 from google.gax import path_template
 from plugin.utils import protoutils, casingutils
 
@@ -53,24 +54,25 @@ class ResourceName(ResourceNameBase):
     id_segments = [seg.literal for seg in name_template.segments
           if seg.kind == path_template._BINDING]
 
-    self.format_name_upper = casingutils.lower_underscore_to_upper_camel(
+    self.format_name_upper = casingutils.get_resource_type_class_name(
         entity_name)
-    self.format_name_lower = casingutils.lower_underscore_to_lower_camel(
+    self.format_name_lower = casingutils.get_resource_type_var_name(
         entity_name)
-
-    self.format_name_upper = name
-    self.format_name_lower = casingutils.get_lower(name)
+    self.type_name_upper = casingutils.get_resource_type_type_name(
+        entity_name)
     self.parameter_list = [
         {
             'parameter': casingutils.lower_underscore_to_lower_camel(lit),
-            'parameter_name': casingutils.lower_underscore_to_lower_camel(lit),
+            'parameter_name': lit,
+            'not_first': True,
             'not_last': True,
         } for lit in id_segments]
+    self.parameter_list[0]['not_first'] = False
     self.parameter_list[-1]['not_last'] = False
     self.format_fields = [
         {
-            'upper': f['parameter'],
-            'lower': f['parameter']
+            'upper': casingutils.lower_camel_to_upper_camel(f['parameter']),
+            'lower': f['parameter'],
         } for f in self.parameter_list]
     self.format_string = collection_config.name_pattern
 
@@ -80,6 +82,9 @@ class ResourceName(ResourceNameBase):
   def formatNameLower(self):
     return self.format_name_lower
 
+  def typeNameUpper(self):
+    return self.type_name_upper
+
   def formatFields(self):
     return self.format_fields
 
@@ -88,6 +93,10 @@ class ResourceName(ResourceNameBase):
 
   def formatString(self):
     return self.format_string
+
+  def filename(self):
+    class_dir = RESOURCE_NAMES_TYPE_PACKAGE_JAVA.replace('.', os.path.sep)
+    return os.path.join(class_dir, self.format_name_upper + '.java')
 
 
 class ResourceNameOneof(ResourceNameBase):

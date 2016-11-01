@@ -55,6 +55,11 @@ def read_from_gapic_yaml(yaml_file):
         oneofs,
         collections)
 
+  #print 'read_from_gapic_yaml:'
+  #print collections
+  #print oneofs
+  #print field_resource_name_map
+  #print 'done'
   return GapicConfig(collections, oneofs, field_resource_name_map)
 
 
@@ -75,8 +80,8 @@ def load_collection_configs(config_list, existing_configs):
 
 def load_collection_oneofs(config_list, existing_oneofs, existing_collections):
   for config in config_list:
-    root_type_name = config['root_type_name']
-    collection_list = config['collection_list']
+    root_type_name = config['oneof_name']
+    collection_list = config['collection_names']
     for collection in collection_list:
       if collection not in existing_collections:
         raise ValueError('Collection specified in collection oneof, but no ' \
@@ -93,19 +98,25 @@ def load_collection_oneofs(config_list, existing_oneofs, existing_collections):
 
 
 def load_resource_name_map(resource_name_generation, oneofs, collections):
-    for message_config in resource_name_generation:
-      message_name = message_config['message_name']
-      for field, coll in message_config['field_resource_types'].iteritems():
-        full_field_name = create_field_name(message_name, field)
-        if full_field_name in field_resource_name_map:
-          raise ValueError('Found multiple specifications for same field in ' \
-                           'resource_name_generation config. Use fully ' \
-                           'qualified message name to avoid conflicts. ' \
-                           'Name: ' + full_field_name)
-        if coll not in oneofs and coll not in collections:
-          raise ValueError('Unknown collection specified for field ' + \
-                           full_field_name + ': ' + coll)
-        field_resource_name_map[full_field_name] = coll
+  field_resource_name_map = {}
+  for message_config in resource_name_generation:
+    message_name = message_config['message_name']
+    for field, coll in message_config['field_entity_map'].iteritems():
+      full_field_name = create_field_name(message_name, field)
+      if full_field_name in field_resource_name_map:
+        raise ValueError('Found multiple specifications for same field in ' \
+                         'resource_name_generation config. Use fully ' \
+                         'qualified message name to avoid conflicts. ' \
+                         'Name: ' + full_field_name)
+      if coll not in oneofs and coll not in collections:
+        raise ValueError('Unknown collection specified for field ' + \
+                         full_field_name + ': ' + coll)
+      field_resource_name_map[full_field_name] = coll
+  return field_resource_name_map
+
+
+def create_field_name(message_name, field):
+  return message_name + "." + field
 
 
 class CollectionConfig(object):
@@ -127,3 +138,6 @@ class GapicConfig(object):
     self.collection_oneofs = collection_oneofs
     self.field_resource_name_map = field_resource_name_map
 
+  def get_entity_name_for_message_field(self, message_name, field_name):
+    return self.field_resource_name_map.get(
+        create_field_name(message_name, field_name))

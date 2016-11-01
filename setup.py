@@ -44,6 +44,7 @@ install_requires = [
     'pystache>=0.5.4',
     'protobuf>=3.0.0',
     'google-gax>=0.14.1',
+    'pyyaml>=3.12',
 ]
 
 setup(

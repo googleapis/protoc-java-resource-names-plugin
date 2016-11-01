@@ -18,6 +18,9 @@ import pytest
 import subprocess
 import shutil
 
+from plugin.templates import resource_name
+from plugin.utils import casingutils
+
 TEST_DIR = os.path.join('test', 'testdata')
 TEST_OUTPUT_DIR = os.path.join(TEST_DIR, 'test_output')
 
@@ -37,14 +40,16 @@ def check_output(actual_output_file, baseline):
       + str(actual_output)
 
 
-def run_protoc_gapic_plugin(output_dir, include_dirs, proto, lang_out=None):
-  def format_output_arg(name, output_dir):
+def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto, lang_out=None):
+  def format_output_arg(name, output_dir, extra_arg=None):
+    if extra_arg:
+      return '--{}_out={}:{}'.format(name, extra_arg, output_dir)
     return '--{}_out={}'.format(name, output_dir)
 
   args = ['protoc']
   if lang_out is not None:
     args.append(format_output_arg(lang_out, output_dir))
-  args += [format_output_arg('gapic', output_dir),
+  args += [format_output_arg('gapic', output_dir, gapic_yaml),
            '--plugin=protoc-gen-gapic=gapic_plugin.py']
   args += ['-I' + path for path in include_dirs]
   args.append(proto)
@@ -58,8 +63,10 @@ def clean_test_output():
 
 def test_resource_name_generation():
   clean_test_output()
+  gapic_yaml = os.path.join(TEST_DIR, 'library_gapic.yaml')
   include_dirs = ['.', '../googleapis']
   run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
+                          gapic_yaml,
                           include_dirs,
                           os.path.join(TEST_DIR, 'library_simple.proto'),
                           'java')
@@ -69,4 +76,9 @@ def test_resource_name_generation():
                                       'example',
                                       'library',
                                       'v1')
-  check_output(os.path.join(generated_output_dir, 'BookName.java'), 'java_standard_book_name')
+  resources = ['book', 'shelf', 'archived_book']
+  generated_class_dir = resource_name.RESOURCE_NAMES_TYPE_PACKAGE_JAVA.replace('.', os.path.sep)
+  for resource in resources:
+    generated_class = casingutils.lower_underscore_to_upper_camel(resource) + 'Name.java'
+    generated_class_path = os.path.join(TEST_OUTPUT_DIR, generated_class_dir, generated_class)
+    check_output(generated_class_path, 'java_' + resource + '_name')

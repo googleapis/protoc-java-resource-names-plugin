@@ -36,58 +36,71 @@ import pystache
 from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
 
-from plugin import templates
-from plugin.utils import protoutils
-from plugin.generated import resource_name_format_pb2
+from plugin.templates import resource_name, insertion_points
+from plugin.utils import protoutils, gapicutils
 
 
 TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
 
-def generate_resource_name_types(response, format_dict):
+def generate_resource_name_types(response, gapic_config):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
-  for fmt_data in format_dict.values():
-    name, _, proto_file = fmt_data
-    filename = name + '.java'
-    for ext, ext_value in protoutils.get_named_options(proto_file, 'java_package'):
-      filename = os.path.join(ext_value.replace('.', os.sep), filename)
-      break
+  for collection_config in gapic_config.collection_configs.values():
+    resource = resource_name.ResourceName(collection_config)
     f = response.file.add()
-    f.name = filename
-    f.content = renderer.render(templates.ResourceName(fmt_data))
+    f.name = resource.filename()
+    f.content = renderer.render(resource)
 
 
-def generate_get_set_injection(response, formatted_field_list):
+def generate_get_set_injection(response, gapic_config, request):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
-  for formatted_field_data in formatted_field_list:
-    proto_file, item, _, _, package = formatted_field_data
-    filename = item.name + '.java'
-    for ext, ext_value in protoutils.get_named_options(proto_file, 'java_package'):
-      filename = os.path.join(ext_value.replace('.', os.sep), filename)
-      break
-    f = response.file.add()
-    f.name = filename
-    f.insertion_point = 'builder_scope:' + package + '.' + item.name
-    f.content = renderer.render(construct_builder_view(formatted_field_data))
+  for proto_file in request.proto_file:
+    for item, package in protoutils.traverse(proto_file):
+      filename = item.name + '.java'
+      for field in item.field:
+        entity_name = gapic_config.get_entity_name_for_message_field(
+            item.name, field.name)
+        if entity_name:
+            f = response.file.add()
+            f.name = filename
+            f.insertion_point = 'builder_scope:' + package + '.' + item.name
+            f.content = renderer.render(construct_builder_view(gapic_config, entity_name, field))
 
-    f = response.file.add()
-    f.name = filename
-    f.insertion_point = 'class_scope:' + package + '.' + item.name
-    f.content = renderer.render(construct_class_view(formatted_field_data))
+            f = response.file.add()
+            f.name = filename
+            f.insertion_point = 'class_scope:' + package + '.' + item.name
+            f.content = renderer.render(construct_class_view(gapic_config, entity_name, field))
 
 
-def construct_builder_view(formatted_field_data):
-  _, _, f, _, _ = formatted_field_data
-  if f.label == FieldDescriptorProto.LABEL_REPEATED:
-    return templates.InsertBuilderList(formatted_field_data)
-  else:
-    return templates.InsertBuilder(formatted_field_data)
+def construct_builder_view(gapic_config, entity_name, field):
+  if entity_name in gapic_config.collection_configs:
+    collection_config = gapic_config.collection_configs.get(entity_name)
+    if field.label == FieldDescriptorProto.LABEL_REPEATED:
+      return insertion_points.InsertBuilderList(collection_config)
+    else:
+      return insertion_points.InsertBuilder(collection_config)
+  elif entity_name in gapic_config.collection_oneofs:
+    # NOT SUPPORTED
+    #if field.label == FieldDescriptorProto.LABEL_REPEATED:
+    #  return templates.InsertBuilderList(formatted_field_data)
+    #else:
+    #  return templates.InsertBuilder(formatted_field_data)
+    pass
 
-def construct_class_view(formatted_field_data):
-  _, _, f, _, _ = formatted_field_data
-  if f.label == FieldDescriptorProto.LABEL_REPEATED:
-    return templates.InsertClassList(formatted_field_data)
-  else:
-    return templates.InsertClass(formatted_field_data)
+
+def construct_class_view(gapic_config, entity_name, field):
+  if entity_name in gapic_config.collection_configs:
+    collection_config = gapic_config.collection_configs.get(entity_name)
+    if field.label == FieldDescriptorProto.LABEL_REPEATED:
+      return insertion_points.InsertClassList(collection_config)
+    else:
+      return insertion_points.InsertClass(collection_config)
+  elif entity_name in gapic_config.collection_oneofs:
+    # NOT SUPPORTED
+    #if field.label == FieldDescriptorProto.LABEL_REPEATED:
+    #  return templates.InsertBuilderList(formatted_field_data)
+    #else:
+    #  return templates.InsertBuilder(formatted_field_data)
+    pass
 
 
 if __name__ == '__main__':
@@ -98,14 +111,16 @@ if __name__ == '__main__':
   request = plugin.CodeGeneratorRequest()
   request.ParseFromString(data)
 
+  gapic_config = gapicutils.read_from_gapic_yaml(request.parameter)
+
   format_dict = protoutils.get_format_dict(request)
   formatted_field_list = list(protoutils.get_formatted_field_list(request, format_dict))
 
   # Generate output
   response = plugin.CodeGeneratorResponse()
 
-  generate_resource_name_types(response, format_dict)
-  generate_get_set_injection(response, formatted_field_list)
+  generate_resource_name_types(response, gapic_config)
+  #generate_get_set_injection(response, gapic_config, request)
 
   # Serialise response message
   output = response.SerializeToString()

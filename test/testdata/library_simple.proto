@@ -6,15 +6,11 @@ syntax = "proto3";
 
 package google.example.library.v1;
 
-import "proto/resource_name_format.proto";
 import "google/api/annotations.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "LibraryProto";
 option java_package = "com.google.example.library.v1";
-
-option (google.gapic.format) = { format_name: 'ShelfName', format_string: 'bookShelves/{bookShelf}' };
-option (google.gapic.format) = { format_name: 'BookName', format_string: 'bookShelves/{bookShelf}/book/{book}' };
 
 service LibraryService {
 
@@ -43,18 +39,18 @@ service LibraryService {
 }
 
 message ListBooksRequest {
-  repeated string name = 1 [(google.gapic.format_name) = "BookName"];
+  repeated string name = 1;
 }
 
 message ListBooksResponse {
-  repeated string name = 1 [(google.gapic.format_name) = "BookName"];
+  repeated string name = 1;
 }
 
 // A Shelf contains a collection of books with a theme.
 message Shelf {
   // The resource name of the shelf.
   // Shelf names have the form `bookShelves/{shelf_id}`.
-  string name = 1 [(google.gapic.format_name) = "ShelfName"];
+  string name = 1;
 
   // The theme of the shelf
   string theme = 2;
@@ -69,7 +65,7 @@ message CreateShelfRequest {
 // Request message for LibraryService.GetShelf.
 message GetShelfRequest {
   // The name of the shelf to retrieve.
-  string name = 1 [(google.gapic.format_name) = "ShelfName"];
+  string name = 1;
 
   // To test 'options' parameter name conflict.
   string options = 4;
@@ -79,7 +75,7 @@ message GetShelfRequest {
 message Book {
   // The resource name of the book.
   // Book names have the form `bookShelves/{shelf_id}/books/{book_id}`.
-  string name = 1 [(google.gapic.format_name) = "BookName"];
+  string name = 1;
 
   // The name of the book author.
   string author = 2;
@@ -88,7 +84,7 @@ message Book {
 // Request message for LibraryService.CreateBook.
 message CreateBookRequest {
   // The name of the shelf in which the book is created.
-  string name = 1 [(google.gapic.format_name) = "BookName"];
+  string name = 1;
 
   // The book to create.
   Book book = 2;
@@ -96,5 +92,5 @@ message CreateBookRequest {
 
 message GetBookRequest {
   // The name of the book to retrieve.
-  string name = 1 [(google.gapic.format_name) = "BookName"];
+  string name = 1;
 }

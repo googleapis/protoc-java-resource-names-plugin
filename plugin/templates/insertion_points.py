@@ -38,10 +38,10 @@ class InsertBuilder(object):
 
     entity_name = collection_config.entity_name
     short_class_name = casingutils.lower_underscore_to_upper_camel(entity_name)
-    self.resource_class_name = '.'.join(RESOURCE_NAMES_TYPE_PACKAGE_JAVA,
-                                        short_class_name)
+    self.resource_class_name = '.'.join([RESOURCE_NAMES_TYPE_PACKAGE_JAVA,
+                                         short_class_name])
     self.field_name_upper = casingutils.lower_underscore_to_upper_camel(
-        field.name)
+        entity_name)
 
   def resourceTypeClassName(self):
     return self.resource_class_name

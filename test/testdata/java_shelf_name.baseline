@@ -23,20 +23,15 @@ import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class ArchivedBookName implements ResourceName {
+public class ShelfName implements ResourceName {
 
   private static final PathTemplate PATH_TEMPLATE =
-      PathTemplate.createWithoutUrlEncoding("archives/{archive_id}/books/{book_id=**}");
+      PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}");
 
-  private final String archiveId;
-  private final String bookId;
+  private final String shelfId;
 
-  public String getArchiveId() {
-    return archiveId;
-  }
-
-  public String getBookId() {
-    return bookId;
+  public String getShelfId() {
+    return shelfId;
   }
 
   public static Builder newBuilder() {
@@ -47,22 +42,20 @@ public class ArchivedBookName implements ResourceName {
     return new Builder(this);
   }
 
-  private ArchivedBookName(Builder builder) {
-    archiveId = Preconditions.checkNotNull(builder.getArchiveId());
-    bookId = Preconditions.checkNotNull(builder.getBookId());
+  private ShelfName(Builder builder) {
+    shelfId = Preconditions.checkNotNull(builder.getShelfId());
   }
 
-  public static ArchivedBookName create(String archiveId, String bookId) {
+  public static ShelfName create(String shelfId) {
     return newBuilder()
-      .setArchiveId(archiveId)
-      .setBookId(bookId)
+      .setShelfId(shelfId)
       .build();
   }
 
-  public static ArchivedBookName parse(String formattedString) {
+  public static ShelfName parse(String formattedString) {
     ImmutableMap<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(formattedString, "Error in ArchivedBookName.parse");
-    return create(matchMap.get("archive_id"), matchMap.get("book_id"));
+        PATH_TEMPLATE.validatedMatch(formattedString, "Error in ShelfName.parse");
+    return create(matchMap.get("shelf_id"));
   }
 
   public static boolean isParsableFrom(String formattedString) {
@@ -71,48 +64,37 @@ public class ArchivedBookName implements ResourceName {
 
   @Override
   public ResourceNameType getType() {
-    return ArchivedBookNameType.instance();
+    return ShelfNameType.instance();
   }
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("archive_id", archiveId, "book_id", bookId);
+    return PATH_TEMPLATE.instantiate("shelf_id", shelfId);
   }
 
   /** Builder for TopicName. */
   public static class Builder {
 
-    private String archiveId;
-    private String bookId;
+    private String shelfId;
 
-    public String getArchiveId() {
-      return archiveId;
+    public String getShelfId() {
+      return shelfId;
     }
 
-    public String getBookId() {
-      return bookId;
-    }
-
-    public Builder setArchiveId(String archiveId) {
-      this.archiveId = archiveId;
-      return this;
-    }
-
-    public Builder setBookId(String bookId) {
-      this.bookId = bookId;
+    public Builder setShelfId(String shelfId) {
+      this.shelfId = shelfId;
       return this;
     }
 
     private Builder() {
     }
 
-    private Builder(ArchivedBookName archivedBookName) {
-      archiveId = archivedBookName.archiveId;
-      bookId = archivedBookName.bookId;
+    private Builder(ShelfName shelfName) {
+      shelfId = shelfName.shelfId;
     }
 
-    public ArchivedBookName build() {
-      return new ArchivedBookName(this);
+    public ShelfName build() {
+      return new ShelfName(this);
     }
   }
 
@@ -121,10 +103,9 @@ public class ArchivedBookName implements ResourceName {
     if (o == this) {
       return true;
     }
-    if (o instanceof ArchivedBookName) {
-      ArchivedBookName that = (ArchivedBookName) o;
-      return (this.archiveId.equals(that.archiveId))
-          && (this.bookId.equals(that.bookId));
+    if (o instanceof ShelfName) {
+      ShelfName that = (ShelfName) o;
+      return (this.shelfId.equals(that.shelfId));
     }
     return false;
   }
@@ -133,9 +114,7 @@ public class ArchivedBookName implements ResourceName {
   public int hashCode() {
     int h = 1;
     h *= 1000003;
-    h ^= archiveId.hashCode();
-    h *= 1000003;
-    h ^= bookId.hashCode();
+    h ^= shelfId.hashCode();
     return h;
   }
 }

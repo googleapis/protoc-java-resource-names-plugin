@@ -42,21 +42,30 @@ def lower_underscore_to_upper_camel(snake_str):
   return "".join(x.title() for x in components)
 
 
+def lower_camel_to_upper_camel(lower_camel_str):
+  return lower_camel_str[0].upper() + lower_camel_str[1:]
+
+
 def get_resource_type_class_name(entity_name):
-  name = '_'.join(entity_name, 'name')
+  name = '_'.join([entity_name, 'name'])
   return lower_underscore_to_upper_camel(name)
 
 
 def get_resource_type_var_name(entity_name):
-  name = '_'.join(entity_name, 'name')
+  name = '_'.join([entity_name, 'name'])
   return lower_underscore_to_lower_camel(name)
 
 
+def get_resource_type_type_name(entity_name):
+  name = '_'.join([entity_name, 'name', 'type'])
+  return lower_underscore_to_upper_camel(name)
+
+
 def get_oneof_class_name(entity_name):
-  name = '_'.join(entity_name, 'name_oneof')
+  name = '_'.join([entity_name, 'name_oneof'])
   return lower_underscore_to_upper_camel(name)
 
 
 def get_oneof_var_name(entity_name):
-  name = '_'.join(entity_name, 'name_oneof')
+  name = '_'.join([entity_name, 'name_oneof'])
   return lower_underscore_to_lower_camel(name)
