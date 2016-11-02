@@ -63,9 +63,7 @@ def generate_resource_name_types(response, gapic_config, proto_file):
 
 def generate_get_set_injection(response, gapic_config, request):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
-  #print 'generate_get_set_injection'
   for proto_file in request.proto_file:
-    #print 'protofile:', proto_file.name
     for item, package in protoutils.traverse(proto_file):
       java_package = package
       for opt in protoutils.get_named_options(proto_file, 'java_package'):
@@ -76,51 +74,37 @@ def generate_get_set_injection(response, gapic_config, request):
         entity_name = gapic_config.get_entity_name_for_message_field(
             item.name, field.name)
         if entity_name:
+          if entity_name in gapic_config.collection_configs:
+            collection = gapic_config.collection_configs.get(entity_name)
+          elif entity_name in gapic_config.collection_oneofs:
+            collection = gapic_config.collection_oneofs.get(entity_name)
+          else:
+            raise ValueError('entity name not found: ' + entity_name)
+          resource = resource_name.ResourceName(collection)
+
           f = response.file.add()
           f.name = filename
           f.insertion_point = 'builder_scope:' + package + '.' + item.name
-          f.content = renderer.render(construct_builder_view(gapic_config, entity_name, field))
+          f.content = renderer.render(construct_builder_view(resource, field))
 
           f = response.file.add()
           f.name = filename
           f.insertion_point = 'class_scope:' + package + '.' + item.name
-          f.content = renderer.render(construct_class_view(gapic_config, entity_name, field))
-        #else:
-        #  print 'miss:', item.name, field.name
+          f.content = renderer.render(construct_class_view(resource, field))
 
 
-def construct_builder_view(gapic_config, entity_name, field):
-  if entity_name in gapic_config.collection_configs:
-    collection_config = gapic_config.collection_configs.get(entity_name)
-    resource = resource_name.ResourceName(collection_config)
-    if field.label == FieldDescriptorProto.LABEL_REPEATED:
-      return insertion_points.InsertBuilderList(resource, field)
-    else:
-      return insertion_points.InsertBuilder(resource, field)
-  elif entity_name in gapic_config.collection_oneofs:
-    # NOT SUPPORTED
-    #if field.label == FieldDescriptorProto.LABEL_REPEATED:
-    #  return templates.InsertBuilderList(formatted_field_data)
-    #else:
-    #  return templates.InsertBuilder(formatted_field_data)
-    pass
+def construct_builder_view(resource, field):
+  if field.label == FieldDescriptorProto.LABEL_REPEATED:
+    return insertion_points.InsertBuilderList(resource, field)
+  else:
+    return insertion_points.InsertBuilder(resource, field)
 
 
-def construct_class_view(gapic_config, entity_name, field):
-  if entity_name in gapic_config.collection_configs:
-    collection_config = gapic_config.collection_configs.get(entity_name)
-    resource = resource_name.ResourceName(collection_config)
-    if field.label == FieldDescriptorProto.LABEL_REPEATED:
-      return insertion_points.InsertClassList(resource, field)
-    else:
-      return insertion_points.InsertClass(resource, field)
-  elif entity_name in gapic_config.collection_oneofs:
-    # NOT SUPPORTED
-    #if field.label == FieldDescriptorProto.LABEL_REPEATED:
-    #  return templates.InsertBuilderList(formatted_field_data)
-    #else:
-    #  return templates.InsertBuilder(formatted_field_data)
-    pass
+def construct_class_view(resource, field):
+  if field.label == FieldDescriptorProto.LABEL_REPEATED:
+    return insertion_points.InsertClassList(resource, field)
+  else:
+    return insertion_points.InsertClass(resource, field)
 
 
 if __name__ == '__main__':
