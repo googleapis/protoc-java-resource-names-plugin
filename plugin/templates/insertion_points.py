@@ -34,17 +34,17 @@ from plugin.templates.resource_name import RESOURCE_NAMES_TYPE_PACKAGE_JAVA
 
 class InsertBuilder(object):
 
-  def __init__(self, collection_config):
-
-    entity_name = collection_config.entity_name
-    short_class_name = casingutils.lower_underscore_to_upper_camel(entity_name)
-    self.resource_class_name = '.'.join([RESOURCE_NAMES_TYPE_PACKAGE_JAVA,
-                                         short_class_name])
+  def __init__(self, resource, field):
+    self.resource_class_name = resource.className()
+    self.resource_full_class_name = resource.fullClassName()
     self.field_name_upper = casingutils.lower_underscore_to_upper_camel(
-        entity_name)
+        field.name)
 
   def resourceTypeClassName(self):
     return self.resource_class_name
+
+  def resourceTypeFullClassName(self):
+    return self.resource_full_class_name
 
   def fieldNameUpper(self):
     return self.field_name_upper

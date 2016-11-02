@@ -508,6 +508,9 @@ resource_name_generation:
 - message_name: ListBooksRequest
   field_entity_map:
     name: shelf
+- message_name: ListBooksResponse
+  field_entity_map:
+    name: book
 - message_name: UpdateBookRequest
   field_entity_map:
     name: book

@@ -48,6 +48,9 @@ class ResourceNameBase(object):
     class_dir = self.package().replace('.', os.path.sep)
     return os.path.join(class_dir, self.className() + '.java')
 
+  def fullClassName(self):
+    return self.package() + '.' + self.className()
+
   def className(self):
     raise NotImplementedError('className must be implemented by child')
 

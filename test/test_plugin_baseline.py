@@ -21,8 +21,10 @@ import shutil
 from plugin.templates import resource_name
 from plugin.utils import casingutils
 
+
 TEST_DIR = os.path.join('test', 'testdata')
 TEST_OUTPUT_DIR = os.path.join(TEST_DIR, 'test_output')
+
 
 def read_baseline(baseline):
   filename = os.path.join(TEST_DIR, baseline + '.baseline')
@@ -61,9 +63,18 @@ def clean_test_output():
   os.mkdir(TEST_OUTPUT_DIR)
 
 
+@pytest.fixture(scope='class')
+def run_protoc():
+  clean_test_output()
+  gapic_yaml = os.path.join(TEST_DIR, 'library_gapic.yaml')
+  include_dirs = ['.', '../googleapis']
+  run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
+                          gapic_yaml,
+                          include_dirs,
+                          os.path.join(TEST_DIR, 'library_simple.proto'),
+                          'java')
+
 class TestProtocGapicPlugin(object):
-  resources = ['book', 'shelf', 'archived_book']
-  oneofs = ['book']
   resource_output_dir = resource_name.RESOURCE_NAMES_TYPE_PACKAGE_JAVA.replace('.', os.path.sep)
   protoc_output_dir = os.path.join('com',
                                    'google',
@@ -71,32 +82,26 @@ class TestProtocGapicPlugin(object):
                                    'library',
                                    'v1')
 
-  @pytest.fixture(scope='class')
-  def run_protoc(self):
-    clean_test_output()
-    gapic_yaml = os.path.join(TEST_DIR, 'library_gapic.yaml')
-    include_dirs = ['.', '../googleapis']
-    run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
-                            gapic_yaml,
-                            include_dirs,
-                            os.path.join(TEST_DIR, 'library_simple.proto'),
-                            'java')
+  @pytest.mark.parametrize('resource', ['book', 'shelf', 'archived_book'])
+  def test_resource_name_generation(self, run_protoc, resource):
+    generated_class = casingutils.lower_underscore_to_upper_camel(resource) + 'Name.java'
+    generated_class_path = os.path.join(TEST_OUTPUT_DIR, self.resource_output_dir, generated_class)
+    check_output(generated_class_path, 'java_' + resource + '_name')
 
-  def test_resource_name_generation(self):
-    for resource in self.resources:
-      generated_class = casingutils.lower_underscore_to_upper_camel(resource) + 'Name.java'
-      generated_class_path = os.path.join(TEST_OUTPUT_DIR, self.resource_output_dir, generated_class)
-      check_output(generated_class_path, 'java_' + resource + '_name')
+  @pytest.mark.parametrize('resource', ['book', 'shelf', 'archived_book'])
+  def test_resource_name_type_generation(self, run_protoc, resource):
+    generated_type =  casingutils.lower_underscore_to_upper_camel(resource) + 'NameType.java'
+    generated_type_path = os.path.join(TEST_OUTPUT_DIR, self.resource_output_dir, generated_type)
+    check_output(generated_type_path, 'java_' + resource + '_name_type')
 
-  def test_resource_name_type_generation(self):
-    for resource in self.resources:
-      generated_type =  casingutils.lower_underscore_to_upper_camel(resource) + 'NameType.java'
-      generated_type_path = os.path.join(TEST_OUTPUT_DIR, self.resource_output_dir, generated_type)
-      check_output(generated_type_path, 'java_' + resource + '_name_type')
+  @pytest.mark.parametrize('oneof', ['book'])
+  def test_resource_name_oneof_generation(self, run_protoc, oneof):
+    generated_oneof = casingutils.lower_underscore_to_upper_camel(oneof) + 'NameOneof.java'
+    generated_oneof_path = os.path.join(TEST_OUTPUT_DIR, self.protoc_output_dir, generated_oneof)
+    check_output(generated_oneof_path, 'java_' + oneof + '_name_oneof')
 
-  def test_resource_name_oneof_generation(self):
-    for oneof in self.oneofs:
-      generated_oneof = casingutils.lower_underscore_to_upper_camel(oneof) + 'NameOneof.java'
-      generated_oneof_path = os.path.join(TEST_OUTPUT_DIR, self.protoc_output_dir, generated_oneof)
-      check_output(generated_oneof_path, 'java_' + oneof + '_name_oneof')
-
+  @pytest.mark.parametrize('message', ['book', 'shelf', 'list_books_response'])
+  def test_get_set_insertion(self, run_protoc, message):
+    proto_class =  casingutils.lower_underscore_to_upper_camel(message) + '.java'
+    proto_class_path = os.path.join(TEST_OUTPUT_DIR, self.protoc_output_dir, proto_class)
+    check_output(proto_class_path, 'java_' + message + '_insert')
