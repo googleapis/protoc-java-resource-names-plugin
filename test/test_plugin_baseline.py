@@ -100,7 +100,7 @@ class TestProtocGapicPlugin(object):
     generated_oneof_path = os.path.join(TEST_OUTPUT_DIR, self.protoc_output_dir, generated_oneof)
     check_output(generated_oneof_path, 'java_' + oneof + '_name_oneof')
 
-  @pytest.mark.parametrize('message', ['book', 'shelf', 'list_books_response'])
+  @pytest.mark.parametrize('message', ['book', 'shelf', 'list_books_response', 'book_from_anywhere'])
   def test_get_set_insertion(self, run_protoc, message):
     proto_class =  casingutils.lower_underscore_to_upper_camel(message) + '.java'
     proto_class_path = os.path.join(TEST_OUTPUT_DIR, self.protoc_output_dir, proto_class)
