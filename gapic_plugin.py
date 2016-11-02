@@ -61,12 +61,12 @@ def generate_resource_name_types(response, gapic_config, proto_file):
     render_new_file(renderer, response, resource_oneof)
 
 
-def generate_get_set_injection(response, gapic_config, request):
+def generate_get_set_injection(response, gapic_config, proto_file, request):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
-  for proto_file in request.proto_file:
-    for item, package in protoutils.traverse(proto_file):
+  for pf in request.proto_file:
+    for item, package in protoutils.traverse(pf):
       java_package = package
-      for opt in protoutils.get_named_options(proto_file, 'java_package'):
+      for opt in protoutils.get_named_options(pf, 'java_package'):
         java_package = opt[1]
         break
       filename = os.path.join(java_package.replace('.', os.path.sep), item.name + '.java')
@@ -76,11 +76,12 @@ def generate_get_set_injection(response, gapic_config, request):
         if entity_name:
           if entity_name in gapic_config.collection_configs:
             collection = gapic_config.collection_configs.get(entity_name)
+            resource = resource_name.ResourceName(collection)
           elif entity_name in gapic_config.collection_oneofs:
             collection = gapic_config.collection_oneofs.get(entity_name)
+            resource = resource_name.ResourceNameOneof(collection, proto_file)
           else:
             raise ValueError('entity name not found: ' + entity_name)
-          resource = resource_name.ResourceName(collection)
 
           f = response.file.add()
           f.name = filename
@@ -130,7 +131,7 @@ if __name__ == '__main__':
   response = plugin.CodeGeneratorResponse()
 
   generate_resource_name_types(response, gapic_config, proto_file)
-  generate_get_set_injection(response, gapic_config, request)
+  generate_get_set_injection(response, gapic_config, proto_file, request)
 
   # Serialise response message
   output = response.SerializeToString()
