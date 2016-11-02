@@ -139,7 +139,7 @@ class ResourceNameType(ResourceNameBase):
 
   def __init__(self, collection_config):
     entity_name = collection_config.entity_name
-    self.type_name_upper = casingutils.get_resource_type_type_class_name(
+    self.type_name_upper = casingutils.get_resource_type_type_name(
         entity_name)
 
   def className(self):

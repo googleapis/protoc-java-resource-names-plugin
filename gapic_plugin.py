@@ -42,19 +42,23 @@ from plugin.utils import protoutils, gapicutils
 
 TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
 
+def render_new_file(renderer, response, resource):
+  f = response.file.add()
+  f.name = resource.filename()
+  f.content = renderer.render(resource)
+
+
 def generate_resource_name_types(response, gapic_config, proto_file):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
   for collection_config in gapic_config.collection_configs.values():
     resource = resource_name.ResourceName(collection_config)
-    f = response.file.add()
-    f.name = resource.filename()
-    f.content = renderer.render(resource)
+    resource_type = resource_name.ResourceNameType(collection_config)
+    render_new_file(renderer, response, resource)
+    render_new_file(renderer, response, resource_type)
 
   for oneof_config in gapic_config.collection_oneofs.values():
-    resource = resource_name.ResourceNameOneof(oneof_config, proto_file)
-    f = response.file.add()
-    f.name = resource.filename()
-    f.content = renderer.render(resource)
+    resource_oneof = resource_name.ResourceNameOneof(oneof_config, proto_file)
+    render_new_file(renderer, response, resource_oneof)
 
 
 def generate_get_set_injection(response, gapic_config, request):
