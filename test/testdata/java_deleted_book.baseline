@@ -21,7 +21,7 @@ import com.google.api.resourcenames.ResourceNameType;
 @javax.annotation.Generated("by GAPIC protoc plugin")
 public class DeletedBook implements ResourceName {
 
-  private static final String INVALID_VALUE = "_deleted-book_";
+  private static final String FIXED_VALUE = "_deleted-book_";
 
   private static final DeletedBook instance = new DeletedBook();
 
@@ -37,7 +37,7 @@ public class DeletedBook implements ResourceName {
 
   @Override
   public String toString() {
-    return INVALID_VALUE;
+    return FIXED_VALUE;
   }
 }
 

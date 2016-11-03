@@ -28,7 +28,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from plugin.utils import casingutils
+from plugin.utils import casing_utils
 from plugin.templates.resource_name import RESOURCE_NAMES_TYPE_PACKAGE_JAVA
 
 
@@ -37,7 +37,7 @@ class InsertBuilder(object):
   def __init__(self, resource, field):
     self.resource_class_name = resource.className()
     self.resource_full_class_name = resource.fullClassName()
-    self.field_name_upper = casingutils.lower_underscore_to_upper_camel(
+    self.field_name_upper = casing_utils.lower_underscore_to_upper_camel(
         field.name)
 
   def resourceTypeClassName(self):

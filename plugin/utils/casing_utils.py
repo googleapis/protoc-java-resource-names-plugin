@@ -57,7 +57,7 @@ def get_resource_type_class_name(entity_name):
   return lower_underscore_to_upper_camel(name)
 
 
-def get_invalid_resource_type_class_name(entity_name):
+def get_fixed_resource_type_class_name(entity_name):
   return lower_underscore_to_upper_camel(entity_name)
 
 

@@ -46,7 +46,8 @@ def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto, lang_ou
   def format_output_arg(name, output_dir, extra_arg=None):
     if extra_arg:
       return '--{}_out={}:{}'.format(name, extra_arg, output_dir)
-    return '--{}_out={}'.format(name, output_dir)
+    else:
+      return '--{}_out={}'.format(name, output_dir)
 
   args = ['protoc']
   if lang_out is not None:

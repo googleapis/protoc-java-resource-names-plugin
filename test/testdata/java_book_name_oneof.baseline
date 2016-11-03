@@ -19,56 +19,65 @@ import com.google.api.resourcenames.ResourceNameType;
 import com.google.api.resourcenames.types.BookName;
 import com.google.api.resourcenames.types.ArchivedBookName;
 import com.google.api.resourcenames.types.UntypedResourceName;
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
 public class BookNameOneof implements ResourceName {
 
-  private final String rawValue;
+  private final ResourceName resourceName;
 
   public BookName getBookName() {
-    return BookName.parse(rawValue);
+    if (resourceName instanceof BookName) {
+      return (BookName) resourceName;
+    } else {
+      return null;
+    }
   }
   public ArchivedBookName getArchivedBookName() {
-    return ArchivedBookName.parse(rawValue);
+    if (resourceName instanceof ArchivedBookName) {
+      return (ArchivedBookName) resourceName;
+    } else {
+      return null;
+    }
   }
 
   public UntypedResourceName getUntypedResourceName() {
-    return UntypedResourceName.parse(rawValue);
+    return UntypedResourceName.from(resourceName);
   }
 
   public ResourceName getValue() {
-    if (BookName.isParsableFrom(rawValue)) {
-      return getBookName();
-    }
-    if (ArchivedBookName.isParsableFrom(rawValue)) {
-      return getArchivedBookName();
-    }
-    return getUntypedResourceName();
+    return resourceName;
   }
 
   public ResourceNameType getType() {
     return getValue().getType();
   }
 
-  private BookNameOneof(String rawValue) {
-    this.rawValue = rawValue;
+  private BookNameOneof(ResourceName resourceName) {
+    this.resourceName = Preconditions.isNotNull(resourceName);
   }
 
   public static BookNameOneof parse(String formattedString) {
-    return new BookNameOneof(formattedString);
+    if (BookName.isParsableFrom(formattedString)) {
+      return new BookNameOneof(BookName.parse(formattedString));
+    }
+    if (ArchivedBookName.isParsableFrom(formattedString)) {
+      return new BookNameOneof(ArchivedBookName.parse(formattedString));
+    }
+    return new BookNameOneof(UntypedResourceName.parse(formattedString));
   }
 
   public static BookNameOneof from(BookName bookName) {
-    return BookNameOneof.parse(bookName.toString());
+    return new BookNameOneof(bookName);
   }
   public static BookNameOneof from(ArchivedBookName archivedBookName) {
-    return BookNameOneof.parse(archivedBookName.toString());
+    return new BookNameOneof(archivedBookName);
   }
 
   public static BookNameOneof fromUntyped(UntypedResourceName untypedResourceName) {
-    return BookNameOneof.parse(untypedResourceName.toString());
+    return new BookNameOneof(untypedResourceName);
   }
 }
 

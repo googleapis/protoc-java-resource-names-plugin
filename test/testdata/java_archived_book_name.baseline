@@ -15,7 +15,7 @@
 package com.google.api.resourcenames.types;
 
 import com.google.common.base.Preconditions;
-import com.google.api.gax.protobuf.PathTemplate;
+import com.google.api.pathtemplate.PathTemplate;
 import com.google.common.collect.ImmutableMap;
 import com.google.api.resourcenames.ResourceName;
 import com.google.api.resourcenames.ResourceNameType;
@@ -61,7 +61,7 @@ public class ArchivedBookName implements ResourceName {
 
   public static ArchivedBookName parse(String formattedString) {
     ImmutableMap<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(formattedString, "Error in ArchivedBookName.parse");
+        PATH_TEMPLATE.validatedMatch(formattedString, "ArchivedBookName.parse: formattedString not in valid format");
     return create(matchMap.get("archive_id"), matchMap.get("book_id"));
   }
 
@@ -79,7 +79,7 @@ public class ArchivedBookName implements ResourceName {
     return PATH_TEMPLATE.instantiate("archive_id", archiveId, "book_id", bookId);
   }
 
-  /** Builder for TopicName. */
+  /** Builder for ArchivedBookName. */
   public static class Builder {
 
     private String archiveId;

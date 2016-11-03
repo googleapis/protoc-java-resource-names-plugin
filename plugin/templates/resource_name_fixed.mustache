@@ -21,9 +21,9 @@ import {{resourceNameGlobalPackageName}}.ResourceNameType;
 @javax.annotation.Generated("by GAPIC protoc plugin")
 public class {{className}} implements ResourceName {
 
-  private static final String INVALID_VALUE = "{{invalidValue}}";
+  private static final String FIXED_VALUE = "{{fixedValue}}";
 
-  private static final DeletedBook instance = new DeletedBook();
+  private static final {{className}} instance = new {{className}}();
 
   private {{className}}() {}
 
@@ -37,7 +37,7 @@ public class {{className}} implements ResourceName {
 
   @Override
   public String toString() {
-    return INVALID_VALUE;
+    return FIXED_VALUE;
   }
 }
 

@@ -20,53 +20,58 @@ import {{resourceNameGlobalPackageName}}.ResourceNameType;
 import {{resourceNameTypePackageName}}.{{resourceTypeClassName}};
 {{/resourceTypes}}
 import {{resourceNameTypePackageName}}.UntypedResourceName;
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
 public class {{className}} implements ResourceName {
 
-  private final String rawValue;
+  private final ResourceName resourceName;
 
   {{#resourceTypes}}
   public {{resourceTypeClassName}} get{{resourceTypeClassName}}() {
-    return {{resourceTypeClassName}}.parse(rawValue);
+    if (resourceName instanceof {{resourceTypeClassName}}) {
+      return ({{resourceTypeClassName}}) resourceName;
+    } else {
+      return null;
+    }
   }
   {{/resourceTypes}}
 
   public UntypedResourceName getUntypedResourceName() {
-    return UntypedResourceName.parse(rawValue);
+    return UntypedResourceName.from(resourceName);
   }
 
   public ResourceName getValue() {
-    {{#resourceTypes}}
-    if ({{resourceTypeClassName}}.isParsableFrom(rawValue)) {
-      return get{{resourceTypeClassName}}();
-    }
-    {{/resourceTypes}}
-    return getUntypedResourceName();
+    return resourceName;
   }
 
   public ResourceNameType getType() {
     return getValue().getType();
   }
 
-  private {{className}}(String rawValue) {
-    this.rawValue = rawValue;
+  private {{className}}(ResourceName resourceName) {
+    this.resourceName = Preconditions.isNotNull(resourceName);
   }
 
   public static {{className}} parse(String formattedString) {
-    return new {{className}}(formattedString);
+    {{#resourceTypes}}
+    if ({{resourceTypeClassName}}.isParsableFrom(formattedString)) {
+      return new {{className}}({{resourceTypeClassName}}.parse(formattedString));
+    }
+    {{/resourceTypes}}
+    return new {{className}}(UntypedResourceName.parse(formattedString));
   }
 
   {{#resourceTypes}}
   public static {{className}} from({{resourceTypeClassName}} {{resourceTypeVarName}}) {
-    return {{className}}.parse({{resourceTypeVarName}}.toString());
+    return new {{className}}({{resourceTypeVarName}});
   }
   {{/resourceTypes}}
 
   public static {{className}} fromUntyped(UntypedResourceName untypedResourceName) {
-    return {{className}}.parse(untypedResourceName.toString());
+    return new {{className}}(untypedResourceName);
   }
 }
 

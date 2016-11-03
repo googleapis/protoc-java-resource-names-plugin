@@ -37,7 +37,7 @@ from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
 
 from plugin.templates import resource_name, insertion_points
-from plugin.utils import protoutils, gapicutils
+from plugin.utils import proto_utils, gapic_utils
 
 
 TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
@@ -56,8 +56,8 @@ def generate_resource_name_types(response, gapic_config, proto_file):
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
 
-  for invalid_config in gapic_config.invalid_collections.values():
-    resource = resource_name.ResourceNameInvalid(invalid_config)
+  for fixed_config in gapic_config.fixed_collections.values():
+    resource = resource_name.ResourceNameFixed(fixed_config)
     resource_type = resource_name.ResourceNameType(resource.className())
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
@@ -70,9 +70,9 @@ def generate_resource_name_types(response, gapic_config, proto_file):
 def generate_get_set_injection(response, gapic_config, proto_file, request):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
   for pf in request.proto_file:
-    for item, package in protoutils.traverse(pf):
+    for item, package in proto_utils.traverse(pf):
       java_package = package
-      for opt in protoutils.get_named_options(pf, 'java_package'):
+      for opt in proto_utils.get_named_options(pf, 'java_package'):
         java_package = opt[1]
         break
       filename = os.path.join(java_package.replace('.', os.path.sep), item.name + '.java')
@@ -131,7 +131,7 @@ if __name__ == '__main__':
       proto_file = pf
       break
 
-  gapic_config = gapicutils.read_from_gapic_yaml(request.parameter)
+  gapic_config = gapic_utils.read_from_gapic_yaml(request.parameter)
 
   # Generate output
   response = plugin.CodeGeneratorResponse()
