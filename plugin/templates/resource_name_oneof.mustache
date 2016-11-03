@@ -14,13 +14,13 @@
 
 package {{package}};
 
+import com.google.common.base.Preconditions;
 import {{resourceNameGlobalPackageName}}.ResourceName;
 import {{resourceNameGlobalPackageName}}.ResourceNameType;
 {{#resourceTypes}}
 import {{resourceNameTypePackageName}}.{{resourceTypeClassName}};
 {{/resourceTypes}}
 import {{resourceNameTypePackageName}}.UntypedResourceName;
-import com.google.common.base.Preconditions;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
@@ -52,7 +52,7 @@ public class {{className}} implements ResourceName {
   }
 
   private {{className}}(ResourceName resourceName) {
-    this.resourceName = Preconditions.isNotNull(resourceName);
+    this.resourceName = Preconditions.checkNotNull(resourceName);
   }
 
   public static {{className}} parse(String formattedString) {
