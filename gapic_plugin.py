@@ -52,7 +52,13 @@ def generate_resource_name_types(response, gapic_config, proto_file):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
   for collection_config in gapic_config.collection_configs.values():
     resource = resource_name.ResourceName(collection_config)
-    resource_type = resource_name.ResourceNameType(collection_config)
+    resource_type = resource_name.ResourceNameType(resource.className())
+    render_new_file(renderer, response, resource)
+    render_new_file(renderer, response, resource_type)
+
+  for invalid_config in gapic_config.invalid_collections.values():
+    resource = resource_name.ResourceNameInvalid(invalid_config)
+    resource_type = resource_name.ResourceNameType(resource.className())
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
 

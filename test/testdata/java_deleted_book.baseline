@@ -12,27 +12,27 @@
  * the License.
  */
 
-package {{resourceNameTypePackageName}};
+package com.google.api.resourcenames.types;
 
-import {{resourceNameGlobalPackageName}}.ResourceName;
-import {{resourceNameGlobalPackageName}}.ResourceNameType;
+import com.google.api.resourcenames.ResourceName;
+import com.google.api.resourcenames.ResourceNameType;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{className}} implements ResourceName {
+public class DeletedBook implements ResourceName {
 
-  private static final String INVALID_VALUE = "{{invalidValue}}";
+  private static final String INVALID_VALUE = "_deleted-book_";
 
   private static final DeletedBook instance = new DeletedBook();
 
-  private {{className}}() {}
+  private DeletedBook() {}
 
-  public static {{className}} instance() {
+  public static DeletedBook instance() {
     return instance;
   }
 
   public ResourceNameType getType() {
-    return {{className}}Type.instance();
+    return DeletedBookType.instance();
   }
 
   @Override

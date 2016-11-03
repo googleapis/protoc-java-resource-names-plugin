@@ -74,6 +74,10 @@ def run_protoc():
                           os.path.join(TEST_DIR, 'library_simple.proto'),
                           'java')
 
+RESOURCE_NAMES_TO_GENERATE = ['book_name', 'shelf_name', 'archived_book_name', 'deleted_book']
+ONEOFS_TO_GENERATE = ['book_name_oneof']
+MESSAGE_CLASSES_TO_EXTEND = ['book', 'shelf', 'list_books_response', 'book_from_anywhere']
+
 class TestProtocGapicPlugin(object):
   resource_output_dir = resource_name.RESOURCE_NAMES_TYPE_PACKAGE_JAVA.replace('.', os.path.sep)
   protoc_output_dir = os.path.join('com',
@@ -82,23 +86,23 @@ class TestProtocGapicPlugin(object):
                                    'library',
                                    'v1')
 
-  @pytest.mark.parametrize('resource', ['book', 'shelf', 'archived_book'])
+  @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
   def test_resource_name_generation(self, run_protoc, resource):
-    generated_class = casingutils.lower_underscore_to_upper_camel(resource) + 'Name.java'
+    generated_class = casingutils.lower_underscore_to_upper_camel(resource) + '.java'
     generated_class_path = os.path.join(TEST_OUTPUT_DIR, self.resource_output_dir, generated_class)
-    check_output(generated_class_path, 'java_' + resource + '_name')
+    check_output(generated_class_path, 'java_' + resource)
 
-  @pytest.mark.parametrize('resource', ['book', 'shelf', 'archived_book'])
+  @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
   def test_resource_name_type_generation(self, run_protoc, resource):
-    generated_type =  casingutils.lower_underscore_to_upper_camel(resource) + 'NameType.java'
+    generated_type =  casingutils.lower_underscore_to_upper_camel(resource) + 'Type.java'
     generated_type_path = os.path.join(TEST_OUTPUT_DIR, self.resource_output_dir, generated_type)
-    check_output(generated_type_path, 'java_' + resource + '_name_type')
+    check_output(generated_type_path, 'java_' + resource + '_type')
 
-  @pytest.mark.parametrize('oneof', ['book'])
+  @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
   def test_resource_name_oneof_generation(self, run_protoc, oneof):
-    generated_oneof = casingutils.lower_underscore_to_upper_camel(oneof) + 'NameOneof.java'
+    generated_oneof = casingutils.lower_underscore_to_upper_camel(oneof) + '.java'
     generated_oneof_path = os.path.join(TEST_OUTPUT_DIR, self.protoc_output_dir, generated_oneof)
-    check_output(generated_oneof_path, 'java_' + oneof + '_name_oneof')
+    check_output(generated_oneof_path, 'java_' + oneof)
 
   @pytest.mark.parametrize('message', ['book', 'shelf', 'list_books_response', 'book_from_anywhere'])
   def test_get_set_insertion(self, run_protoc, message):

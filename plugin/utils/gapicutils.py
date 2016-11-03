@@ -39,15 +39,20 @@ def read_from_gapic_yaml(yaml_file):
   if 'collections' in gapic_yaml:
     collections = load_collection_configs(gapic_yaml['collections'],
                                           collections)
-  for interface in gapic_yaml['interfaces']:
+  for interface in gapic_yaml.get('interfaces', []):
     if 'collections' in interface:
       collections = load_collection_configs(interface['collections'],
                                             collections)
+  invalid_collections = {}
+  if 'invalid_collections' in gapic_yaml:
+    invalid_collections = load_invalid_configs(gapic_yaml['invalid_collections'],
+                                               collections)
+
   oneofs = {}
   if 'collection_oneofs' in gapic_yaml:
     oneofs = load_collection_oneofs(gapic_yaml['collection_oneofs'],
-                                    oneofs,
                                     collections)
+
   field_resource_name_map = {}
   if 'resource_name_generation' in gapic_yaml:
     field_resource_name_map = load_resource_name_map(
@@ -55,12 +60,7 @@ def read_from_gapic_yaml(yaml_file):
         oneofs,
         collections)
 
-  #print 'read_from_gapic_yaml:'
-  #print collections
-  #print oneofs
-  #print field_resource_name_map
-  #print 'done'
-  return GapicConfig(collections, oneofs, field_resource_name_map)
+  return GapicConfig(collections, invalid_collections, oneofs, field_resource_name_map)
 
 
 def load_collection_configs(config_list, existing_configs):
@@ -78,7 +78,27 @@ def load_collection_configs(config_list, existing_configs):
   return existing_configs
 
 
-def load_collection_oneofs(config_list, existing_oneofs, existing_collections):
+def load_invalid_configs(config_list, existing_collections):
+  existing_configs = {}
+  for config in config_list:
+    entity_name = config['entity_name']
+    invalid_value = config['invalid_value']
+    if entity_name in existing_collections:
+      raise ValueError('Found different collection configs with same entity ' \
+                       'name but of different types. Name: ' + entity_name)
+    if entity_name in existing_configs:
+      existing_invalid_value = existing_configs[entity_name].invalid_value
+      if existing_invalid_value != invalid_value:
+        raise ValueError('Found invalid collection configs with same entity ' \
+                         'name but different values. Name: ' + entity_name)
+    else:
+      existing_configs[entity_name] = InvalidCollectionConfig(entity_name,
+                                                              invalid_value)
+  return existing_configs
+
+
+def load_collection_oneofs(config_list, existing_collections):
+  existing_oneofs = {}
   for config in config_list:
     root_type_name = config['oneof_name']
     collection_list = config['collection_names']
@@ -125,6 +145,12 @@ class CollectionConfig(object):
     self.name_pattern = name_pattern
 
 
+class InvalidCollectionConfig(object):
+  def __init__(self, entity_name, invalid_value):
+    self.entity_name = entity_name
+    self.invalid_value = invalid_value
+
+
 class CollectionOneof(object):
   def __init__(self, oneof_name, resource_type_list):
     self.oneof_name = oneof_name
@@ -132,9 +158,10 @@ class CollectionOneof(object):
 
 
 class GapicConfig(object):
-  def __init__(self, collection_configs={}, collection_oneofs={},
-               field_resource_name_map={}, **kwargs):
+  def __init__(self, collection_configs={}, invalid_collections={},
+               collection_oneofs={}, field_resource_name_map={}, **kwargs):
     self.collection_configs = collection_configs
+    self.invalid_collections = invalid_collections
     self.collection_oneofs = collection_oneofs
     self.field_resource_name_map = field_resource_name_map
 

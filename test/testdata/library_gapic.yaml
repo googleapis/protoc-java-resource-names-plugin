@@ -4,6 +4,9 @@ type: com.google.api.codegen.ConfigProto
 collections:
   - name_pattern: archives/{archive_id}/books/{book_id=**}
     entity_name: archived_book
+invalid_collections:
+  - entity_name: deleted_book
+    invalid_value: _deleted-book_
 collection_oneofs:
   - oneof_name: book_oneof
     collection_names:

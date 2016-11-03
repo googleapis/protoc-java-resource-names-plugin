@@ -71,8 +71,8 @@ class ResourceName(ResourceNameBase):
         entity_name)
     self.format_name_lower = casingutils.get_resource_type_var_name(
         entity_name)
-    self.type_name_upper = casingutils.get_resource_type_type_name(
-        entity_name)
+    self.type_name_upper = casingutils.get_resource_type_from_class_name(
+        self.format_name_upper)
     self.parameter_list = [
         {
             'parameter': casingutils.lower_underscore_to_lower_camel(lit),
@@ -114,7 +114,7 @@ class ResourceName(ResourceNameBase):
 class ResourceNameOneof(ResourceNameBase):
 
   def __init__(self, oneof, proto_file):
-    entity_name = casingutils.remove_suffix(oneof.oneof_name, '_oneof')
+    entity_name = oneof.oneof_name
     self.oneof_class_name = casingutils.get_oneof_class_name(entity_name)
     self.resource_types = [
         {
@@ -140,10 +140,9 @@ class ResourceNameOneof(ResourceNameBase):
 
 class ResourceNameType(ResourceNameBase):
 
-  def __init__(self, collection_config):
-    entity_name = collection_config.entity_name
-    self.type_name_upper = casingutils.get_resource_type_type_name(
-        entity_name)
+  def __init__(self, class_name):
+    self.type_name_upper = casingutils.get_resource_type_from_class_name(
+        class_name)
 
   def className(self):
     return self.type_name_upper
@@ -155,7 +154,7 @@ class ResourceNameType(ResourceNameBase):
 class ResourceNameInvalid(ResourceNameBase):
 
   def __init__(self, invalid_config):
-    self.format_name_upper = casingutils.get_resource_type_class_name(
+    self.format_name_upper = casingutils.get_invalid_resource_type_class_name(
         invalid_config.entity_name)
     self.invalid_value = invalid_config.invalid_value
 

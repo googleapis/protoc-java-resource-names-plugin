@@ -57,17 +57,21 @@ def get_resource_type_class_name(entity_name):
   return lower_underscore_to_upper_camel(name)
 
 
+def get_invalid_resource_type_class_name(entity_name):
+  return lower_underscore_to_upper_camel(entity_name)
+
+
 def get_resource_type_var_name(entity_name):
   name = '_'.join([entity_name, 'name'])
   return lower_underscore_to_lower_camel(name)
 
 
-def get_resource_type_type_name(entity_name):
-  name = '_'.join([entity_name, 'name', 'type'])
-  return lower_underscore_to_upper_camel(name)
+def get_resource_type_from_class_name(class_name):
+  return class_name + 'Type'
 
 
 def get_oneof_class_name(entity_name):
+  entity_name = remove_suffix(entity_name, '_oneof')
   name = '_'.join([entity_name, 'name_oneof'])
   return lower_underscore_to_upper_camel(name)
 
