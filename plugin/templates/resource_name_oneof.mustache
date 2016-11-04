@@ -20,7 +20,7 @@ import {{resourceNameGlobalPackageName}}.ResourceNameType;
 {{#resourceTypes}}
 import {{resourceNameTypePackageName}}.{{resourceTypeClassName}};
 {{/resourceTypes}}
-import {{resourceNameTypePackageName}}.UntypedResourceName;
+import {{resourceNameGlobalPackageName}}.UntypedResourceName;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
@@ -56,11 +56,16 @@ public class {{className}} implements ResourceName {
   }
 
   public static {{className}} parse(String formattedString) {
-    {{#resourceTypes}}
+    {{#singleResourceTypes}}
     if ({{resourceTypeClassName}}.isParsableFrom(formattedString)) {
       return new {{className}}({{resourceTypeClassName}}.parse(formattedString));
     }
-    {{/resourceTypes}}
+    {{/singleResourceTypes}}
+    {{#fixedResourceTypes}}
+    if ({{resourceTypeClassName}}.matches(formattedString)) {
+      return new {{className}}({{resourceTypeClassName}}.instance());
+    }
+    {{/fixedResourceTypes}}
     return new {{className}}(UntypedResourceName.parse(formattedString));
   }
 

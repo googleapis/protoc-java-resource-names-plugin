@@ -116,16 +116,17 @@ class ResourceNameOneof(ResourceNameBase):
   def __init__(self, oneof, proto_file):
     entity_name = oneof.oneof_name
     self.oneof_class_name = casing_utils.get_oneof_class_name(entity_name)
-    self.resource_types = [
+    self.single_resource_types = [
         {
             'resourceTypeClassName': resource.className(),
             'resourceTypeVarName': resource.varName(),
         } for resource in (ResourceName(x) for x in oneof.resource_list)]
-    self.resource_types += [
+    self.fixed_resource_types = [
         {
             'resourceTypeClassName': resource.className(),
             'resourceTypeVarName': resource.varName(),
         } for resource in (ResourceNameFixed(x) for x in oneof.fixed_resource_list)]
+    self.resource_types = self.single_resource_types + self.fixed_resource_types
 
     self.oneof_package_name = 'defaultpackage'
     for opt in proto_utils.get_named_options(proto_file, 'java_package'):
@@ -137,6 +138,12 @@ class ResourceNameOneof(ResourceNameBase):
 
   def resourceTypes(self):
     return self.resource_types
+
+  def singleResourceTypes(self):
+    return self.single_resource_types
+
+  def fixedResourceTypes(self):
+    return self.fixed_resource_types
 
   def package(self):
     return self.oneof_package_name

@@ -35,6 +35,10 @@ public class {{className}} implements ResourceName {
     return {{className}}Type.instance();
   }
 
+  public static boolean matches(String value) {
+    return FIXED_VALUE.equals(value);
+  }
+
   @Override
   public String toString() {
     return FIXED_VALUE;

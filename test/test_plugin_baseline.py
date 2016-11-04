@@ -19,7 +19,7 @@ import subprocess
 import shutil
 
 from plugin.templates import resource_name
-from plugin.utils import casingutils
+from plugin.utils import casing_utils
 
 
 TEST_DIR = os.path.join('test', 'testdata')
@@ -89,24 +89,24 @@ class TestProtocGapicPlugin(object):
 
   @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
   def test_resource_name_generation(self, run_protoc, resource):
-    generated_class = casingutils.lower_underscore_to_upper_camel(resource) + '.java'
+    generated_class = casing_utils.lower_underscore_to_upper_camel(resource) + '.java'
     generated_class_path = os.path.join(TEST_OUTPUT_DIR, self.resource_output_dir, generated_class)
     check_output(generated_class_path, 'java_' + resource)
 
   @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
   def test_resource_name_type_generation(self, run_protoc, resource):
-    generated_type =  casingutils.lower_underscore_to_upper_camel(resource) + 'Type.java'
+    generated_type =  casing_utils.lower_underscore_to_upper_camel(resource) + 'Type.java'
     generated_type_path = os.path.join(TEST_OUTPUT_DIR, self.resource_output_dir, generated_type)
     check_output(generated_type_path, 'java_' + resource + '_type')
 
   @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
   def test_resource_name_oneof_generation(self, run_protoc, oneof):
-    generated_oneof = casingutils.lower_underscore_to_upper_camel(oneof) + '.java'
+    generated_oneof = casing_utils.lower_underscore_to_upper_camel(oneof) + '.java'
     generated_oneof_path = os.path.join(TEST_OUTPUT_DIR, self.protoc_output_dir, generated_oneof)
     check_output(generated_oneof_path, 'java_' + oneof)
 
   @pytest.mark.parametrize('message', ['book', 'shelf', 'list_books_response', 'book_from_anywhere'])
   def test_get_set_insertion(self, run_protoc, message):
-    proto_class =  casingutils.lower_underscore_to_upper_camel(message) + '.java'
+    proto_class =  casing_utils.lower_underscore_to_upper_camel(message) + '.java'
     proto_class_path = os.path.join(TEST_OUTPUT_DIR, self.protoc_output_dir, proto_class)
     check_output(proto_class_path, 'java_' + message + '_insert')

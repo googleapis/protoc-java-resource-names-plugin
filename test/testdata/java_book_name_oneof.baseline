@@ -19,7 +19,7 @@ import com.google.api.resourcenames.ResourceName;
 import com.google.api.resourcenames.ResourceNameType;
 import com.google.api.resourcenames.types.BookName;
 import com.google.api.resourcenames.types.ArchivedBookName;
-import com.google.api.resourcenames.types.UntypedResourceName;
+import com.google.api.resourcenames.UntypedResourceName;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
