@@ -44,8 +44,8 @@ def read_from_gapic_yaml(yaml_file):
       collections = load_collection_configs(interface['collections'],
                                             collections)
   fixed_collections = {}
-  if 'invalid_collections' in gapic_yaml:
-    fixed_collections = load_fixed_configs(gapic_yaml['invalid_collections'],
+  if 'fixed_collections' in gapic_yaml:
+    fixed_collections = load_fixed_configs(gapic_yaml['fixed_collections'],
                                                collections)
 
   oneofs = {}
@@ -82,7 +82,7 @@ def load_fixed_configs(config_list, existing_collections):
   existing_configs = {}
   for config in config_list:
     entity_name = config['entity_name']
-    fixed_value = config['invalid_value']
+    fixed_value = config['fixed_value']
     if entity_name in existing_collections:
       raise ValueError('Found different collection configs with same entity ' \
                        'name but of different types. Name: ' + entity_name)
