@@ -1,0 +1,11 @@
+public {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassName}}(int index) {
+  return {{resourceTypeFullClassName}}.parse(get{{fieldNameUpper}}(index));
+}
+
+public java.lang.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {
+  java.lang.List<{{resourceTypeFullClassName}}> list = new java.util.ArrayList<>();
+  for (int i = 0; i < getNameCount(); i++) {
+    list.add(get{{fieldNameUpper}}As{{resourceTypeClassName}}(i));
+  }
+  return list;
+}

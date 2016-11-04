@@ -2,3 +2,5 @@ build
 .tox
 *.pyc
 dist
+test/testdata/test_output
+.cache

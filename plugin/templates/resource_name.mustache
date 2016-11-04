@@ -12,17 +12,18 @@
  * the License.
  */
 
-package {{packageName}};
+package {{resourceNameTypePackageName}};
 
 import com.google.common.base.Preconditions;
-import com.google.api.gax.protobuf.PathTemplate;
+import com.google.api.pathtemplate.PathTemplate;
 import com.google.common.collect.ImmutableMap;
-
+import {{resourceNameGlobalPackageName}}.ResourceName;
+import {{resourceNameGlobalPackageName}}.ResourceNameType;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{formatNameUpper}} {
+public class {{className}} implements ResourceName {
 
   private static final PathTemplate PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("{{formatString}}");
@@ -45,23 +46,31 @@ public class {{formatNameUpper}} {
     return new Builder(this);
   }
 
-  private {{formatNameUpper}}(Builder builder) {
+  private {{className}}(Builder builder) {
     {{#formatFields}}
     {{lower}} = Preconditions.checkNotNull(builder.get{{upper}}());
     {{/formatFields}}
   }
 
-  public static {{formatNameUpper}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
+  public static {{className}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
     return newBuilder(){{#formatFields}}
       .set{{upper}}({{lower}}){{/formatFields}}
       .build();
   }
 
-  public static {{formatNameUpper}} parse(String formattedString) {
+  public static {{className}} parse(String formattedString) {
     ImmutableMap<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(
-            formattedString, "Error in {{formatNameUpper}}.parse");
+        PATH_TEMPLATE.validatedMatch(formattedString, "{{className}}.parse: formattedString not in valid format");
     return create({{#parameterList}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameterList}});
+  }
+
+  public static boolean isParsableFrom(String formattedString) {
+    return PATH_TEMPLATE.matches(formattedString);
+  }
+
+  @Override
+  public ResourceNameType getType() {
+    return {{typeNameUpper}}.instance();
   }
 
   @Override
@@ -69,7 +78,7 @@ public class {{formatNameUpper}} {
     return PATH_TEMPLATE.instantiate({{#parameterList}}"{{parameter_name}}", {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}});
   }
 
-  /** Builder for TopicName. */
+  /** Builder for {{className}}. */
   public static class Builder {
 
     {{#formatFields}}
@@ -92,14 +101,14 @@ public class {{formatNameUpper}} {
     private Builder() {
     }
 
-    private Builder({{formatNameUpper}} {{formatNameLower}}) {
+    private Builder({{className}} {{varName}}) {
       {{#formatFields}}
-      {{lower}} = {{formatNameLower}}.{{lower}};
+      {{lower}} = {{varName}}.{{lower}};
       {{/formatFields}}
     }
 
-    public {{formatNameUpper}} build() {
-      return new {{formatNameUpper}}(this);
+    public {{className}} build() {
+      return new {{className}}(this);
     }
   }
 
@@ -108,10 +117,10 @@ public class {{formatNameUpper}} {
     if (o == this) {
       return true;
     }
-    if (o instanceof {{formatNameUpper}}) {
-      {{formatNameUpper}} that = ({{formatNameUpper}}) o;
-      return {{#parameterList}}{{#not_first}}&& {{/not_first}}(this.{{parameter}}.equals(that.{{parameter}})
-        {{/parameterList}};
+    if (o instanceof {{className}}) {
+      {{className}} that = ({{className}}) o;
+      return {{#parameterList}}{{#not_first}}
+          && {{/not_first}}(this.{{parameter}}.equals(that.{{parameter}})){{/parameterList}};
     }
     return false;
   }
@@ -126,3 +135,4 @@ public class {{formatNameUpper}} {
     return h;
   }
 }
+

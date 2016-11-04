@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# Copyright 2015, Google Inc.
+# Copyright 2016, Google Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,44 +27,55 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
-import re
-import sys
-from setuptools import setup, find_packages
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    sys.exit()
+def get_lower(s):
+  return s[:1].lower() + s[1:]
 
-version = '0.0.1'
 
-install_requires = [
-    'pystache>=0.5.4',
-    'protobuf>=3.0.0',
-    'google-gax>=0.14.1',
-    'pyyaml>=3.12',
-]
+def lower_underscore_to_lower_camel(snake_str):
+  components = snake_str.split('_')
+  return components[0] + "".join(x.title() for x in components[1:])
 
-setup(
-    name='proto-compiler-plugin',
-    version=version,
-    description='GAPIC protobuf plugin',
-    long_description=open('README.rst').read(),
-    author='Google API Authors',
-    author_email='googleapis-packages@google.com',
-    url='https://github.com/googleapis/proto-compiler-plugin',
-    packages=find_packages(),
-    scripts=['gapic_plugin.py'],
-    license='BSD-3-Clause',
-    classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: Implementation :: CPython',
-    ],
-    tests_require=['pytest'],
-    install_requires=install_requires,
-)
+
+def lower_underscore_to_upper_camel(snake_str):
+  components = snake_str.split('_')
+  return "".join(x.title() for x in components)
+
+
+def lower_camel_to_upper_camel(lower_camel_str):
+  return lower_camel_str[0].upper() + lower_camel_str[1:]
+
+
+def remove_suffix(original, suffix):
+  if original.endswith(suffix):
+    return original[:-len(suffix)]
+  return original
+
+
+def get_resource_type_class_name(entity_name):
+  name = '_'.join([entity_name, 'name'])
+  return lower_underscore_to_upper_camel(name)
+
+
+def get_fixed_resource_type_class_name(entity_name):
+  return lower_underscore_to_upper_camel(entity_name)
+
+
+def get_resource_type_var_name(entity_name):
+  name = '_'.join([entity_name, 'name'])
+  return lower_underscore_to_lower_camel(name)
+
+
+def get_resource_type_from_class_name(class_name):
+  return class_name + 'Type'
+
+
+def get_oneof_class_name(entity_name):
+  entity_name = remove_suffix(entity_name, '_oneof')
+  name = '_'.join([entity_name, 'name_oneof'])
+  return lower_underscore_to_upper_camel(name)
+
+
+def get_oneof_var_name(entity_name):
+  name = '_'.join([entity_name, 'name_oneof'])
+  return lower_underscore_to_lower_camel(name)

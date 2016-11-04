@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# Copyright 2015, Google Inc.
+# Copyright 2016, Google Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,44 +27,36 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
-import re
-import sys
-from setuptools import setup, find_packages
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    sys.exit()
+from plugin.utils import casing_utils
+from plugin.templates.resource_name import RESOURCE_NAMES_TYPE_PACKAGE_JAVA
 
-version = '0.0.1'
 
-install_requires = [
-    'pystache>=0.5.4',
-    'protobuf>=3.0.0',
-    'google-gax>=0.14.1',
-    'pyyaml>=3.12',
-]
+class InsertBuilder(object):
 
-setup(
-    name='proto-compiler-plugin',
-    version=version,
-    description='GAPIC protobuf plugin',
-    long_description=open('README.rst').read(),
-    author='Google API Authors',
-    author_email='googleapis-packages@google.com',
-    url='https://github.com/googleapis/proto-compiler-plugin',
-    packages=find_packages(),
-    scripts=['gapic_plugin.py'],
-    license='BSD-3-Clause',
-    classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: Implementation :: CPython',
-    ],
-    tests_require=['pytest'],
-    install_requires=install_requires,
-)
+  def __init__(self, resource, field):
+    self.resource_class_name = resource.className()
+    self.resource_full_class_name = resource.fullClassName()
+    self.field_name_upper = casing_utils.lower_underscore_to_upper_camel(
+        field.name)
+
+  def resourceTypeClassName(self):
+    return self.resource_class_name
+
+  def resourceTypeFullClassName(self):
+    return self.resource_full_class_name
+
+  def fieldNameUpper(self):
+    return self.field_name_upper
+
+
+class InsertBuilderList(InsertBuilder):
+  pass
+
+
+class InsertClass(InsertBuilder):
+  pass
+
+
+class InsertClassList(InsertBuilder):
+  pass
