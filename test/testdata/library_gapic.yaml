@@ -4,7 +4,7 @@ type: com.google.api.codegen.ConfigProto
 collections:
   - name_pattern: archives/{archive_id}/books/{book_id=**}
     entity_name: archived_book
-fixed_collections:
+fixed_resource_name_values:
   - entity_name: deleted_book
     fixed_value: _deleted-book_
 collection_oneofs:

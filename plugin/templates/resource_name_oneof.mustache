@@ -47,7 +47,7 @@ public class {{className}} {
     }
   }
 
-  public ResourceName getValue() {
+  public ResourceName getResourceName() {
     return resourceName;
   }
 
@@ -81,6 +81,11 @@ public class {{className}} {
 
   public static {{className}} fromUntyped(UntypedResourceName untypedResourceName) {
     return new {{className}}(untypedResourceName);
+  }
+
+  @Override
+  public String toString() {
+    return getValue().toString();
   }
 }
 

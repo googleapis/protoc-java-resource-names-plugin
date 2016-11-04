@@ -51,7 +51,7 @@ public class BookNameOneof {
     }
   }
 
-  public ResourceName getValue() {
+  public ResourceName getResourceName() {
     return resourceName;
   }
 
@@ -82,6 +82,11 @@ public class BookNameOneof {
 
   public static BookNameOneof fromUntyped(UntypedResourceName untypedResourceName) {
     return new BookNameOneof(untypedResourceName);
+  }
+
+  @Override
+  public String toString() {
+    return getValue().toString();
   }
 }
 

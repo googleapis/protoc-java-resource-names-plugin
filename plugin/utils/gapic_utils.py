@@ -44,8 +44,8 @@ def read_from_gapic_yaml(yaml_file):
       collections = load_collection_configs(interface['collections'],
                                             collections)
   fixed_collections = {}
-  if 'fixed_collections' in gapic_yaml:
-    fixed_collections = load_fixed_configs(gapic_yaml['fixed_collections'],
+  if 'fixed_resource_name_values' in gapic_yaml:
+    fixed_collections = load_fixed_configs(gapic_yaml['fixed_resource_name_values'],
                                                collections)
 
   oneofs = {}
