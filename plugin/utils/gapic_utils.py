@@ -51,7 +51,7 @@ def read_from_gapic_yaml(yaml_file):
   oneofs = {}
   if 'collection_oneofs' in gapic_yaml:
     oneofs = load_collection_oneofs(gapic_yaml['collection_oneofs'],
-                                    collections)
+                                    collections, fixed_collections)
 
   field_resource_name_map = {}
   if 'resource_name_generation' in gapic_yaml:
@@ -97,23 +97,32 @@ def load_fixed_configs(config_list, existing_collections):
   return existing_configs
 
 
-def load_collection_oneofs(config_list, existing_collections):
+def load_collection_oneofs(config_list, existing_collections, fixed_collections):
   existing_oneofs = {}
   for config in config_list:
     root_type_name = config['oneof_name']
     collection_list = config['collection_names']
+    resources = []
+    fixed_resources = []
     for collection in collection_list:
-      if collection not in existing_collections:
+      if (collection not in existing_collections and
+          collection not in fixed_collections):
         raise ValueError('Collection specified in collection oneof, but no ' \
                          'matching collection was found. Oneof: ' + \
                          root_type_name + ', Collection: ' + collection)
+      if collection in existing_collections:
+        resources.append(existing_collections[collection])
+      else:
+        fixed_resources.append(fixed_collections[collection])
 
     if (root_type_name in existing_oneofs or
-        root_type_name in existing_collections):
+        root_type_name in existing_collections or
+        root_type_name in fixed_collections):
       raise ValueError('Found two collection oneofs with same name: ' + \
                        root_type_name)
     existing_oneofs[root_type_name] = CollectionOneof(root_type_name,
-                                                      collection_list)
+                                                      resources,
+                                                      fixed_resources)
   return existing_oneofs
 
 
@@ -152,9 +161,10 @@ class FixedCollectionConfig(object):
 
 
 class CollectionOneof(object):
-  def __init__(self, oneof_name, resource_type_list):
+  def __init__(self, oneof_name, resources, fixed_resources):
     self.oneof_name = oneof_name
-    self.resource_type_list = resource_type_list
+    self.resource_list = resources
+    self.fixed_resource_list = fixed_resources
 
 
 class GapicConfig(object):

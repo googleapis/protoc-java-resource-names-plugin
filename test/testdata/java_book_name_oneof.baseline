@@ -14,12 +14,12 @@
 
 package com.google.example.library.v1;
 
+import com.google.common.base.Preconditions;
 import com.google.api.resourcenames.ResourceName;
 import com.google.api.resourcenames.ResourceNameType;
 import com.google.api.resourcenames.types.BookName;
 import com.google.api.resourcenames.types.ArchivedBookName;
 import com.google.api.resourcenames.types.UntypedResourceName;
-import com.google.common.base.Preconditions;
 import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
@@ -56,7 +56,7 @@ public class BookNameOneof implements ResourceName {
   }
 
   private BookNameOneof(ResourceName resourceName) {
-    this.resourceName = Preconditions.isNotNull(resourceName);
+    this.resourceName = Preconditions.checkNotNull(resourceName);
   }
 
   public static BookNameOneof parse(String formattedString) {

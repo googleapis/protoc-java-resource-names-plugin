@@ -54,6 +54,9 @@ class ResourceNameBase(object):
   def className(self):
     raise NotImplementedError('className must be implemented by child')
 
+  def varName(self):
+    return casing_utils.get_lower(self.className())
+
   def package(self):
     raise NotImplementedError('package must be implemented by child')
 
@@ -92,9 +95,6 @@ class ResourceName(ResourceNameBase):
   def className(self):
     return self.format_name_upper
 
-  def formatNameLower(self):
-    return self.format_name_lower
-
   def typeNameUpper(self):
     return self.type_name_upper
 
@@ -118,11 +118,15 @@ class ResourceNameOneof(ResourceNameBase):
     self.oneof_class_name = casing_utils.get_oneof_class_name(entity_name)
     self.resource_types = [
         {
-            'resourceTypeClassName': casing_utils.get_resource_type_class_name(
-                resource_type),
-            'resourceTypeVarName': casing_utils.get_resource_type_var_name(
-                resource_type),
-        } for resource_type in oneof.resource_type_list]
+            'resourceTypeClassName': resource.className(),
+            'resourceTypeVarName': resource.varName(),
+        } for resource in (ResourceName(x) for x in oneof.resource_list)]
+    self.resource_types += [
+        {
+            'resourceTypeClassName': resource.className(),
+            'resourceTypeVarName': resource.varName(),
+        } for resource in (ResourceNameFixed(x) for x in oneof.fixed_resource_list)]
+
     self.oneof_package_name = 'defaultpackage'
     for opt in proto_utils.get_named_options(proto_file, 'java_package'):
       self.oneof_package_name = opt[1]

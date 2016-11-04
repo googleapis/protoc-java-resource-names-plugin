@@ -101,9 +101,9 @@ public class {{className}} implements ResourceName {
     private Builder() {
     }
 
-    private Builder({{className}} {{formatNameLower}}) {
+    private Builder({{className}} {{varName}}) {
       {{#formatFields}}
-      {{lower}} = {{formatNameLower}}.{{lower}};
+      {{lower}} = {{varName}}.{{lower}};
       {{/formatFields}}
     }
 
