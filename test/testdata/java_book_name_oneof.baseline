@@ -24,7 +24,7 @@ import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class BookNameOneof implements ResourceName {
+public class BookNameOneof {
 
   private final ResourceName resourceName;
 
@@ -44,7 +44,11 @@ public class BookNameOneof implements ResourceName {
   }
 
   public UntypedResourceName getUntypedResourceName() {
-    return UntypedResourceName.from(resourceName);
+    if (resourceName instanceof UntypedResourceName) {
+      return (UntypedResourceName) resourceName);
+    } else {
+      return null;
+    }
   }
 
   public ResourceName getValue() {
@@ -59,14 +63,14 @@ public class BookNameOneof implements ResourceName {
     this.resourceName = Preconditions.checkNotNull(resourceName);
   }
 
-  public static BookNameOneof parse(String formattedString) {
-    if (BookName.isParsableFrom(formattedString)) {
-      return new BookNameOneof(BookName.parse(formattedString));
+  public static BookNameOneof parse(String resourceNameString) {
+    if (BookName.isParsableFrom(resourceNameString)) {
+      return new BookNameOneof(BookName.parse(resourceNameString));
     }
-    if (ArchivedBookName.isParsableFrom(formattedString)) {
-      return new BookNameOneof(ArchivedBookName.parse(formattedString));
+    if (ArchivedBookName.isParsableFrom(resourceNameString)) {
+      return new BookNameOneof(ArchivedBookName.parse(resourceNameString));
     }
-    return new BookNameOneof(UntypedResourceName.parse(formattedString));
+    return new BookNameOneof(UntypedResourceName.parse(resourceNameString));
   }
 
   public static BookNameOneof from(BookName bookName) {

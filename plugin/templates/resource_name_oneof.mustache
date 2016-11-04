@@ -25,7 +25,7 @@ import java.io.IOException;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{className}} implements ResourceName {
+public class {{className}} {
 
   private final ResourceName resourceName;
 
@@ -40,7 +40,11 @@ public class {{className}} implements ResourceName {
   {{/resourceTypes}}
 
   public UntypedResourceName getUntypedResourceName() {
-    return UntypedResourceName.from(resourceName);
+    if (resourceName instanceof UntypedResourceName) {
+      return (UntypedResourceName) resourceName);
+    } else {
+      return null;
+    }
   }
 
   public ResourceName getValue() {
@@ -55,18 +59,18 @@ public class {{className}} implements ResourceName {
     this.resourceName = Preconditions.checkNotNull(resourceName);
   }
 
-  public static {{className}} parse(String formattedString) {
+  public static {{className}} parse(String resourceNameString) {
     {{#singleResourceTypes}}
-    if ({{resourceTypeClassName}}.isParsableFrom(formattedString)) {
-      return new {{className}}({{resourceTypeClassName}}.parse(formattedString));
+    if ({{resourceTypeClassName}}.isParsableFrom(resourceNameString)) {
+      return new {{className}}({{resourceTypeClassName}}.parse(resourceNameString));
     }
     {{/singleResourceTypes}}
     {{#fixedResourceTypes}}
-    if ({{resourceTypeClassName}}.matches(formattedString)) {
+    if ({{resourceTypeClassName}}.matches(resourceNameString)) {
       return new {{className}}({{resourceTypeClassName}}.instance());
     }
     {{/fixedResourceTypes}}
-    return new {{className}}(UntypedResourceName.parse(formattedString));
+    return new {{className}}(UntypedResourceName.parse(resourceNameString));
   }
 
   {{#resourceTypes}}
