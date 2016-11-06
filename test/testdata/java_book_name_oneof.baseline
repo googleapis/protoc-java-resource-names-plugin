@@ -45,7 +45,7 @@ public class BookNameOneof {
 
   public UntypedResourceName getUntypedResourceName() {
     if (resourceName instanceof UntypedResourceName) {
-      return (UntypedResourceName) resourceName);
+      return (UntypedResourceName) resourceName;
     } else {
       return null;
     }
@@ -56,7 +56,7 @@ public class BookNameOneof {
   }
 
   public ResourceNameType getType() {
-    return getValue().getType();
+    return getResourceName().getType();
   }
 
   private BookNameOneof(ResourceName resourceName) {
@@ -86,7 +86,24 @@ public class BookNameOneof {
 
   @Override
   public String toString() {
-    return getValue().toString();
+    return getResourceName().toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof BookNameOneof) {
+      BookNameOneof that = (BookNameOneof) o;
+      return resourceName.equals(that.resourceName);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return resourceName.hashCode();
   }
 }
 
