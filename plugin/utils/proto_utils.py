@@ -29,46 +29,53 @@
 
 import itertools
 
+# pylint: disable=import-error, no-name-in-module
 from google.protobuf.descriptor_pb2 import DescriptorProto
 
-def traverse(proto_file):
-  def _traverse(package, items):
-    for item in items:
-      if isinstance(item, DescriptorProto):
-        yield item, package
-        for nested in item.nested_type:
-          nested_package = package + item.name
-          for nested_item in _traverse(nested, nested_package):
-            yield nested_item, nested_package
 
-  return itertools.chain(
-    _traverse(proto_file.package, proto_file.message_type),
-  )
+def traverse(proto_file):
+    def _traverse(package, items):
+        for item in items:
+            if isinstance(item, DescriptorProto):
+                yield item, package
+                for nested in item.nested_type:
+                    nested_package = package + item.name
+                    for nested_item in _traverse(nested, nested_package):
+                        yield nested_item, nested_package
+
+    return itertools.chain(
+        _traverse(proto_file.package, proto_file.message_type),
+    )
+
 
 def get_format_dict(request):
-  format_dict = {}
-  for proto_file in request.proto_file:
-    for ext, ext_value in get_named_options(proto_file, 'format'):
-      for i in range(len(ext_value)):
-        msg = ext_value[i]
-        name, fmt_string = msg.format_name, msg.format_string
-        if name in format_dict and format_dict[name][1] != fmt_string:
-          raise ValueError('Two different formats with name ' + name + ': '
-                           + fmt_string + ', ' + format_dict[name][1])
-        format_dict[name] = (name, fmt_string, proto_file)
-  return format_dict
+    format_dict = {}
+    for proto_file in request.proto_file:
+        for ext, ext_value in get_named_options(proto_file, 'format'):
+            for i in range(len(ext_value)):
+                msg = ext_value[i]
+                name, fmt_string = msg.format_name, msg.format_string
+                if name in format_dict and format_dict[name][1] != fmt_string:
+                    raise ValueError('Two different formats with name ' + name
+                                     + ': ' + fmt_string + ', '
+                                     + format_dict[name][1])
+                format_dict[name] = (name, fmt_string, proto_file)
+    return format_dict
+
 
 def get_formatted_field_list(request, format_dict):
-  for proto_file in request.proto_file:
-    for item, package in traverse(proto_file):
-      for f in item.field:
-        for ext, ext_value in get_named_options(f, 'format_name'):
-          if ext_value not in format_dict:
-            raise ValueError('Format ' + ext_value + 'not found in format_dict')
-          yield (proto_file, item, f, format_dict[ext_value], package)
+    for proto_file in request.proto_file:
+        for item, package in traverse(proto_file):
+            for f in item.field:
+                for ext, ext_value in get_named_options(f, 'format_name'):
+                    if ext_value not in format_dict:
+                        raise ValueError(
+                            'Format ' + ext_value + 'not found in format_dict')
+                    yield (proto_file, item, f, format_dict[ext_value],
+                           package)
 
 
 def get_named_options(item, option_name):
-  for ext, ext_value in item.options._fields.iteritems():
-    if ext.name == option_name:
-      yield ext, ext_value
+    for ext, ext_value in item.options._fields.iteritems():
+        if ext.name == option_name:
+            yield ext, ext_value

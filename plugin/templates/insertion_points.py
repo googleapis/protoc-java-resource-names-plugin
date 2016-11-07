@@ -5,13 +5,13 @@
 # modification, are permitted provided that the following conditions are
 # met:
 #
-#     * Redistributions of source code must retain the above copyright
+#         * Redistributions of source code must retain the above copyright
 # notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
+#         * Redistributions in binary form must reproduce the above
 # copyright notice, this list of conditions and the following disclaimer
 # in the documentation and/or other materials provided with the
 # distribution.
-#     * Neither the name of Google Inc. nor the names of its
+#         * Neither the name of Google Inc. nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
 #
@@ -27,36 +27,34 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 from plugin.utils import casing_utils
-from plugin.templates.resource_name import RESOURCE_NAMES_TYPE_PACKAGE_JAVA
 
 
 class InsertBuilder(object):
 
-  def __init__(self, resource, field):
-    self.resource_class_name = resource.className()
-    self.resource_full_class_name = resource.fullClassName()
-    self.field_name_upper = casing_utils.lower_underscore_to_upper_camel(
-        field.name)
+    def __init__(self, resource, field):
+        self.resource_class_name = resource.className()
+        self.resource_full_class_name = resource.fullClassName()
+        self.field_name_upper = casing_utils.lower_underscore_to_upper_camel(
+            field.name)
 
-  def resourceTypeClassName(self):
-    return self.resource_class_name
+    def resourceTypeClassName(self):
+        return self.resource_class_name
 
-  def resourceTypeFullClassName(self):
-    return self.resource_full_class_name
+    def resourceTypeFullClassName(self):
+        return self.resource_full_class_name
 
-  def fieldNameUpper(self):
-    return self.field_name_upper
+    def fieldNameUpper(self):
+        return self.field_name_upper
 
 
 class InsertBuilderList(InsertBuilder):
-  pass
+    pass
 
 
 class InsertClass(InsertBuilder):
-  pass
+    pass
 
 
 class InsertClassList(InsertBuilder):
-  pass
+    pass
