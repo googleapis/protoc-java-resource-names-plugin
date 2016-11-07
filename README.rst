@@ -1,6 +1,10 @@
 GAPIC Proto Compiler Plugin
 ================================
 
+.. image:: https://img.shields.io/travis/googleapis/proto-compiler-plugin.svg
+     :target: https://travis-ci.org/googleapis/proto-compiler-plugin
+
+
 The GAPIC Proto Compiler Plugin is used to add functionality to protobuf
 generated types. The additional functionality is required by client libraries
 generated using the GAPIC code generation tool, which reside in the
