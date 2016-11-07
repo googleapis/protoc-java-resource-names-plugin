@@ -5,13 +5,13 @@
 # modification, are permitted provided that the following conditions are
 # met:
 #
-#     * Redistributions of source code must retain the above copyright
+#         * Redistributions of source code must retain the above copyright
 # notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
+#         * Redistributions in binary form must reproduce the above
 # copyright notice, this list of conditions and the following disclaimer
 # in the documentation and/or other materials provided with the
 # distribution.
-#     * Neither the name of Google Inc. nor the names of its
+#         * Neither the name of Google Inc. nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
 #
@@ -29,53 +29,53 @@
 
 
 def get_lower(s):
-  return s[:1].lower() + s[1:]
+    return s[:1].lower() + s[1:]
 
 
 def lower_underscore_to_lower_camel(snake_str):
-  components = snake_str.split('_')
-  return components[0] + "".join(x.title() for x in components[1:])
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
 
 
 def lower_underscore_to_upper_camel(snake_str):
-  components = snake_str.split('_')
-  return "".join(x.title() for x in components)
+    components = snake_str.split('_')
+    return ''.join(x.title() for x in components)
 
 
 def lower_camel_to_upper_camel(lower_camel_str):
-  return lower_camel_str[0].upper() + lower_camel_str[1:]
+    return lower_camel_str[0].upper() + lower_camel_str[1:]
 
 
 def remove_suffix(original, suffix):
-  if original.endswith(suffix):
-    return original[:-len(suffix)]
-  return original
+    if original.endswith(suffix):
+        return original[:-len(suffix)]
+    return original
 
 
 def get_resource_type_class_name(entity_name):
-  name = '_'.join([entity_name, 'name'])
-  return lower_underscore_to_upper_camel(name)
+    name = '_'.join([entity_name, 'name'])
+    return lower_underscore_to_upper_camel(name)
 
 
 def get_fixed_resource_type_class_name(entity_name):
-  return lower_underscore_to_upper_camel(entity_name)
+    return lower_underscore_to_upper_camel(entity_name)
 
 
 def get_resource_type_var_name(entity_name):
-  name = '_'.join([entity_name, 'name'])
-  return lower_underscore_to_lower_camel(name)
+    name = '_'.join([entity_name, 'name'])
+    return lower_underscore_to_lower_camel(name)
 
 
 def get_resource_type_from_class_name(class_name):
-  return class_name + 'Type'
+    return class_name + 'Type'
 
 
 def get_oneof_class_name(entity_name):
-  entity_name = remove_suffix(entity_name, '_oneof')
-  name = '_'.join([entity_name, 'name_oneof'])
-  return lower_underscore_to_upper_camel(name)
+    entity_name = remove_suffix(entity_name, '_oneof')
+    name = '_'.join([entity_name, 'name_oneof'])
+    return lower_underscore_to_upper_camel(name)
 
 
 def get_oneof_var_name(entity_name):
-  name = '_'.join([entity_name, 'name_oneof'])
-  return lower_underscore_to_lower_camel(name)
+    name = '_'.join([entity_name, 'name_oneof'])
+    return lower_underscore_to_lower_camel(name)
