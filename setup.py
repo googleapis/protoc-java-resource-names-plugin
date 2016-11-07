@@ -57,6 +57,7 @@ setup(
     url='https://github.com/googleapis/proto-compiler-plugin',
     packages=find_packages(),
     scripts=['gapic_plugin.py'],
+    package_data={'plugin.templates': ['*.mustache']},
     license='BSD-3-Clause',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -69,4 +70,5 @@ setup(
     ],
     tests_require=['pytest'],
     install_requires=install_requires,
+    include_package_data=True,
 )
