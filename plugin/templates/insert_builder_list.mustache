@@ -7,7 +7,7 @@ public Builder add{{fieldNameUpper}}With{{resourceTypeClassName}}({{resourceType
 }
 
 public Builder addAll{{fieldNameUpper}}With{{resourceTypeClassName}}List(java.lang.Iterable<{{resourceTypeFullClassName}}> values) {
-  java.lang.List<java.lang.String> list = new java.util.ArrayList<java.lang.String>();
+  java.util.List<java.lang.String> list = new java.util.ArrayList<java.lang.String>();
   for ({{resourceTypeFullClassName}} value : values) {
     list.add(value.toString());
   }
@@ -18,8 +18,8 @@ public {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassN
   return {{resourceTypeFullClassName}}.parse(get{{fieldNameUpper}}(index));
 }
 
-public java.lang.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {
-  java.lang.List<{{resourceTypeFullClassName}}> list = new java.util.ArrayList<{{resourceTypeFullClassName}}>();
+public java.util.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {
+  java.util.List<{{resourceTypeFullClassName}}> list = new java.util.ArrayList<{{resourceTypeFullClassName}}>();
   for (int i = 0; i < getNameCount(); i++) {
     list.add(get{{fieldNameUpper}}As{{resourceTypeClassName}}(i));
   }
