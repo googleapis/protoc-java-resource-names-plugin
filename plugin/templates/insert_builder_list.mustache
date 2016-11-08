@@ -20,7 +20,7 @@ public {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassN
 
 public java.util.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {
   java.util.List<{{resourceTypeFullClassName}}> list = new java.util.ArrayList<{{resourceTypeFullClassName}}>();
-  for (int i = 0; i < getNameCount(); i++) {
+  for (int i = 0; i < get{{fieldNameUpper}}Count(); i++) {
     list.add(get{{fieldNameUpper}}As{{resourceTypeClassName}}(i));
   }
   return list;
