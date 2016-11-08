@@ -114,10 +114,7 @@ def construct_class_view(resource, field):
     return insertion_points.InsertClass(resource, field)
 
 
-if __name__ == '__main__':
-  # Read request message from stdin
-  data = sys.stdin.read()
-
+def main(data):
   # Parse request
   request = plugin.CodeGeneratorRequest()
   request.ParseFromString(data)
@@ -141,6 +138,14 @@ if __name__ == '__main__':
 
   # Serialise response message
   output = response.SerializeToString()
+
+  return output
+
+if __name__ == '__main__':
+  # Read request message from stdin
+  data = sys.stdin.read()
+
+  output = main(data)
 
   # Write to stdout
   sys.stdout.write(output)
