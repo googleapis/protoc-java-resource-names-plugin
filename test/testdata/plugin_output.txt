@@ -1,0 +1,779 @@
+zù
+1com/google/api/resourcenames/types/ShelfName.javazÁ/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.resourcenames.types;
+
+import com.google.common.base.Preconditions;
+import com.google.api.pathtemplate.PathTemplate;
+import com.google.common.collect.ImmutableMap;
+import com.google.api.resourcenames.ResourceName;
+import com.google.api.resourcenames.ResourceNameType;
+import java.io.IOException;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class ShelfName implements ResourceName {
+
+  private static final PathTemplate PATH_TEMPLATE =
+      PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}");
+
+  private final String shelfId;
+
+  public String getShelfId() {
+    return shelfId;
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public Builder toBuilder() {
+    return new Builder(this);
+  }
+
+  private ShelfName(Builder builder) {
+    shelfId = Preconditions.checkNotNull(builder.getShelfId());
+  }
+
+  public static ShelfName create(String shelfId) {
+    return newBuilder()
+      .setShelfId(shelfId)
+      .build();
+  }
+
+  public static ShelfName parse(String formattedString) {
+    ImmutableMap<String, String> matchMap =
+        PATH_TEMPLATE.validatedMatch(formattedString, "ShelfName.parse: formattedString not in valid format");
+    return create(matchMap.get("shelf_id"));
+  }
+
+  public static boolean isParsableFrom(String formattedString) {
+    return PATH_TEMPLATE.matches(formattedString);
+  }
+
+  @Override
+  public ResourceNameType getType() {
+    return ShelfNameType.instance();
+  }
+
+  @Override
+  public String toString() {
+    return PATH_TEMPLATE.instantiate("shelf_id", shelfId);
+  }
+
+  /** Builder for ShelfName. */
+  public static class Builder {
+
+    private String shelfId;
+
+    public String getShelfId() {
+      return shelfId;
+    }
+
+    public Builder setShelfId(String shelfId) {
+      this.shelfId = shelfId;
+      return this;
+    }
+
+    private Builder() {
+    }
+
+    private Builder(ShelfName shelfName) {
+      shelfId = shelfName.shelfId;
+    }
+
+    public ShelfName build() {
+      return new ShelfName(this);
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof ShelfName) {
+      ShelfName that = (ShelfName) o;
+      return (this.shelfId.equals(that.shelfId));
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int h = 1;
+    h *= 1000003;
+    h ^= shelfId.hashCode();
+    return h;
+  }
+}
+
+zª
+5com/google/api/resourcenames/types/ShelfNameType.javazÅ/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.resourcenames.types;
+
+import com.google.api.resourcenames.ResourceNameType;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class ShelfNameType implements ResourceNameType {
+
+  private static ShelfNameType instance = new ShelfNameType();
+
+  private ShelfNameType() {}
+
+  public static ShelfNameType instance() {
+    return instance;
+  }
+}
+zº
+0com/google/api/resourcenames/types/BookName.javazá/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.resourcenames.types;
+
+import com.google.common.base.Preconditions;
+import com.google.api.pathtemplate.PathTemplate;
+import com.google.common.collect.ImmutableMap;
+import com.google.api.resourcenames.ResourceName;
+import com.google.api.resourcenames.ResourceNameType;
+import java.io.IOException;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class BookName implements ResourceName {
+
+  private static final PathTemplate PATH_TEMPLATE =
+      PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}/books/{book_id}");
+
+  private final String shelfId;
+  private final String bookId;
+
+  public String getShelfId() {
+    return shelfId;
+  }
+
+  public String getBookId() {
+    return bookId;
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public Builder toBuilder() {
+    return new Builder(this);
+  }
+
+  private BookName(Builder builder) {
+    shelfId = Preconditions.checkNotNull(builder.getShelfId());
+    bookId = Preconditions.checkNotNull(builder.getBookId());
+  }
+
+  public static BookName create(String shelfId, String bookId) {
+    return newBuilder()
+      .setShelfId(shelfId)
+      .setBookId(bookId)
+      .build();
+  }
+
+  public static BookName parse(String formattedString) {
+    ImmutableMap<String, String> matchMap =
+        PATH_TEMPLATE.validatedMatch(formattedString, "BookName.parse: formattedString not in valid format");
+    return create(matchMap.get("shelf_id"), matchMap.get("book_id"));
+  }
+
+  public static boolean isParsableFrom(String formattedString) {
+    return PATH_TEMPLATE.matches(formattedString);
+  }
+
+  @Override
+  public ResourceNameType getType() {
+    return BookNameType.instance();
+  }
+
+  @Override
+  public String toString() {
+    return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "book_id", bookId);
+  }
+
+  /** Builder for BookName. */
+  public static class Builder {
+
+    private String shelfId;
+    private String bookId;
+
+    public String getShelfId() {
+      return shelfId;
+    }
+
+    public String getBookId() {
+      return bookId;
+    }
+
+    public Builder setShelfId(String shelfId) {
+      this.shelfId = shelfId;
+      return this;
+    }
+
+    public Builder setBookId(String bookId) {
+      this.bookId = bookId;
+      return this;
+    }
+
+    private Builder() {
+    }
+
+    private Builder(BookName bookName) {
+      shelfId = bookName.shelfId;
+      bookId = bookName.bookId;
+    }
+
+    public BookName build() {
+      return new BookName(this);
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof BookName) {
+      BookName that = (BookName) o;
+      return (this.shelfId.equals(that.shelfId))
+          && (this.bookId.equals(that.bookId));
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int h = 1;
+    h *= 1000003;
+    h ^= shelfId.hashCode();
+    h *= 1000003;
+    h ^= bookId.hashCode();
+    return h;
+  }
+}
+
+zµ
+4com/google/api/resourcenames/types/BookNameType.javaz¸/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.resourcenames.types;
+
+import com.google.api.resourcenames.ResourceNameType;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class BookNameType implements ResourceNameType {
+
+  private static BookNameType instance = new BookNameType();
+
+  private BookNameType() {}
+
+  public static BookNameType instance() {
+    return instance;
+  }
+}
+z¯
+8com/google/api/resourcenames/types/ArchivedBookName.javazª/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.resourcenames.types;
+
+import com.google.common.base.Preconditions;
+import com.google.api.pathtemplate.PathTemplate;
+import com.google.common.collect.ImmutableMap;
+import com.google.api.resourcenames.ResourceName;
+import com.google.api.resourcenames.ResourceNameType;
+import java.io.IOException;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class ArchivedBookName implements ResourceName {
+
+  private static final PathTemplate PATH_TEMPLATE =
+      PathTemplate.createWithoutUrlEncoding("archives/{archive_id}/books/{book_id=**}");
+
+  private final String archiveId;
+  private final String bookId;
+
+  public String getArchiveId() {
+    return archiveId;
+  }
+
+  public String getBookId() {
+    return bookId;
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public Builder toBuilder() {
+    return new Builder(this);
+  }
+
+  private ArchivedBookName(Builder builder) {
+    archiveId = Preconditions.checkNotNull(builder.getArchiveId());
+    bookId = Preconditions.checkNotNull(builder.getBookId());
+  }
+
+  public static ArchivedBookName create(String archiveId, String bookId) {
+    return newBuilder()
+      .setArchiveId(archiveId)
+      .setBookId(bookId)
+      .build();
+  }
+
+  public static ArchivedBookName parse(String formattedString) {
+    ImmutableMap<String, String> matchMap =
+        PATH_TEMPLATE.validatedMatch(formattedString, "ArchivedBookName.parse: formattedString not in valid format");
+    return create(matchMap.get("archive_id"), matchMap.get("book_id"));
+  }
+
+  public static boolean isParsableFrom(String formattedString) {
+    return PATH_TEMPLATE.matches(formattedString);
+  }
+
+  @Override
+  public ResourceNameType getType() {
+    return ArchivedBookNameType.instance();
+  }
+
+  @Override
+  public String toString() {
+    return PATH_TEMPLATE.instantiate("archive_id", archiveId, "book_id", bookId);
+  }
+
+  /** Builder for ArchivedBookName. */
+  public static class Builder {
+
+    private String archiveId;
+    private String bookId;
+
+    public String getArchiveId() {
+      return archiveId;
+    }
+
+    public String getBookId() {
+      return bookId;
+    }
+
+    public Builder setArchiveId(String archiveId) {
+      this.archiveId = archiveId;
+      return this;
+    }
+
+    public Builder setBookId(String bookId) {
+      this.bookId = bookId;
+      return this;
+    }
+
+    private Builder() {
+    }
+
+    private Builder(ArchivedBookName archivedBookName) {
+      archiveId = archivedBookName.archiveId;
+      bookId = archivedBookName.bookId;
+    }
+
+    public ArchivedBookName build() {
+      return new ArchivedBookName(this);
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof ArchivedBookName) {
+      ArchivedBookName that = (ArchivedBookName) o;
+      return (this.archiveId.equals(that.archiveId))
+          && (this.bookId.equals(that.bookId));
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int h = 1;
+    h *= 1000003;
+    h ^= archiveId.hashCode();
+    h *= 1000003;
+    h ^= bookId.hashCode();
+    return h;
+  }
+}
+
+zÂ
+<com/google/api/resourcenames/types/ArchivedBookNameType.javaz§/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.resourcenames.types;
+
+import com.google.api.resourcenames.ResourceNameType;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class ArchivedBookNameType implements ResourceNameType {
+
+  private static ArchivedBookNameType instance = new ArchivedBookNameType();
+
+  private ArchivedBookNameType() {}
+
+  public static ArchivedBookNameType instance() {
+    return instance;
+  }
+}
+zñ
+3com/google/api/resourcenames/types/DeletedBook.javazﬁ
+/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.resourcenames.types;
+
+import com.google.api.resourcenames.ResourceName;
+import com.google.api.resourcenames.ResourceNameType;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class DeletedBook implements ResourceName {
+
+  private static final String FIXED_VALUE = "_deleted-book_";
+
+  private static final DeletedBook instance = new DeletedBook();
+
+  private DeletedBook() {}
+
+  public static DeletedBook instance() {
+    return instance;
+  }
+
+  public ResourceNameType getType() {
+    return DeletedBookType.instance();
+  }
+
+  public static boolean matches(String value) {
+    return FIXED_VALUE.equals(value);
+  }
+
+  @Override
+  public String toString() {
+    return FIXED_VALUE;
+  }
+}
+
+z«
+7com/google/api/resourcenames/types/DeletedBookType.javazã/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.api.resourcenames.types;
+
+import com.google.api.resourcenames.ResourceNameType;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class DeletedBookType implements ResourceNameType {
+
+  private static DeletedBookType instance = new DeletedBookType();
+
+  private DeletedBookType() {}
+
+  public static DeletedBookType instance() {
+    return instance;
+  }
+}
+zø
+0com/google/example/library/v1/BookNameOneof.javazä/*
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.example.library.v1;
+
+import com.google.common.base.Preconditions;
+import com.google.api.resourcenames.ResourceName;
+import com.google.api.resourcenames.ResourceNameType;
+import com.google.api.resourcenames.types.BookName;
+import com.google.api.resourcenames.types.ArchivedBookName;
+import com.google.api.resourcenames.UntypedResourceName;
+import java.io.IOException;
+
+// AUTO-GENERATED DOCUMENTATION AND CLASS
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class BookNameOneof {
+
+  private final ResourceName resourceName;
+
+  public BookName getBookName() {
+    if (resourceName instanceof BookName) {
+      return (BookName) resourceName;
+    } else {
+      return null;
+    }
+  }
+  public ArchivedBookName getArchivedBookName() {
+    if (resourceName instanceof ArchivedBookName) {
+      return (ArchivedBookName) resourceName;
+    } else {
+      return null;
+    }
+  }
+
+  public UntypedResourceName getUntypedResourceName() {
+    if (resourceName instanceof UntypedResourceName) {
+      return (UntypedResourceName) resourceName;
+    } else {
+      return null;
+    }
+  }
+
+  public ResourceName getResourceName() {
+    return resourceName;
+  }
+
+  public ResourceNameType getType() {
+    return getResourceName().getType();
+  }
+
+  private BookNameOneof(ResourceName resourceName) {
+    this.resourceName = Preconditions.checkNotNull(resourceName);
+  }
+
+  public static BookNameOneof parse(String resourceNameString) {
+    if (BookName.isParsableFrom(resourceNameString)) {
+      return new BookNameOneof(BookName.parse(resourceNameString));
+    }
+    if (ArchivedBookName.isParsableFrom(resourceNameString)) {
+      return new BookNameOneof(ArchivedBookName.parse(resourceNameString));
+    }
+    return new BookNameOneof(UntypedResourceName.parse(resourceNameString));
+  }
+
+  public static BookNameOneof from(BookName bookName) {
+    return new BookNameOneof(bookName);
+  }
+  public static BookNameOneof from(ArchivedBookName archivedBookName) {
+    return new BookNameOneof(archivedBookName);
+  }
+
+  public static BookNameOneof fromUntyped(UntypedResourceName untypedResourceName) {
+    return new BookNameOneof(untypedResourceName);
+  }
+
+  @Override
+  public String toString() {
+    return getResourceName().toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof BookNameOneof) {
+      BookNameOneof that = (BookNameOneof) o;
+      return resourceName.equals(that.resourceName);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return resourceName.hashCode();
+  }
+}
+
+z˜
+'com/google/example/library/v1/Book.java,builder_scope:google.example.library.v1.Bookzùpublic final Builder setNameWithBookName(com.google.api.resourcenames.types.BookName value) {
+  return setName(value.toString());
+}
+
+public final com.google.api.resourcenames.types.BookName getNameAsBookName() {
+  return com.google.api.resourcenames.types.BookName.parse(getName());
+}
+z
+'com/google/example/library/v1/Book.java*class_scope:google.example.library.v1.Bookzòpublic final com.google.api.resourcenames.types.BookName getNameAsBookName() {
+  return com.google.api.resourcenames.types.BookName.parse(getName());
+}
+zµ
+2com/google/example/library/v1/BookFromArchive.java7builder_scope:google.example.library.v1.BookFromArchivez≈public final Builder setNameWithArchivedBookName(com.google.api.resourcenames.types.ArchivedBookName value) {
+  return setName(value.toString());
+}
+
+public final com.google.api.resourcenames.types.ArchivedBookName getNameAsArchivedBookName() {
+  return com.google.api.resourcenames.types.ArchivedBookName.parse(getName());
+}
+zû
+2com/google/example/library/v1/BookFromArchive.java5class_scope:google.example.library.v1.BookFromArchivez∞public final com.google.api.resourcenames.types.ArchivedBookName getNameAsArchivedBookName() {
+  return com.google.api.resourcenames.types.ArchivedBookName.parse(getName());
+}
+zô
+3com/google/example/library/v1/BookFromAnywhere.java8builder_scope:google.example.library.v1.BookFromAnywherezßpublic final Builder setNameWithBookNameOneof(com.google.example.library.v1.BookNameOneof value) {
+  return setName(value.toString());
+}
+
+public final com.google.example.library.v1.BookNameOneof getNameAsBookNameOneof() {
+  return com.google.example.library.v1.BookNameOneof.parse(getName());
+}
+zç
+3com/google/example/library/v1/BookFromAnywhere.java6class_scope:google.example.library.v1.BookFromAnywherezùpublic final com.google.example.library.v1.BookNameOneof getNameAsBookNameOneof() {
+  return com.google.example.library.v1.BookNameOneof.parse(getName());
+}
+z˛
+(com/google/example/library/v1/Shelf.java-builder_scope:google.example.library.v1.Shelfz¢public final Builder setNameWithShelfName(com.google.api.resourcenames.types.ShelfName value) {
+  return setName(value.toString());
+}
+
+public final com.google.api.resourcenames.types.ShelfName getNameAsShelfName() {
+  return com.google.api.resourcenames.types.ShelfName.parse(getName());
+}
+zı
+(com/google/example/library/v1/Shelf.java+class_scope:google.example.library.v1.Shelfzõpublic final com.google.api.resourcenames.types.ShelfName getNameAsShelfName() {
+  return com.google.api.resourcenames.types.ShelfName.parse(getName());
+}
+z’	
+4com/google/example/library/v1/ListBooksResponse.java9builder_scope:google.example.library.v1.ListBooksResponsez·public Builder setBooksWithBookName(int index, com.google.api.resourcenames.types.BookName value) {
+  return setBooks(index, value.toString());
+}
+
+public Builder addBooksWithBookName(com.google.api.resourcenames.types.BookName value) {
+  return addBooks(value.toString());
+}
+
+public Builder addAllBooksWithBookNameList(java.lang.Iterable<com.google.api.resourcenames.types.BookName> values) {
+  java.lang.List<java.lang.String> list = new java.util.ArrayList<java.lang.String>();
+  for (com.google.api.resourcenames.types.BookName value : values) {
+    list.add(value.toString());
+  }
+  return addAllBooks(list);
+}
+
+public com.google.api.resourcenames.types.BookName getBooksAsBookName(int index) {
+  return com.google.api.resourcenames.types.BookName.parse(getBooks(index));
+}
+
+public java.lang.List<com.google.api.resourcenames.types.BookName> getBooksListAsBookNameList() {
+  java.lang.List<com.google.api.resourcenames.types.BookName> list = new java.util.ArrayList<com.google.api.resourcenames.types.BookName>();
+  for (int i = 0; i < getNameCount(); i++) {
+    list.add(getBooksAsBookName(i));
+  }
+  return list;
+}
+zÎ
+4com/google/example/library/v1/ListBooksResponse.java7class_scope:google.example.library.v1.ListBooksResponsez˘public com.google.api.resourcenames.types.BookName getBooksAsBookName(int index) {
+  return com.google.api.resourcenames.types.BookName.parse(getBooks(index));
+}
+
+public java.lang.List<com.google.api.resourcenames.types.BookName> getBooksListAsBookNameList() {
+  java.lang.List<com.google.api.resourcenames.types.BookName> list = new java.util.ArrayList<com.google.api.resourcenames.types.BookName>();
+  for (int i = 0; i < getNameCount(); i++) {
+    list.add(getBooksAsBookName(i));
+  }
+  return list;
+}

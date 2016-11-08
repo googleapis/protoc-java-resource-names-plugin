@@ -3,7 +3,7 @@ public {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassN
 }
 
 public java.lang.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {
-  java.lang.List<{{resourceTypeFullClassName}}> list = new java.util.ArrayList<>();
+  java.lang.List<{{resourceTypeFullClassName}}> list = new java.util.ArrayList<{{resourceTypeFullClassName}}>();
   for (int i = 0; i < getNameCount(); i++) {
     list.add(get{{fieldNameUpper}}As{{resourceTypeClassName}}(i));
   }
