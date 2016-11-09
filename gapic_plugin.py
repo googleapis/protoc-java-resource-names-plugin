@@ -51,14 +51,14 @@ def render_new_file(renderer, response, resource):
 def generate_resource_name_types(response, gapic_config, proto_file):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
   for collection_config in gapic_config.collection_configs.values():
-    resource = resource_name.ResourceName(collection_config)
-    resource_type = resource_name.ResourceNameType(resource.className())
+    resource = resource_name.ResourceName(collection_config, proto_file)
+    resource_type = resource_name.ResourceNameType(resource.className(), proto_file)
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
 
   for fixed_config in gapic_config.fixed_collections.values():
-    resource = resource_name.ResourceNameFixed(fixed_config)
-    resource_type = resource_name.ResourceNameType(resource.className())
+    resource = resource_name.ResourceNameFixed(fixed_config, proto_file)
+    resource_type = resource_name.ResourceNameType(resource.className(), proto_file)
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
 
@@ -82,7 +82,7 @@ def generate_get_set_injection(response, gapic_config, proto_file, request):
         if entity_name:
           if entity_name in gapic_config.collection_configs:
             collection = gapic_config.collection_configs.get(entity_name)
-            resource = resource_name.ResourceName(collection)
+            resource = resource_name.ResourceName(collection, proto_file)
           elif entity_name in gapic_config.collection_oneofs:
             collection = gapic_config.collection_oneofs.get(entity_name)
             resource = resource_name.ResourceNameOneof(collection, proto_file)

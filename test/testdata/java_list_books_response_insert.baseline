@@ -888,28 +888,28 @@ public  final class ListBooksResponse extends
     }
 
 
-    public Builder setBooksWithBookName(int index, com.google.api.resourcenames.types.BookName value) {
+    public Builder setBooksWithBookName(int index, com.google.example.library.v1.BookName value) {
       return setBooks(index, value.toString());
     }
     
-    public Builder addBooksWithBookName(com.google.api.resourcenames.types.BookName value) {
+    public Builder addBooksWithBookName(com.google.example.library.v1.BookName value) {
       return addBooks(value.toString());
     }
     
-    public Builder addAllBooksWithBookNameList(java.lang.Iterable<com.google.api.resourcenames.types.BookName> values) {
+    public Builder addAllBooksWithBookNameList(java.lang.Iterable<com.google.example.library.v1.BookName> values) {
       java.util.List<java.lang.String> list = new java.util.ArrayList<java.lang.String>();
-      for (com.google.api.resourcenames.types.BookName value : values) {
+      for (com.google.example.library.v1.BookName value : values) {
         list.add(value.toString());
       }
       return addAllBooks(list);
     }
     
-    public com.google.api.resourcenames.types.BookName getBooksAsBookName(int index) {
-      return com.google.api.resourcenames.types.BookName.parse(getBooks(index));
+    public com.google.example.library.v1.BookName getBooksAsBookName(int index) {
+      return com.google.example.library.v1.BookName.parse(getBooks(index));
     }
     
-    public java.util.List<com.google.api.resourcenames.types.BookName> getBooksListAsBookNameList() {
-      java.util.List<com.google.api.resourcenames.types.BookName> list = new java.util.ArrayList<com.google.api.resourcenames.types.BookName>();
+    public java.util.List<com.google.example.library.v1.BookName> getBooksListAsBookNameList() {
+      java.util.List<com.google.example.library.v1.BookName> list = new java.util.ArrayList<com.google.example.library.v1.BookName>();
       for (int i = 0; i < getBooksCount(); i++) {
         list.add(getBooksAsBookName(i));
       }
@@ -918,12 +918,12 @@ public  final class ListBooksResponse extends
     // @@protoc_insertion_point(builder_scope:google.example.library.v1.ListBooksResponse)
   }
 
-  public com.google.api.resourcenames.types.BookName getBooksAsBookName(int index) {
-    return com.google.api.resourcenames.types.BookName.parse(getBooks(index));
+  public com.google.example.library.v1.BookName getBooksAsBookName(int index) {
+    return com.google.example.library.v1.BookName.parse(getBooks(index));
   }
   
-  public java.util.List<com.google.api.resourcenames.types.BookName> getBooksListAsBookNameList() {
-    java.util.List<com.google.api.resourcenames.types.BookName> list = new java.util.ArrayList<com.google.api.resourcenames.types.BookName>();
+  public java.util.List<com.google.example.library.v1.BookName> getBooksListAsBookNameList() {
+    java.util.List<com.google.example.library.v1.BookName> list = new java.util.ArrayList<com.google.example.library.v1.BookName>();
     for (int i = 0; i < getBooksCount(); i++) {
       list.add(getBooksAsBookName(i));
     }

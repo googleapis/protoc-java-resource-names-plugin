@@ -17,7 +17,6 @@ import pytest
 import subprocess
 import shutil
 
-from plugin.templates import resource_name
 from plugin.utils import casing_utils
 
 
@@ -85,8 +84,6 @@ MESSAGE_CLASSES_TO_EXTEND = ['book', 'shelf', 'list_books_response',
                              'book_from_anywhere']
 
 PROTOC_OUTPUT_DIR = os.path.join('com', 'google', 'example', 'library', 'v1')
-RESOURCE_OUTPUT_DIR = resource_name.RESOURCE_NAMES_TYPE_PACKAGE_JAVA.replace(
-    '.', os.path.sep)
 
 
 class TestProtocGapicPlugin(object):
@@ -95,13 +92,13 @@ class TestProtocGapicPlugin(object):
     def test_resource_name_generation(self, run_protoc, resource):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
             resource)
-        check_output(generated_class, RESOURCE_OUTPUT_DIR, 'java_' + resource)
+        check_output(generated_class, PROTOC_OUTPUT_DIR, 'java_' + resource)
 
     @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
     def test_resource_name_type_generation(self, run_protoc, resource):
         generated_type = \
             casing_utils.lower_underscore_to_upper_camel(resource) + 'Type'
-        check_output(generated_type, RESOURCE_OUTPUT_DIR,
+        check_output(generated_type, PROTOC_OUTPUT_DIR,
                      'java_' + resource + '_type')
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)

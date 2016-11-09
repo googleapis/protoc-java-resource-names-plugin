@@ -35,6 +35,14 @@ RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA = 'com.google.api.resourcenames'
 RESOURCE_NAMES_TYPE_PACKAGE_JAVA = 'com.google.api.resourcenames.types'
 
 
+def get_java_package(proto_file):
+    package_name = 'defaultpackage'
+    for opt in proto_utils.get_named_options(proto_file, 'java_package'):
+        package_name = opt[1]
+        break
+    return package_name
+
+
 class ResourceNameBase(object):
 
     def resourceNameTypePackageName(self):
@@ -62,7 +70,7 @@ class ResourceNameBase(object):
 
 class ResourceName(ResourceNameBase):
 
-    def __init__(self, collection_config):
+    def __init__(self, collection_config, proto_file):
 
         entity_name = collection_config.entity_name
         name_template = path_template.PathTemplate(
@@ -91,6 +99,7 @@ class ResourceName(ResourceNameBase):
             'lower': f['parameter'],
         } for f in self.parameter_list]
         self.format_string = collection_config.name_pattern
+        self.package_name = get_java_package(proto_file)
 
     def className(self):
         return self.format_name_upper
@@ -108,7 +117,7 @@ class ResourceName(ResourceNameBase):
         return self.format_string
 
     def package(self):
-        return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
+        return self.package_name
 
 
 class ResourceNameOneof(ResourceNameBase):
@@ -119,12 +128,15 @@ class ResourceNameOneof(ResourceNameBase):
         self.single_resource_types = [{
             'resourceTypeClassName': resource.className(),
             'resourceTypeVarName': resource.varName(),
-        } for resource in (ResourceName(x) for x in oneof.resource_list)]
+            'resourcePackage': resource.package(),
+        } for resource in (ResourceName(x, proto_file)
+                           for x in oneof.resource_list)]
         self.fixed_resource_types = [{
             'resourceTypeClassName': resource.className(),
             'resourceTypeVarName': resource.varName(),
-        } for resource in (
-            ResourceNameFixed(x) for x in oneof.fixed_resource_list)]
+            'resourcePackage': resource.package(),
+        } for resource in (ResourceNameFixed(x, proto_file)
+                           for x in oneof.fixed_resource_list)]
         self.resource_types = (self.single_resource_types
                                + self.fixed_resource_types)
 
@@ -151,24 +163,26 @@ class ResourceNameOneof(ResourceNameBase):
 
 class ResourceNameType(ResourceNameBase):
 
-    def __init__(self, class_name):
+    def __init__(self, class_name, proto_file):
         self.type_name_upper = casing_utils.get_resource_type_from_class_name(
             class_name)
+        self.package_name = get_java_package(proto_file)
 
     def className(self):
         return self.type_name_upper
 
     def package(self):
-        return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
+        return self.package_name
 
 
 class ResourceNameFixed(ResourceNameBase):
 
-    def __init__(self, fixed_config):
+    def __init__(self, fixed_config, proto_file):
         self.format_name_upper = \
             casing_utils.get_fixed_resource_type_class_name(
                 fixed_config.entity_name)
         self.fixed_value = fixed_config.fixed_value
+        self.package_name = get_java_package(proto_file)
 
     def className(self):
         return self.format_name_upper
@@ -177,4 +191,4 @@ class ResourceNameFixed(ResourceNameBase):
         return self.fixed_value
 
     def package(self):
-        return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
+        return self.package_name
