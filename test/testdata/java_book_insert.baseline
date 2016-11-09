@@ -585,18 +585,18 @@ public  final class Book extends
     }
 
 
-    public final Builder setNameWithBookName(com.google.api.resourcenames.types.BookName value) {
+    public final Builder setNameWithBookName(com.google.example.library.v1.BookName value) {
       return setName(value.toString());
     }
     
-    public final com.google.api.resourcenames.types.BookName getNameAsBookName() {
-      return com.google.api.resourcenames.types.BookName.parse(getName());
+    public final com.google.example.library.v1.BookName getNameAsBookName() {
+      return com.google.example.library.v1.BookName.parse(getName());
     }
     // @@protoc_insertion_point(builder_scope:google.example.library.v1.Book)
   }
 
-  public final com.google.api.resourcenames.types.BookName getNameAsBookName() {
-    return com.google.api.resourcenames.types.BookName.parse(getName());
+  public final com.google.example.library.v1.BookName getNameAsBookName() {
+    return com.google.example.library.v1.BookName.parse(getName());
   }
   // @@protoc_insertion_point(class_scope:google.example.library.v1.Book)
   private static final com.google.example.library.v1.Book DEFAULT_INSTANCE;
