@@ -4,3 +4,4 @@ build
 dist
 test/testdata/test_output
 .cache
+*.egg-info/
