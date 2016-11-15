@@ -43,7 +43,7 @@ def check_output(output_class, output_path, baseline):
         + str(actual_output)
 
 
-def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto,
+def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
                             lang_out=None):
     def format_output_arg(name, output_dir, extra_arg=None):
         if extra_arg:
@@ -57,7 +57,7 @@ def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto,
     args += [format_output_arg('gapic', output_dir, gapic_yaml),
              '--plugin=protoc-gen-gapic=gapic_plugin.py']
     args += ['-I' + path for path in include_dirs]
-    args.append(proto)
+    args += proto_files
     subprocess.check_call(args)
 
 
@@ -71,10 +71,11 @@ def run_protoc():
     clean_test_output()
     gapic_yaml = os.path.join(TEST_DIR, 'library_gapic.yaml')
     include_dirs = ['.', '../googleapis']
+    proto_files = ['library_simple.proto', 'archive.proto']
     run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
                             gapic_yaml,
                             include_dirs,
-                            os.path.join(TEST_DIR, 'library_simple.proto'),
+                            [os.path.join(TEST_DIR, x) for x in proto_files],
                             'java')
 
 RESOURCE_NAMES_TO_GENERATE = ['book_name', 'shelf_name', 'archived_book_name',

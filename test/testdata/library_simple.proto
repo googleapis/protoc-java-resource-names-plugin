@@ -36,16 +36,6 @@ service LibraryService {
   rpc ListBooks(ListBooksRequest) returns (ListBooksResponse) {
     option (google.api.http) = { get: "/v1/{name=bookShelves/*}/books" };
   }
-
-  // Gets a book from an archive.
-  rpc GetBookFromArchive(GetBookFromArchiveRequest) returns (BookFromArchive) {
-    option (google.api.http) = { get: "/v1/{name=archives/*/books/*}"};
-  }
-
-  // Gets a book from a shelf or archive.
-  rpc GetBookFromAnywhere(GetBookFromAnywhereRequest) returns (BookFromAnywhere) {
-    option (google.api.http) = { get: "/v1/{name=archives/*/books/**}"};
-  }
 }
 
 // A single book in the library.
@@ -56,39 +46,6 @@ message Book {
 
   // The name of the book author.
   string author = 2;
-}
-
-// A single book in the archives.
-message BookFromArchive {
-  // The resource name of the book.
-  // Book names have the form `archives/{archive_id}/books/{book_id}`.
-  string name = 1;
-
-  // The name of the book author.
-  string author = 2;
-
-  // The title of the book.
-  string title = 3;
-
-  // Value indicating whether the book has been read.
-  bool read = 4;
-}
-
-// A single book in the archives or library.
-message BookFromAnywhere {
-  // The resource name of the book.
-  // Book names have the form `bookShelves/{shelf_id}/books/{book_id}` or
-  // `archives/{archive_id}/books/{book_id}`.
-  string name = 1;
-
-  // The name of the book author.
-  string author = 2;
-
-  // The title of the book.
-  string title = 3;
-
-  // Value indicating whether the book has been read.
-  bool read = 4;
 }
 
 // A Shelf contains a collection of books with a theme.
@@ -160,15 +117,4 @@ message ListBooksResponse {
   // field in the subsequent call to `ListBooks` method to retrieve the next
   // page of results.
   string next_page_token = 2;
-}
-// Request message for LibraryService.GetBookFromArchive.
-message GetBookFromArchiveRequest {
-  // The name of the book to retrieve.
-  string name = 1;
-}
-
-// Request message for LibraryService.GetBookFromAnywhere.
-message GetBookFromAnywhereRequest {
-  // The name of the book to retrieve.
-  string name = 1;
 }
