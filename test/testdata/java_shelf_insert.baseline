@@ -592,11 +592,21 @@ public  final class Shelf extends
     public final com.google.example.library.v1.ShelfName getNameAsShelfName() {
       return com.google.example.library.v1.ShelfName.parse(getName());
     }
+    public final Builder setThemeWithResourceName(com.google.api.resourcenames.ResourceName value) {
+      return setTheme(value.toString());
+    }
+    
+    public final com.google.api.resourcenames.ResourceName getThemeAsResourceName() {
+      return com.google.api.resourcenames.ResourceName.parse(getTheme());
+    }
     // @@protoc_insertion_point(builder_scope:google.example.library.v1.Shelf)
   }
 
   public final com.google.example.library.v1.ShelfName getNameAsShelfName() {
     return com.google.example.library.v1.ShelfName.parse(getName());
+  }
+  public final com.google.api.resourcenames.ResourceName getThemeAsResourceName() {
+    return com.google.api.resourcenames.ResourceName.parse(getTheme());
   }
   // @@protoc_insertion_point(class_scope:google.example.library.v1.Shelf)
   private static final com.google.example.library.v1.Shelf DEFAULT_INSTANCE;

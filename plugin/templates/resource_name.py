@@ -181,3 +181,12 @@ class ResourceNameFixed(ResourceNameBase):
 
     def package(self):
         return self.package_name
+
+
+class ResourceNameAny(ResourceNameBase):
+
+    def className(self):
+        return 'ResourceName'
+
+    def package(self):
+        return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA

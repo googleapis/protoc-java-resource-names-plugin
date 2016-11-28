@@ -76,7 +76,9 @@ def generate_get_set_injection(response, gapic_config, request, java_package):
         entity_name = gapic_config.get_entity_name_for_message_field(
             item.name, field.name)
         if entity_name:
-          if entity_name in gapic_config.collection_configs:
+          if entity_name == gapic_utils.GAPIC_CONFIG_ANY:
+            resource = resource_name.ResourceNameAny()
+          elif entity_name in gapic_config.collection_configs:
             collection = gapic_config.collection_configs.get(entity_name)
             resource = resource_name.ResourceName(collection, java_package)
           elif entity_name in gapic_config.collection_oneofs:
