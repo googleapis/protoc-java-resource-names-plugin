@@ -190,3 +190,12 @@ class ResourceNameAny(ResourceNameBase):
 
     def package(self):
         return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
+
+
+class ResourceNameUntyped(ResourceNameBase):
+
+    def className(self):
+        return 'UntypedResourceName'
+
+    def package(self):
+        return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
