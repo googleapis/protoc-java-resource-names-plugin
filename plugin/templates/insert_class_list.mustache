@@ -1,5 +1,5 @@
 public {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassName}}(int index) {
-  return {{resourceTypeFullClassName}}.parse(get{{fieldNameUpper}}(index));
+  return {{concreteResourceTypeFullClassName}}.parse(get{{fieldNameUpper}}(index));
 }
 
 public java.util.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {

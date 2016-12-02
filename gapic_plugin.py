@@ -76,7 +76,11 @@ def generate_get_set_injection(response, gapic_config, request, java_package):
         entity_name = gapic_config.get_entity_name_for_message_field(
             item.name, field.name)
         if entity_name:
-          if entity_name in gapic_config.collection_configs:
+          concrete_resource = None
+          if entity_name == gapic_utils.GAPIC_CONFIG_ANY:
+            resource = resource_name.ResourceNameAny()
+            concrete_resource = resource_name.ResourceNameUntyped()
+          elif entity_name in gapic_config.collection_configs:
             collection = gapic_config.collection_configs.get(entity_name)
             resource = resource_name.ResourceName(collection, java_package)
           elif entity_name in gapic_config.collection_oneofs:
@@ -88,26 +92,26 @@ def generate_get_set_injection(response, gapic_config, request, java_package):
           f = response.file.add()
           f.name = filename
           f.insertion_point = 'builder_scope:' + package + '.' + item.name
-          f.content = renderer.render(construct_builder_view(resource, field))
+          f.content = renderer.render(get_builder_view(field)(resource, field, concrete_resource))
 
           f = response.file.add()
           f.name = filename
           f.insertion_point = 'class_scope:' + package + '.' + item.name
-          f.content = renderer.render(construct_class_view(resource, field))
+          f.content = renderer.render(get_class_view(field)(resource, field, concrete_resource))
 
 
-def construct_builder_view(resource, field):
+def get_builder_view(field):
   if field.label == FieldDescriptorProto.LABEL_REPEATED:
-    return insertion_points.InsertBuilderList(resource, field)
+    return insertion_points.InsertBuilderList
   else:
-    return insertion_points.InsertBuilder(resource, field)
+    return insertion_points.InsertBuilder
 
 
-def construct_class_view(resource, field):
+def get_class_view(field):
   if field.label == FieldDescriptorProto.LABEL_REPEATED:
-    return insertion_points.InsertClassList(resource, field)
+    return insertion_points.InsertClassList
   else:
-    return insertion_points.InsertClass(resource, field)
+    return insertion_points.InsertClass
 
 
 def get_protos_to_generate_for(request):
