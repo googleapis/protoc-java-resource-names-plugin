@@ -889,23 +889,37 @@ public  final class ListBooksResponse extends
 
 
     public Builder setBooksWithBookName(int index, com.google.example.library.v1.BookName value) {
+      if (value == null) {
+        return setBooks(index, "");
+      }
       return setBooks(index, value.toString());
     }
     
     public Builder addBooksWithBookName(com.google.example.library.v1.BookName value) {
+      if (value == null) {
+        return addBooks("");
+      }
       return addBooks(value.toString());
     }
     
     public Builder addAllBooksWithBookNameList(java.lang.Iterable<com.google.example.library.v1.BookName> values) {
       java.util.List<java.lang.String> list = new java.util.ArrayList<java.lang.String>();
       for (com.google.example.library.v1.BookName value : values) {
-        list.add(value.toString());
+        if (value == null) {
+          list.add("");
+        } else {
+          list.add(value.toString());
+        }
       }
       return addAllBooks(list);
     }
     
     public com.google.example.library.v1.BookName getBooksAsBookName(int index) {
-      return com.google.example.library.v1.BookName.parse(getBooks(index));
+      java.lang.String str = getBooks(index);
+      if (str.isEmpty()) {
+        return null;
+      }
+      return com.google.example.library.v1.BookName.parse(str);
     }
     
     public java.util.List<com.google.example.library.v1.BookName> getBooksListAsBookNameList() {
@@ -919,7 +933,11 @@ public  final class ListBooksResponse extends
   }
 
   public com.google.example.library.v1.BookName getBooksAsBookName(int index) {
-    return com.google.example.library.v1.BookName.parse(getBooks(index));
+    java.lang.String str = getBooks(index);
+    if (str.isEmpty()) {
+      return null;
+    }
+    return com.google.example.library.v1.BookName.parse(str);
   }
   
   public java.util.List<com.google.example.library.v1.BookName> getBooksListAsBookNameList() {

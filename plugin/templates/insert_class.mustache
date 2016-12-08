@@ -1,3 +1,7 @@
 public final {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassName}}() {
-  return {{concreteResourceTypeFullClassName}}.parse(get{{fieldNameUpper}}());
+  java.lang.String str = get{{fieldNameUpper}}();
+  if (str.isEmpty()) {
+    return null;
+  }
+  return {{concreteResourceTypeFullClassName}}.parse(str);
 }
