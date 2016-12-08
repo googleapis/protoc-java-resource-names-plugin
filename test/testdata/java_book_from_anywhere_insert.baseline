@@ -814,17 +814,28 @@ public  final class BookFromAnywhere extends
 
 
     public final Builder setNameWithBookNameOneof(com.google.example.library.v1.BookNameOneof value) {
+      if (value == null) {
+        return setName("");
+      }
       return setName(value.toString());
     }
     
     public final com.google.example.library.v1.BookNameOneof getNameAsBookNameOneof() {
-      return com.google.example.library.v1.BookNameOneof.parse(getName());
+      java.lang.String str = getName();
+      if (str.isEmpty()) {
+        return null;
+      }
+      return com.google.example.library.v1.BookNameOneof.parse(str);
     }
     // @@protoc_insertion_point(builder_scope:google.example.library.v1.BookFromAnywhere)
   }
 
   public final com.google.example.library.v1.BookNameOneof getNameAsBookNameOneof() {
-    return com.google.example.library.v1.BookNameOneof.parse(getName());
+    java.lang.String str = getName();
+    if (str.isEmpty()) {
+      return null;
+    }
+    return com.google.example.library.v1.BookNameOneof.parse(str);
   }
   // @@protoc_insertion_point(class_scope:google.example.library.v1.BookFromAnywhere)
   private static final com.google.example.library.v1.BookFromAnywhere DEFAULT_INSTANCE;

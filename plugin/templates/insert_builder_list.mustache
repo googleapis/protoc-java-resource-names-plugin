@@ -1,21 +1,35 @@
 public Builder set{{fieldNameUpper}}With{{resourceTypeClassName}}(int index, {{resourceTypeFullClassName}} value) {
+  if (value == null) {
+    return set{{fieldNameUpper}}(index, "");
+  }
   return set{{fieldNameUpper}}(index, value.toString());
 }
 
 public Builder add{{fieldNameUpper}}With{{resourceTypeClassName}}({{resourceTypeFullClassName}} value) {
+  if (value == null) {
+    return add{{fieldNameUpper}}("");
+  }
   return add{{fieldNameUpper}}(value.toString());
 }
 
 public Builder addAll{{fieldNameUpper}}With{{resourceTypeClassName}}List(java.lang.Iterable<{{resourceTypeFullClassName}}> values) {
   java.util.List<java.lang.String> list = new java.util.ArrayList<java.lang.String>();
   for ({{resourceTypeFullClassName}} value : values) {
-    list.add(value.toString());
+    if (value == null) {
+      list.add("");
+    } else {
+      list.add(value.toString());
+    }
   }
   return addAll{{fieldNameUpper}}(list);
 }
 
 public {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassName}}(int index) {
-  return {{concreteResourceTypeFullClassName}}.parse(get{{fieldNameUpper}}(index));
+  java.lang.String str = get{{fieldNameUpper}}(index);
+  if (str.isEmpty()) {
+    return null;
+  }
+  return {{concreteResourceTypeFullClassName}}.parse(str);
 }
 
 public java.util.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {

@@ -586,17 +586,28 @@ public  final class Book extends
 
 
     public final Builder setNameWithBookName(com.google.example.library.v1.BookName value) {
+      if (value == null) {
+        return setName("");
+      }
       return setName(value.toString());
     }
     
     public final com.google.example.library.v1.BookName getNameAsBookName() {
-      return com.google.example.library.v1.BookName.parse(getName());
+      java.lang.String str = getName();
+      if (str.isEmpty()) {
+        return null;
+      }
+      return com.google.example.library.v1.BookName.parse(str);
     }
     // @@protoc_insertion_point(builder_scope:google.example.library.v1.Book)
   }
 
   public final com.google.example.library.v1.BookName getNameAsBookName() {
-    return com.google.example.library.v1.BookName.parse(getName());
+    java.lang.String str = getName();
+    if (str.isEmpty()) {
+      return null;
+    }
+    return com.google.example.library.v1.BookName.parse(str);
   }
   // @@protoc_insertion_point(class_scope:google.example.library.v1.Book)
   private static final com.google.example.library.v1.Book DEFAULT_INSTANCE;
