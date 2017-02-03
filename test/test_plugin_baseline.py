@@ -78,6 +78,7 @@ def run_protoc():
                             [os.path.join(TEST_DIR, x) for x in proto_files],
                             'java')
 
+
 RESOURCE_NAMES_TO_GENERATE = ['book_name', 'shelf_name', 'archived_book_name',
                               'deleted_book']
 ONEOFS_TO_GENERATE = ['book_name_oneof']
