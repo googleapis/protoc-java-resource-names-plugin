@@ -9,7 +9,7 @@ package com.google.example.library.v1;
  * </pre>
  *
  * Protobuf type {@code google.example.library.v1.BookFromAnywhere}
-mv */
+ */
 public  final class BookFromAnywhere extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:google.example.library.v1.BookFromAnywhere)
