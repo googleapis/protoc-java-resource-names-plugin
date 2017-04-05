@@ -16,6 +16,7 @@ import os
 import pytest
 import subprocess
 import shutil
+import difflib
 
 from plugin.utils import casing_utils
 
@@ -24,23 +25,35 @@ TEST_DIR = os.path.join('test', 'testdata')
 TEST_OUTPUT_DIR = os.path.join(TEST_DIR, 'test_output')
 
 
-def read_baseline(baseline):
-    filename = os.path.join(TEST_DIR, baseline + '.baseline')
-    with open(filename) as f:
-        return f.readlines()
-
-
 def check_output(output_class, output_path, baseline):
+    baseline_file = os.path.join(TEST_DIR, baseline + '.baseline')
+    with open(baseline_file) as f:
+        expected_output = f.readlines()
+
     actual_output_file = os.path.join(TEST_OUTPUT_DIR,
                                       output_path,
                                       output_class + '.java')
     with open(actual_output_file) as f:
         actual_output = f.readlines()
-    expected_output = read_baseline(baseline)
-    assert expected_output == actual_output, "Baseline error.\nExpected: " \
-        + str(expected_output) \
-        + "\nActual: " \
-        + str(actual_output)
+
+    assert expected_output == actual_output, 'Baseline error. File "' \
+        + baseline_file + '" did not match "' \
+        + actual_output_file + '"\nDiff:\n' \
+        + diff(expected_output,
+               actual_output,
+               baseline_file,
+               actual_output_file)
+
+
+def diff(expected_output, actual_output, fromfile, tofile):
+    difflines = list(difflib.context_diff(expected_output,
+                                          actual_output,
+                                          fromfile=fromfile,
+                                          tofile=tofile))
+    if len(difflines) > 50:
+        return "*** diff omitted: too long"
+    else:
+        return "".join(difflines)
 
 
 def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
@@ -77,6 +90,7 @@ def run_protoc():
                             include_dirs,
                             [os.path.join(TEST_DIR, x) for x in proto_files],
                             'java')
+
 
 RESOURCE_NAMES_TO_GENERATE = ['book_name', 'shelf_name', 'archived_book_name',
                               'deleted_book']
