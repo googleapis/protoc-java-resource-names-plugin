@@ -51,9 +51,9 @@ def diff(expected_output, actual_output, fromfile, tofile):
                                           fromfile=fromfile,
                                           tofile=tofile))
     if len(difflines) > 50:
-        return "*** diff omitted: too long"
-    else:
-        return "".join(difflines)
+        difflines = difflines[:50]
+        difflines.append('*** diff too long, truncating ***\n')
+    return "".join(difflines)
 
 
 def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
