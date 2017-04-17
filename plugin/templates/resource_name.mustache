@@ -16,10 +16,10 @@ package {{package}};
 
 import com.google.common.base.Preconditions;
 import com.google.api.pathtemplate.PathTemplate;
-import com.google.common.collect.ImmutableMap;
 import {{resourceNameGlobalPackageName}}.ResourceName;
 import {{resourceNameGlobalPackageName}}.ResourceNameType;
 import java.io.IOException;
+import java.util.Map;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
@@ -59,7 +59,7 @@ public class {{className}} implements ResourceName {
   }
 
   public static {{className}} parse(String formattedString) {
-    ImmutableMap<String, String> matchMap =
+    Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "{{className}}.parse: formattedString not in valid format");
     return create({{#parameterList}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameterList}});
   }
