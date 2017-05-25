@@ -28,7 +28,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import itertools
-import pprint
 
 # pylint: disable=import-error, no-name-in-module
 from google.protobuf.descriptor_pb2 import DescriptorProto
