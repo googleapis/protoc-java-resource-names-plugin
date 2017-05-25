@@ -28,6 +28,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import itertools
+import pprint
 
 # pylint: disable=import-error, no-name-in-module
 from google.protobuf.descriptor_pb2 import DescriptorProto
@@ -76,6 +77,6 @@ def get_formatted_field_list(request, format_dict):
 
 
 def get_named_options(item, option_name):
-    for ext, ext_value in item.options._fields.iteritems():
+    for ext, ext_value in item.options.ListFields():
         if ext.name == option_name:
             yield ext, ext_value

@@ -157,10 +157,17 @@ def main(data):
   return output
 
 if __name__ == '__main__':
+  try:
+    source = sys.stdin.buffer
+    dest = sys.stdout.buffer
+  except AttributeError:
+    source = sys.stdin
+    dest = sys.stdout
+
   # Read request message from stdin
-  data = sys.stdin.read()
+  data = source.read()
 
   output = main(data)
 
   # Write to stdout
-  sys.stdout.write(output)
+  dest.write(output)
