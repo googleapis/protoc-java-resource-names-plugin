@@ -38,7 +38,7 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-version = '0.0.1'
+version = '0.0.2'
 
 install_requires = [
     'pystache>=0.5.4',
@@ -48,9 +48,9 @@ install_requires = [
 ]
 
 setup(
-    name='proto-compiler-plugin',
+    name='protoc-java-resource-names-plugin',
     version=version,
-    description='GAPIC protobuf plugin',
+    description='Protobuf compiler plugin for Java resource names',
     long_description=open('README.rst').read(),
     author='Google API Authors',
     author_email='googleapis-packages@google.com',
