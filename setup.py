@@ -43,7 +43,7 @@ version = '0.0.1'
 install_requires = [
     'pystache>=0.5.4',
     'protobuf>=3.3',
-    'google-gax>=0.14.1',
+    'google-gax>=0.12.3',
     'pyyaml>=3.12',
 ]
 
