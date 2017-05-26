@@ -42,8 +42,8 @@ version = '0.0.1'
 
 install_requires = [
     'pystache>=0.5.4',
-    'protobuf>=3.0.0',
-    'google-gax>=0.14.1',
+    'protobuf>=3.3',
+    'google-gax>=0.12.3',
     'pyyaml>=3.12',
 ]
 
@@ -64,9 +64,10 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     tests_require=['pytest'],
     install_requires=install_requires,

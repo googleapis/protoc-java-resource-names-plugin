@@ -135,7 +135,7 @@ def load_resource_name_map(resource_name_generation, oneofs, collections):
     field_resource_name_map = {}
     for message_config in resource_name_generation:
         message_name = message_config['message_name']
-        for field, coll in message_config['field_entity_map'].iteritems():
+        for field, coll in message_config['field_entity_map'].items():
             full_field_name = create_field_name(message_name, field)
             if full_field_name in field_resource_name_map:
                 raise ValueError(
