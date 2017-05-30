@@ -95,7 +95,7 @@ GitHub repo, from which you can submit a pull request.
   .. code:: bash
 
     cd ~/hack-on-proto-compiler-plugin
-    . ./tox/develop/bin/activate
+    . .tox/develop/bin/activate
 
 .. _`proto-compiler-plugin`: https://github.com/googleapis/proto-compiler-plugin
 .. _`proto-compiler-plugin repo`: https://github.com/googleapis/proto-compiler-plugin
