@@ -96,7 +96,7 @@ RESOURCE_NAMES_TO_GENERATE = ['book_name', 'shelf_name', 'archived_book_name',
                               'deleted_book']
 ONEOFS_TO_GENERATE = ['book_name_oneof']
 MESSAGE_CLASSES_TO_EXTEND = ['book', 'shelf', 'list_books_response',
-                             'book_from_anywhere']
+                             'book_from_anywhere', 'message_with_oneof']
 
 PROTOC_OUTPUT_DIR = os.path.join('com', 'google', 'example', 'library', 'v1')
 

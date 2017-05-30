@@ -1,0 +1,26 @@
+public abstract static class {{oneofNameUpper}}Oneof {
+  {{#fields}}
+  private static class {{nameUpper}} extends {{oneofNameUpper}}Oneof {
+    private final {{type}} {{nameLower}};
+
+    private {{nameUpper}}({{type}} {{nameLower}}) {
+      this.{{nameLower}} = {{nameLower}};
+    }
+
+    @Override
+    void set({{msgNameUpper}}.Builder builder) {
+      builder.set{{nameUpper}}({{nameLower}});
+    }
+  }
+  {{/fields}}
+
+  private {{oneofNameUpper}}Oneof() {}
+
+  abstract void set({{msgNameUpper}}.Builder message);
+
+  {{#fields}}
+  public static {{oneofNameUpper}}Oneof {{nameLower}}({{type}} {{nameLower}}) {
+    return new {{nameUpper}}({{nameLower}});
+  }
+  {{/fields}}
+}

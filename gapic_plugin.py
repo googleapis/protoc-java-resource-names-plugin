@@ -36,7 +36,7 @@ import pystache
 from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
 
-from plugin.templates import resource_name, insertion_points
+from plugin.templates import resource_name, insertion_points, oneof_fields
 from plugin.utils import proto_utils, gapic_utils
 
 
@@ -69,6 +69,8 @@ def generate_resource_name_types(response, gapic_config, java_package):
 
 def generate_get_set_injection(response, gapic_config, request, java_package):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
+  type_map = proto_utils.map_types_java(request.proto_file)
+
   for pf in get_protos_to_generate_for(request):
     for item, package in proto_utils.traverse(pf):
       filename = os.path.join(java_package.replace('.', os.path.sep), item.name + '.java')
@@ -99,6 +101,20 @@ def generate_get_set_injection(response, gapic_config, request, java_package):
           f.insertion_point = 'class_scope:' + package + '.' + item.name
           f.content = renderer.render(get_class_view(field)(resource, field, concrete_resource))
 
+      oneofs = [[] for _ in item.oneof_decl]
+      for field in item.field:
+        if field.HasField("oneof_index"):
+          oneofs[field.oneof_index].append(field)
+      for i, oneof in enumerate(item.oneof_decl):
+        f = response.file.add()
+        f.name = filename
+        f.insertion_point = 'builder_scope:' + package + '.' + item.name
+        f.content = renderer.render(oneof_fields.InsertBuilderOneof(item, oneof.name, oneofs[i], type_map))
+
+        f = response.file.add()
+        f.name = filename
+        f.insertion_point = 'class_scope:' + package + '.' + item.name
+        f.content = renderer.render(oneof_fields.InsertClassOneof(item, oneof.name, oneofs[i], type_map))
 
 def get_builder_view(field):
   if field.label == FieldDescriptorProto.LABEL_REPEATED:
