@@ -1,10 +1,14 @@
 public {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassName}}(int index) {
-  return {{resourceTypeFullClassName}}.parse(get{{fieldNameUpper}}(index));
+  java.lang.String str = get{{fieldNameUpper}}(index);
+  if (str.isEmpty()) {
+    return null;
+  }
+  return {{concreteResourceTypeFullClassName}}.parse(str);
 }
 
-public java.lang.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {
-  java.lang.List<{{resourceTypeFullClassName}}> list = new java.util.ArrayList<>();
-  for (int i = 0; i < getNameCount(); i++) {
+public java.util.List<{{resourceTypeFullClassName}}> get{{fieldNameUpper}}ListAs{{resourceTypeClassName}}List() {
+  java.util.List<{{resourceTypeFullClassName}}> list = new java.util.ArrayList<{{resourceTypeFullClassName}}>();
+  for (int i = 0; i < get{{fieldNameUpper}}Count(); i++) {
     list.add(get{{fieldNameUpper}}As{{resourceTypeClassName}}(i));
   }
   return list;

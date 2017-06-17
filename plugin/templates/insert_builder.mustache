@@ -1,7 +1,14 @@
 public final Builder set{{fieldNameUpper}}With{{resourceTypeClassName}}({{resourceTypeFullClassName}} value) {
+  if (value == null) {
+    return set{{fieldNameUpper}}("");
+  }
   return set{{fieldNameUpper}}(value.toString());
 }
 
 public final {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassName}}() {
-  return {{resourceTypeFullClassName}}.parse(get{{fieldNameUpper}}());
+  java.lang.String str = get{{fieldNameUpper}}();
+  if (str.isEmpty()) {
+    return null;
+  }
+  return {{concreteResourceTypeFullClassName}}.parse(str);
 }

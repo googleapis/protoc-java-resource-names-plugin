@@ -32,9 +32,12 @@ from plugin.utils import casing_utils
 
 class InsertBuilder(object):
 
-    def __init__(self, resource, field):
+    def __init__(self, resource, field, concrete_resource):
+        if concrete_resource is None:
+            concrete_resource = resource
         self.resource_class_name = resource.className()
         self.resource_full_class_name = resource.fullClassName()
+        self.concrete_resource_full_name = concrete_resource.fullClassName()
         self.field_name_upper = casing_utils.lower_underscore_to_upper_camel(
             field.name)
 
@@ -43,6 +46,9 @@ class InsertBuilder(object):
 
     def resourceTypeFullClassName(self):
         return self.resource_full_class_name
+
+    def concreteResourceTypeFullClassName(self):
+        return self.concrete_resource_full_name
 
     def fieldNameUpper(self):
         return self.field_name_upper

@@ -48,99 +48,126 @@ def render_new_file(renderer, response, resource):
   f.content = renderer.render(resource)
 
 
-def generate_resource_name_types(response, gapic_config, proto_file):
+def generate_resource_name_types(response, gapic_config, java_package):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
   for collection_config in gapic_config.collection_configs.values():
-    resource = resource_name.ResourceName(collection_config)
-    resource_type = resource_name.ResourceNameType(resource.className())
+    resource = resource_name.ResourceName(collection_config, java_package)
+    resource_type = resource_name.ResourceNameType(resource.className(), java_package)
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
 
   for fixed_config in gapic_config.fixed_collections.values():
-    resource = resource_name.ResourceNameFixed(fixed_config)
-    resource_type = resource_name.ResourceNameType(resource.className())
+    resource = resource_name.ResourceNameFixed(fixed_config, java_package)
+    resource_type = resource_name.ResourceNameType(resource.className(), java_package)
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
 
   for oneof_config in gapic_config.collection_oneofs.values():
-    resource_oneof = resource_name.ResourceNameOneof(oneof_config, proto_file)
+    resource_oneof = resource_name.ResourceNameOneof(oneof_config, java_package)
     render_new_file(renderer, response, resource_oneof)
 
 
-def generate_get_set_injection(response, gapic_config, proto_file, request):
+def generate_get_set_injection(response, gapic_config, request, java_package):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
-  for pf in request.proto_file:
+  for pf in get_protos_to_generate_for(request):
     for item, package in proto_utils.traverse(pf):
-      java_package = package
-      for opt in proto_utils.get_named_options(pf, 'java_package'):
-        java_package = opt[1]
-        break
       filename = os.path.join(java_package.replace('.', os.path.sep), item.name + '.java')
       for field in item.field:
         entity_name = gapic_config.get_entity_name_for_message_field(
             item.name, field.name)
         if entity_name:
-          if entity_name in gapic_config.collection_configs:
+          concrete_resource = None
+          if entity_name == gapic_utils.GAPIC_CONFIG_ANY:
+            resource = resource_name.ResourceNameAny()
+            concrete_resource = resource_name.ResourceNameUntyped()
+          elif entity_name in gapic_config.collection_configs:
             collection = gapic_config.collection_configs.get(entity_name)
-            resource = resource_name.ResourceName(collection)
+            resource = resource_name.ResourceName(collection, java_package)
           elif entity_name in gapic_config.collection_oneofs:
             collection = gapic_config.collection_oneofs.get(entity_name)
-            resource = resource_name.ResourceNameOneof(collection, proto_file)
+            resource = resource_name.ResourceNameOneof(collection, java_package)
           else:
             raise ValueError('entity name not found: ' + entity_name)
 
           f = response.file.add()
           f.name = filename
           f.insertion_point = 'builder_scope:' + package + '.' + item.name
-          f.content = renderer.render(construct_builder_view(resource, field))
+          f.content = renderer.render(get_builder_view(field)(resource, field, concrete_resource))
 
           f = response.file.add()
           f.name = filename
           f.insertion_point = 'class_scope:' + package + '.' + item.name
-          f.content = renderer.render(construct_class_view(resource, field))
+          f.content = renderer.render(get_class_view(field)(resource, field, concrete_resource))
 
 
-def construct_builder_view(resource, field):
+def get_builder_view(field):
   if field.label == FieldDescriptorProto.LABEL_REPEATED:
-    return insertion_points.InsertBuilderList(resource, field)
+    return insertion_points.InsertBuilderList
   else:
-    return insertion_points.InsertBuilder(resource, field)
+    return insertion_points.InsertBuilder
 
 
-def construct_class_view(resource, field):
+def get_class_view(field):
   if field.label == FieldDescriptorProto.LABEL_REPEATED:
-    return insertion_points.InsertClassList(resource, field)
+    return insertion_points.InsertClassList
   else:
-    return insertion_points.InsertClass(resource, field)
+    return insertion_points.InsertClass
 
 
-if __name__ == '__main__':
-  # Read request message from stdin
-  data = sys.stdin.read()
+def get_protos_to_generate_for(request):
+  proto_files = dict((pf.name, pf) for pf in request.proto_file)
+  for pf_name in request.file_to_generate:
+    if pf_name in proto_files:
+      yield proto_files[pf_name]
 
+
+def resolve_java_package_name(request):
+  java_package = None
+  for pf in get_protos_to_generate_for(request):
+    for item, package in proto_utils.traverse(pf):
+      for opt in proto_utils.get_named_options(pf, 'java_package'):
+        if java_package is not None and java_package != opt[1]:
+          raise ValueError('got conflicting java packages: '
+                           + str(java_package) + ' and '
+                           + str(opt[1]))
+        java_package = opt[1]
+        break
+  if java_package is None:
+    raise ValueError('java package not defined')
+  return java_package
+
+
+def main(data):
   # Parse request
   request = plugin.CodeGeneratorRequest()
   request.ParseFromString(data)
 
-  # Expect only one proto on the command line
-  if len(request.file_to_generate) != 1:
-    raise ValueError('expected 1 proto file on the command line, got:' + str(request.file_to_generate))
-  proto_file_name = request.file_to_generate[0]
-  for pf in request.proto_file:
-    if pf.name == proto_file_name:
-      proto_file = pf
-      break
-
+  java_package = resolve_java_package_name(request)
   gapic_config = gapic_utils.read_from_gapic_yaml(request.parameter)
 
   # Generate output
   response = plugin.CodeGeneratorResponse()
 
-  generate_resource_name_types(response, gapic_config, proto_file)
-  generate_get_set_injection(response, gapic_config, proto_file, request)
+  generate_resource_name_types(response, gapic_config, java_package)
+  generate_get_set_injection(response, gapic_config, request, java_package)
 
   # Serialise response message
   output = response.SerializeToString()
 
+  return output
+
+if __name__ == '__main__':
+  try:
+    source = sys.stdin.buffer
+    dest = sys.stdout.buffer
+  except AttributeError:
+    source = sys.stdin
+    dest = sys.stdout
+
+  # Read request message from stdin
+  data = source.read()
+
+  output = main(data)
+
   # Write to stdout
-  sys.stdout.write(output)
+  dest.write(output)

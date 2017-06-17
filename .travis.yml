@@ -1,7 +1,15 @@
-sudo: false
 language: python
+sudo: false
 python:
   - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+before_script:
+  - wget https://github.com/google/protobuf/releases/download/v3.3.0/protoc-3.3.0-linux-x86_64.zip -O /tmp/protoc.tar.gz
+  - unzip -o /tmp/protoc.tar.gz -d protoc-3.3.0
+  - export PATH=$PATH:$PWD/protoc-3.3.0/bin
+  - git clone https://github.com/googleapis/googleapis.git
 install: pip install codecov tox-travis
 script: tox
 after_success:

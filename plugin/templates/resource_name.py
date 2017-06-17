@@ -29,7 +29,7 @@
 
 import os
 from google.gax import path_template
-from plugin.utils import proto_utils, casing_utils
+from plugin.utils import casing_utils
 
 RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA = 'com.google.api.resourcenames'
 RESOURCE_NAMES_TYPE_PACKAGE_JAVA = 'com.google.api.resourcenames.types'
@@ -62,7 +62,7 @@ class ResourceNameBase(object):
 
 class ResourceName(ResourceNameBase):
 
-    def __init__(self, collection_config):
+    def __init__(self, collection_config, java_package):
 
         entity_name = collection_config.entity_name
         name_template = path_template.PathTemplate(
@@ -91,6 +91,7 @@ class ResourceName(ResourceNameBase):
             'lower': f['parameter'],
         } for f in self.parameter_list]
         self.format_string = collection_config.name_pattern
+        self.package_name = java_package
 
     def className(self):
         return self.format_name_upper
@@ -108,30 +109,30 @@ class ResourceName(ResourceNameBase):
         return self.format_string
 
     def package(self):
-        return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
+        return self.package_name
 
 
 class ResourceNameOneof(ResourceNameBase):
 
-    def __init__(self, oneof, proto_file):
+    def __init__(self, oneof, java_package):
         entity_name = oneof.oneof_name
         self.oneof_class_name = casing_utils.get_oneof_class_name(entity_name)
         self.single_resource_types = [{
             'resourceTypeClassName': resource.className(),
             'resourceTypeVarName': resource.varName(),
-        } for resource in (ResourceName(x) for x in oneof.resource_list)]
+            'resourcePackage': resource.package(),
+        } for resource in (ResourceName(x, java_package)
+                           for x in oneof.resource_list)]
         self.fixed_resource_types = [{
             'resourceTypeClassName': resource.className(),
             'resourceTypeVarName': resource.varName(),
-        } for resource in (
-            ResourceNameFixed(x) for x in oneof.fixed_resource_list)]
+            'resourcePackage': resource.package(),
+        } for resource in (ResourceNameFixed(x, java_package)
+                           for x in oneof.fixed_resource_list)]
         self.resource_types = (self.single_resource_types
                                + self.fixed_resource_types)
 
-        self.oneof_package_name = 'defaultpackage'
-        for opt in proto_utils.get_named_options(proto_file, 'java_package'):
-            self.oneof_package_name = opt[1]
-            break
+        self.oneof_package_name = java_package
 
     def className(self):
         return self.oneof_class_name
@@ -151,24 +152,26 @@ class ResourceNameOneof(ResourceNameBase):
 
 class ResourceNameType(ResourceNameBase):
 
-    def __init__(self, class_name):
+    def __init__(self, class_name, java_package):
         self.type_name_upper = casing_utils.get_resource_type_from_class_name(
             class_name)
+        self.package_name = java_package
 
     def className(self):
         return self.type_name_upper
 
     def package(self):
-        return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
+        return self.package_name
 
 
 class ResourceNameFixed(ResourceNameBase):
 
-    def __init__(self, fixed_config):
+    def __init__(self, fixed_config, java_package):
         self.format_name_upper = \
             casing_utils.get_fixed_resource_type_class_name(
                 fixed_config.entity_name)
         self.fixed_value = fixed_config.fixed_value
+        self.package_name = java_package
 
     def className(self):
         return self.format_name_upper
@@ -177,4 +180,22 @@ class ResourceNameFixed(ResourceNameBase):
         return self.fixed_value
 
     def package(self):
-        return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
+        return self.package_name
+
+
+class ResourceNameAny(ResourceNameBase):
+
+    def className(self):
+        return 'ResourceName'
+
+    def package(self):
+        return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
+
+
+class ResourceNameUntyped(ResourceNameBase):
+
+    def className(self):
+        return 'UntypedResourceName'
+
+    def package(self):
+        return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA

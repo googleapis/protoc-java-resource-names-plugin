@@ -1,4 +1,4 @@
 pystache>=0.5.4
-protobuf>=3.0.0
-google-gax>=0.14.1
+protobuf>=3.3
+google-gax>=0.12.3
 pyyaml>=3.12

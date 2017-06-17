@@ -39,6 +39,7 @@ resource_name_generation:
 - message_name: Shelf
   field_entity_map:
     name: shelf
+    theme: "*"
 - message_name: ListBooksResponse
   field_entity_map:
     books: book

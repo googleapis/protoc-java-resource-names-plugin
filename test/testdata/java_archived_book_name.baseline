@@ -12,14 +12,14 @@
  * the License.
  */
 
-package com.google.api.resourcenames.types;
+package com.google.example.library.v1;
 
 import com.google.common.base.Preconditions;
 import com.google.api.pathtemplate.PathTemplate;
-import com.google.common.collect.ImmutableMap;
 import com.google.api.resourcenames.ResourceName;
 import com.google.api.resourcenames.ResourceNameType;
 import java.io.IOException;
+import java.util.Map;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
@@ -60,7 +60,7 @@ public class ArchivedBookName implements ResourceName {
   }
 
   public static ArchivedBookName parse(String formattedString) {
-    ImmutableMap<String, String> matchMap =
+    Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "ArchivedBookName.parse: formattedString not in valid format");
     return create(matchMap.get("archive_id"), matchMap.get("book_id"));
   }
