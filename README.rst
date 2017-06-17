@@ -19,7 +19,7 @@ generated types.
 Python Versions
 ---------------
 
-GAPIC Proto Compiler Plugin is currently tested with Python 2.7.
+GAPIC Proto Compiler Plugin is currently tested with Python 2.7, 3.4, 3.5 and 3.6.
 
 
 Contributing
