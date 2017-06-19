@@ -11,6 +11,16 @@ public abstract static class {{oneofNameUpper}}Oneof {
     void set({{msgNameUpper}}.Builder builder) {
       builder.set{{nameUpper}}({{nameLower}});
     }
+
+    @Override
+    public int hashCode() {
+      return {{nameLower}}.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      return (other instanceof {{nameUpper}}) && (({{nameUpper}}) other).{{nameLower}}.equals({{nameLower}});
+    }
   }
   {{/fields}}
 

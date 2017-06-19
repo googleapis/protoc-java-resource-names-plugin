@@ -1108,6 +1108,16 @@ public  final class MessageWithOneof extends
       void set(MessageWithOneof.Builder builder) {
         builder.setName(name);
       }
+  
+      @Override
+      public int hashCode() {
+        return name.hashCode();
+      }
+  
+      @Override
+      public boolean equals(Object other) {
+        return (other instanceof Name) && ((Name) other).name.equals(name);
+      }
     }
     private static class Id extends SourceOneof {
       private final long id;
@@ -1119,6 +1129,16 @@ public  final class MessageWithOneof extends
       @Override
       void set(MessageWithOneof.Builder builder) {
         builder.setId(id);
+      }
+  
+      @Override
+      public int hashCode() {
+        return id.hashCode();
+      }
+  
+      @Override
+      public boolean equals(Object other) {
+        return (other instanceof Id) && ((Id) other).id.equals(id);
       }
     }
   
@@ -1145,6 +1165,16 @@ public  final class MessageWithOneof extends
       void set(MessageWithOneof.Builder builder) {
         builder.setDuration(duration);
       }
+  
+      @Override
+      public int hashCode() {
+        return duration.hashCode();
+      }
+  
+      @Override
+      public boolean equals(Object other) {
+        return (other instanceof Duration) && ((Duration) other).duration.equals(duration);
+      }
     }
     private static class Timestamp extends TimeOneof {
       private final com.google.protobuf.Timestamp timestamp;
@@ -1156,6 +1186,16 @@ public  final class MessageWithOneof extends
       @Override
       void set(MessageWithOneof.Builder builder) {
         builder.setTimestamp(timestamp);
+      }
+  
+      @Override
+      public int hashCode() {
+        return timestamp.hashCode();
+      }
+  
+      @Override
+      public boolean equals(Object other) {
+        return (other instanceof Timestamp) && ((Timestamp) other).timestamp.equals(timestamp);
       }
     }
   
