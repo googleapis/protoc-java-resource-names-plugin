@@ -112,7 +112,9 @@ Running Tests
     execute the tests on multiple Python versions and platforms; while it runs,
     it creates a virtualenv for each version/platform combination.  Note that
     your `BREW_HOME` must be set to the brew directory where protoc is installed
-    in order for tests to work. For example:
+    in order for tests to work.  The tests assume that `googleapis`_ repository
+    (contains various common definitions) is copied in :code:`./googleapis`.
+    For example:
 
   .. code:: bash
 
