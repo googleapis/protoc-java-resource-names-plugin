@@ -116,6 +116,7 @@ Running Tests
     which contains various common definitions, is copied in :code:`./googleapis`.
     For example:
 
+  .. _`googleapis`: https://github.com/googleapis/googleapis
   .. code:: bash
 
       export BREW_HOME=~/.linuxbrew
