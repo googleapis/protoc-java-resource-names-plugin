@@ -113,7 +113,7 @@ Running Tests
     it creates a virtualenv for each version/platform combination.  Note that
     your `BREW_HOME` must be set to the brew directory where protoc is installed
     in order for tests to work.  The tests assume that `googleapis`_ repository,
-    which contains various common definitions) is copied in :code:`./googleapis`.
+    which contains various common definitions, is copied in :code:`./googleapis`.
     For example:
 
   .. code:: bash
