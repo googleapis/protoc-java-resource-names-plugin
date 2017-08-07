@@ -30,7 +30,8 @@
 import itertools
 
 # pylint: disable=import-error, no-name-in-module
-from google.protobuf.descriptor_pb2 import DescriptorProto
+from google.protobuf.descriptor_pb2 import (DescriptorProto,
+                                            FieldDescriptorProto)
 
 
 def traverse(proto_file):
@@ -44,8 +45,7 @@ def traverse(proto_file):
                         yield nested_item, nested_package
 
     return itertools.chain(
-        _traverse(proto_file.package, proto_file.message_type),
-    )
+        _traverse(proto_file.package, proto_file.message_type))
 
 
 def get_format_dict(request):
@@ -57,8 +57,8 @@ def get_format_dict(request):
                 name, fmt_string = msg.format_name, msg.format_string
                 if name in format_dict and format_dict[name][1] != fmt_string:
                     raise ValueError('Two different formats with name ' + name
-                                     + ': ' + fmt_string + ', '
-                                     + format_dict[name][1])
+                                     + ': ' + fmt_string + ', ' +
+                                     format_dict[name][1])
                 format_dict[name] = (name, fmt_string, proto_file)
     return format_dict
 
@@ -69,8 +69,8 @@ def get_formatted_field_list(request, format_dict):
             for f in item.field:
                 for ext, ext_value in get_named_options(f, 'format_name'):
                     if ext_value not in format_dict:
-                        raise ValueError(
-                            'Format ' + ext_value + 'not found in format_dict')
+                        raise ValueError('Format ' + ext_value +
+                                         'not found in format_dict')
                     yield (proto_file, item, f, format_dict[ext_value],
                            package)
 
@@ -79,3 +79,52 @@ def get_named_options(item, option_name):
     for ext, ext_value in item.options.ListFields():
         if ext.name == option_name:
             yield ext, ext_value
+
+
+def map_types_java(proto_files):
+    types = {}
+
+    def _update_enum(proto_namespace, java_namespace, enums):
+        types.update({
+            proto_namespace + "." + enum.name: java_namespace + "." + enum.name
+            for enum in enums
+        })
+
+    def _recurse_messages(proto_namespace, java_namespace, msg):
+        proto_name = proto_namespace + "." + msg.name
+        java_name = java_namespace + "." + msg.name
+        types[proto_name] = java_name
+        for sub_msg in msg.nested_type:
+            _recurse_messages(proto_name, java_name, sub_msg)
+        _update_enum(proto_namespace, java_namespace, msg.enum_type)
+
+    for pf in proto_files:
+        proto_pkg = pf.package
+        java_pkg = pf.options.java_package
+        for msg in pf.message_type:
+            _recurse_messages(proto_pkg, java_pkg, msg)
+        _update_enum(proto_pkg, java_pkg, msg.enum_type)
+    return types
+
+
+def field_type_java(field, type_map):
+    types = {
+        FieldDescriptorProto.TYPE_DOUBLE: "double",
+        FieldDescriptorProto.TYPE_FLOAT: "float",
+        FieldDescriptorProto.TYPE_INT32: "int",
+        FieldDescriptorProto.TYPE_INT64: "long",
+        FieldDescriptorProto.TYPE_UINT32: "int",
+        FieldDescriptorProto.TYPE_UINT64: "long",
+        FieldDescriptorProto.TYPE_SINT32: "int",
+        FieldDescriptorProto.TYPE_SINT64: "long",
+        FieldDescriptorProto.TYPE_FIXED32: "int",
+        FieldDescriptorProto.TYPE_FIXED64: "long",
+        FieldDescriptorProto.TYPE_SFIXED32: "int",
+        FieldDescriptorProto.TYPE_SFIXED64: "long",
+        FieldDescriptorProto.TYPE_BOOL: "boolean",
+        FieldDescriptorProto.TYPE_STRING: "java.lang.String",
+        FieldDescriptorProto.TYPE_BYTES: "com.google.protobuf.ByteString",
+    }
+    if field.type in types:
+        return types[field.type]
+    return type_map[field.type_name[1:]]

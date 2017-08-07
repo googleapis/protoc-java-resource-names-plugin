@@ -1,0 +1,36 @@
+public abstract static class {{oneofNameUpper}}Oneof {
+  {{#fields}}
+  private static final class {{nameUpper}} extends {{oneofNameUpper}}Oneof {
+    private final {{type}} {{nameLower}};
+
+    private {{nameUpper}}({{type}} {{nameLower}}) {
+      this.{{nameLower}} = {{nameLower}};
+    }
+
+    @Override
+    void set({{msgNameUpper}}.Builder builder) {
+      builder.set{{nameUpper}}({{nameLower}});
+    }
+
+    @Override
+    public int hashCode() {
+      return java.util.Objects.hashCode({{nameLower}});
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      return (other instanceof {{nameUpper}}) && java.util.Objects.equals({{nameLower}}, (({{nameUpper}}) other).{{nameLower}});
+    }
+  }
+  {{/fields}}
+
+  private {{oneofNameUpper}}Oneof() {}
+
+  abstract void set({{msgNameUpper}}.Builder message);
+
+  {{#fields}}
+  public static {{nameUpper}} {{nameLower}}({{type}} {{nameLower}}) {
+    return new {{nameUpper}}({{nameLower}});
+  }
+  {{/fields}}
+}

@@ -36,7 +36,7 @@ import pystache
 from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
 
-from plugin.templates import resource_name, insertion_points
+from plugin.templates import resource_name, insertion_points, oneof_fields
 from plugin.utils import proto_utils, gapic_utils
 
 
@@ -69,36 +69,46 @@ def generate_resource_name_types(response, gapic_config, java_package):
 
 def generate_get_set_injection(response, gapic_config, request, java_package):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
+  type_map = proto_utils.map_types_java(request.proto_file)
+  def insert(filename, insertion_point, content):
+    f = response.file.add()
+    f.name = filename
+    f.insertion_point = insertion_point
+    f.content = renderer.render(content)
+
   for pf in get_protos_to_generate_for(request):
     for item, package in proto_utils.traverse(pf):
       filename = os.path.join(java_package.replace('.', os.path.sep), item.name + '.java')
+      builder_scope = 'builder_scope:' + package + '.' + item.name
+      class_scope = 'class_scope:' + package + '.' + item.name
+
       for field in item.field:
         entity_name = gapic_config.get_entity_name_for_message_field(
             item.name, field.name)
-        if entity_name:
-          concrete_resource = None
-          if entity_name == gapic_utils.GAPIC_CONFIG_ANY:
-            resource = resource_name.ResourceNameAny()
-            concrete_resource = resource_name.ResourceNameUntyped()
-          elif entity_name in gapic_config.collection_configs:
-            collection = gapic_config.collection_configs.get(entity_name)
-            resource = resource_name.ResourceName(collection, java_package)
-          elif entity_name in gapic_config.collection_oneofs:
-            collection = gapic_config.collection_oneofs.get(entity_name)
-            resource = resource_name.ResourceNameOneof(collection, java_package)
-          else:
-            raise ValueError('entity name not found: ' + entity_name)
+        if not entity_name:
+          continue
+        concrete_resource = None
+        if entity_name == gapic_utils.GAPIC_CONFIG_ANY:
+          resource = resource_name.ResourceNameAny()
+          concrete_resource = resource_name.ResourceNameUntyped()
+        elif entity_name in gapic_config.collection_configs:
+          collection = gapic_config.collection_configs.get(entity_name)
+          resource = resource_name.ResourceName(collection, java_package)
+        elif entity_name in gapic_config.collection_oneofs:
+          collection = gapic_config.collection_oneofs.get(entity_name)
+          resource = resource_name.ResourceNameOneof(collection, java_package)
+        else:
+          raise ValueError('entity name not found: ' + entity_name)
+        insert(filename, builder_scope, get_builder_view(field)(resource, field, concrete_resource))
+        insert(filename, class_scope, get_class_view(field)(resource, field, concrete_resource))
 
-          f = response.file.add()
-          f.name = filename
-          f.insertion_point = 'builder_scope:' + package + '.' + item.name
-          f.content = renderer.render(get_builder_view(field)(resource, field, concrete_resource))
-
-          f = response.file.add()
-          f.name = filename
-          f.insertion_point = 'class_scope:' + package + '.' + item.name
-          f.content = renderer.render(get_class_view(field)(resource, field, concrete_resource))
-
+      oneofs = [[] for _ in item.oneof_decl]
+      for field in item.field:
+        if field.HasField("oneof_index"):
+          oneofs[field.oneof_index].append(field)
+      for decl, oneof in zip(item.oneof_decl, oneofs):
+        insert(filename, builder_scope, oneof_fields.InsertBuilderOneof(item, decl.name, oneof, type_map))
+        insert(filename, class_scope, oneof_fields.InsertClassOneof(item, decl.name, oneof, type_map))
 
 def get_builder_view(field):
   if field.label == FieldDescriptorProto.LABEL_REPEATED:
