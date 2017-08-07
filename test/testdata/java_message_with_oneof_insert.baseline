@@ -1097,7 +1097,7 @@ public  final class MessageWithOneof extends
   }
 
   public abstract static class SourceOneof {
-    private static class Name extends SourceOneof {
+    private static final class Name extends SourceOneof {
       private final java.lang.String name;
   
       private Name(java.lang.String name) {
@@ -1111,15 +1111,15 @@ public  final class MessageWithOneof extends
   
       @Override
       public int hashCode() {
-        return name.hashCode();
+        return java.util.Objects.hashCode(name);
       }
   
       @Override
       public boolean equals(Object other) {
-        return (other instanceof Name) && ((Name) other).name.equals(name);
+        return (other instanceof Name) && java.util.Objects.equals(name, ((Name) other).name);
       }
     }
-    private static class Id extends SourceOneof {
+    private static final class Id extends SourceOneof {
       private final long id;
   
       private Id(long id) {
@@ -1133,12 +1133,12 @@ public  final class MessageWithOneof extends
   
       @Override
       public int hashCode() {
-        return id.hashCode();
+        return java.util.Objects.hashCode(id);
       }
   
       @Override
       public boolean equals(Object other) {
-        return (other instanceof Id) && ((Id) other).id.equals(id);
+        return (other instanceof Id) && java.util.Objects.equals(id, ((Id) other).id);
       }
     }
   
@@ -1146,15 +1146,15 @@ public  final class MessageWithOneof extends
   
     abstract void set(MessageWithOneof.Builder message);
   
-    public static SourceOneof name(java.lang.String name) {
+    public static Name name(java.lang.String name) {
       return new Name(name);
     }
-    public static SourceOneof id(long id) {
+    public static Id id(long id) {
       return new Id(id);
     }
   }
   public abstract static class TimeOneof {
-    private static class Duration extends TimeOneof {
+    private static final class Duration extends TimeOneof {
       private final com.google.protobuf.Duration duration;
   
       private Duration(com.google.protobuf.Duration duration) {
@@ -1168,15 +1168,15 @@ public  final class MessageWithOneof extends
   
       @Override
       public int hashCode() {
-        return duration.hashCode();
+        return java.util.Objects.hashCode(duration);
       }
   
       @Override
       public boolean equals(Object other) {
-        return (other instanceof Duration) && ((Duration) other).duration.equals(duration);
+        return (other instanceof Duration) && java.util.Objects.equals(duration, ((Duration) other).duration);
       }
     }
-    private static class Timestamp extends TimeOneof {
+    private static final class Timestamp extends TimeOneof {
       private final com.google.protobuf.Timestamp timestamp;
   
       private Timestamp(com.google.protobuf.Timestamp timestamp) {
@@ -1190,12 +1190,12 @@ public  final class MessageWithOneof extends
   
       @Override
       public int hashCode() {
-        return timestamp.hashCode();
+        return java.util.Objects.hashCode(timestamp);
       }
   
       @Override
       public boolean equals(Object other) {
-        return (other instanceof Timestamp) && ((Timestamp) other).timestamp.equals(timestamp);
+        return (other instanceof Timestamp) && java.util.Objects.equals(timestamp, ((Timestamp) other).timestamp);
       }
     }
   
@@ -1203,10 +1203,10 @@ public  final class MessageWithOneof extends
   
     abstract void set(MessageWithOneof.Builder message);
   
-    public static TimeOneof duration(com.google.protobuf.Duration duration) {
+    public static Duration duration(com.google.protobuf.Duration duration) {
       return new Duration(duration);
     }
-    public static TimeOneof timestamp(com.google.protobuf.Timestamp timestamp) {
+    public static Timestamp timestamp(com.google.protobuf.Timestamp timestamp) {
       return new Timestamp(timestamp);
     }
   }

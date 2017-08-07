@@ -1,6 +1,6 @@
 public abstract static class {{oneofNameUpper}}Oneof {
   {{#fields}}
-  private static class {{nameUpper}} extends {{oneofNameUpper}}Oneof {
+  private static final class {{nameUpper}} extends {{oneofNameUpper}}Oneof {
     private final {{type}} {{nameLower}};
 
     private {{nameUpper}}({{type}} {{nameLower}}) {
@@ -14,12 +14,12 @@ public abstract static class {{oneofNameUpper}}Oneof {
 
     @Override
     public int hashCode() {
-      return {{nameLower}}.hashCode();
+      return java.util.Objects.hashCode({{nameLower}});
     }
 
     @Override
     public boolean equals(Object other) {
-      return (other instanceof {{nameUpper}}) && (({{nameUpper}}) other).{{nameLower}}.equals({{nameLower}});
+      return (other instanceof {{nameUpper}}) && java.util.Objects.equals({{nameLower}}, (({{nameUpper}}) other).{{nameLower}});
     }
   }
   {{/fields}}
