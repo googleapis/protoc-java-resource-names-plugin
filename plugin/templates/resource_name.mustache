@@ -52,10 +52,18 @@ public class {{className}} implements ResourceName {
     {{/formatFields}}
   }
 
-  public static {{className}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
+  public static {{className}} of({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
     return newBuilder(){{#formatFields}}
       .set{{upper}}({{lower}}){{/formatFields}}
       .build();
+  }
+
+  /**
+   * @deprecated Use {@link #of({{#parameterList}}String{{#not_last}}, {{/not_last}}{{/parameterList}})} instead.
+   */
+  @Deprecated
+  public static {{className}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
+    return of({{#parameterList}}{{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}});
   }
 
   public static {{className}} parse(String formattedString) {

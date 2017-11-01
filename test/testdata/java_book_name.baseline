@@ -52,11 +52,19 @@ public class BookName implements ResourceName {
     bookId = Preconditions.checkNotNull(builder.getBookId());
   }
 
-  public static BookName create(String shelfId, String bookId) {
+  public static BookName of(String shelfId, String bookId) {
     return newBuilder()
       .setShelfId(shelfId)
       .setBookId(bookId)
       .build();
+  }
+
+  /**
+   * @deprecated Use {@link #of(String, String)} instead.
+   */
+  @Deprecated
+  public static BookName create(String shelfId, String bookId) {
+    return of(shelfId, bookId);
   }
 
   public static BookName parse(String formattedString) {

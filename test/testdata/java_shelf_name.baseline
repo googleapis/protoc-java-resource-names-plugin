@@ -46,10 +46,18 @@ public class ShelfName implements ResourceName {
     shelfId = Preconditions.checkNotNull(builder.getShelfId());
   }
 
-  public static ShelfName create(String shelfId) {
+  public static ShelfName of(String shelfId) {
     return newBuilder()
       .setShelfId(shelfId)
       .build();
+  }
+
+  /**
+   * @deprecated Use {@link #of(String)} instead.
+   */
+  @Deprecated
+  public static ShelfName create(String shelfId) {
+    return of(shelfId);
   }
 
   public static ShelfName parse(String formattedString) {
