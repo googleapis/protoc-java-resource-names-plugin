@@ -70,7 +70,7 @@ public class BookName implements ResourceName {
   public static BookName parse(String formattedString) {
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "BookName.parse: formattedString not in valid format");
-    return create(matchMap.get("shelf_id"), matchMap.get("book_id"));
+    return of(matchMap.get("shelf_id"), matchMap.get("book_id"));
   }
 
   public static boolean isParsableFrom(String formattedString) {
