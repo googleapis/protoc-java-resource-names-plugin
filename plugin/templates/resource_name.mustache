@@ -52,16 +52,24 @@ public class {{className}} implements ResourceName {
     {{/formatFields}}
   }
 
-  public static {{className}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
+  public static {{className}} of({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
     return newBuilder(){{#formatFields}}
       .set{{upper}}({{lower}}){{/formatFields}}
       .build();
   }
 
+  /**
+   * @deprecated Use {@link #of({{#parameterList}}String{{#not_last}}, {{/not_last}}{{/parameterList}})} instead.
+   */
+  @Deprecated
+  public static {{className}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
+    return of({{#parameterList}}{{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}});
+  }
+
   public static {{className}} parse(String formattedString) {
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "{{className}}.parse: formattedString not in valid format");
-    return create({{#parameterList}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameterList}});
+    return of({{#parameterList}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameterList}});
   }
 
   public static boolean isParsableFrom(String formattedString) {

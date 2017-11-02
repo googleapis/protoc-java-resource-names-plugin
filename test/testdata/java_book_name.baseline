@@ -52,17 +52,25 @@ public class BookName implements ResourceName {
     bookId = Preconditions.checkNotNull(builder.getBookId());
   }
 
-  public static BookName create(String shelfId, String bookId) {
+  public static BookName of(String shelfId, String bookId) {
     return newBuilder()
       .setShelfId(shelfId)
       .setBookId(bookId)
       .build();
   }
 
+  /**
+   * @deprecated Use {@link #of(String, String)} instead.
+   */
+  @Deprecated
+  public static BookName create(String shelfId, String bookId) {
+    return of(shelfId, bookId);
+  }
+
   public static BookName parse(String formattedString) {
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "BookName.parse: formattedString not in valid format");
-    return create(matchMap.get("shelf_id"), matchMap.get("book_id"));
+    return of(matchMap.get("shelf_id"), matchMap.get("book_id"));
   }
 
   public static boolean isParsableFrom(String formattedString) {
