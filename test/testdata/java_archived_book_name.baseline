@@ -67,7 +67,18 @@ public class ArchivedBookName implements ResourceName {
     return of(archiveId, bookId);
   }
 
+  public static String format(String archiveId, String bookId) {
+    return newBuilder()
+      .setArchiveId(archiveId)
+      .setBookId(bookId)
+      .build()
+      .toString();
+  }
+
   public static ArchivedBookName parse(String formattedString) {
+    if (formattedString.isEmpty()) {
+      return null;
+    }
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "ArchivedBookName.parse: formattedString not in valid format");
     return of(matchMap.get("archive_id"), matchMap.get("book_id"));

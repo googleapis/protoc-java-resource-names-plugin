@@ -36,6 +36,7 @@ class InsertBuilder(object):
         if concrete_resource is None:
             concrete_resource = resource
         self.resource_class_name = resource.className()
+        self.resource_var_name = resource.varName()
         self.resource_full_class_name = resource.fullClassName()
         self.concrete_resource_full_name = concrete_resource.fullClassName()
         self.field_name_upper = casing_utils.lower_underscore_to_upper_camel(
@@ -43,6 +44,9 @@ class InsertBuilder(object):
 
     def resourceTypeClassName(self):
         return self.resource_class_name
+
+    def resourceTypeVarName(self):
+        return self.resource_var_name
 
     def resourceTypeFullClassName(self):
         return self.resource_full_class_name

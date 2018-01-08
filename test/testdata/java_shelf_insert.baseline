@@ -663,6 +663,13 @@ public  final class Shelf extends
     }
 
 
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * protoObject.setName(shelfName.toString());
+     * </code></pre>
+     */
+    @Deprecated
     public final Builder setNameWithShelfName(com.google.example.library.v1.ShelfName value) {
       if (value == null) {
         return setName("");
@@ -670,6 +677,13 @@ public  final class Shelf extends
       return setName(value.toString());
     }
     
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * ShelfName.parse(protoObject.getName());
+     * </code></pre>
+     */
+    @Deprecated
     public final com.google.example.library.v1.ShelfName getNameAsShelfName() {
       java.lang.String str = getName();
       if (str.isEmpty()) {
@@ -677,6 +691,13 @@ public  final class Shelf extends
       }
       return com.google.example.library.v1.ShelfName.parse(str);
     }
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * protoObject.setTheme(resourceName.toString());
+     * </code></pre>
+     */
+    @Deprecated
     public final Builder setThemeWithResourceName(com.google.api.resourcenames.ResourceName value) {
       if (value == null) {
         return setTheme("");
@@ -684,6 +705,13 @@ public  final class Shelf extends
       return setTheme(value.toString());
     }
     
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * ResourceName.parse(protoObject.getTheme());
+     * </code></pre>
+     */
+    @Deprecated
     public final com.google.api.resourcenames.ResourceName getThemeAsResourceName() {
       java.lang.String str = getTheme();
       if (str.isEmpty()) {
@@ -694,6 +722,13 @@ public  final class Shelf extends
     // @@protoc_insertion_point(builder_scope:google.example.library.v1.Shelf)
   }
 
+  /**
+   * @deprecated Use the following instead:
+   * <pre><code>
+   * ShelfName.parse(protoObject.getName());
+   * </code></pre>
+   */
+  @Deprecated
   public final com.google.example.library.v1.ShelfName getNameAsShelfName() {
     java.lang.String str = getName();
     if (str.isEmpty()) {
@@ -701,6 +736,13 @@ public  final class Shelf extends
     }
     return com.google.example.library.v1.ShelfName.parse(str);
   }
+  /**
+   * @deprecated Use the following instead:
+   * <pre><code>
+   * ResourceName.parse(protoObject.getTheme());
+   * </code></pre>
+   */
+  @Deprecated
   public final com.google.api.resourcenames.ResourceName getThemeAsResourceName() {
     java.lang.String str = getTheme();
     if (str.isEmpty()) {
