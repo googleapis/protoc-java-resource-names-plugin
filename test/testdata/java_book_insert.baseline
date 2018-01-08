@@ -663,6 +663,13 @@ public  final class Book extends
     }
 
 
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * protoObject.setName(bookName.toString());
+     * </code></pre>
+     */
+    @Deprecated
     public final Builder setNameWithBookName(com.google.example.library.v1.BookName value) {
       if (value == null) {
         return setName("");
@@ -670,6 +677,13 @@ public  final class Book extends
       return setName(value.toString());
     }
     
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * BookName.parse(protoObject.getName());
+     * </code></pre>
+     */
+    @Deprecated
     public final com.google.example.library.v1.BookName getNameAsBookName() {
       java.lang.String str = getName();
       if (str.isEmpty()) {
@@ -680,6 +694,13 @@ public  final class Book extends
     // @@protoc_insertion_point(builder_scope:google.example.library.v1.Book)
   }
 
+  /**
+   * @deprecated Use the following instead:
+   * <pre><code>
+   * BookName.parse(protoObject.getName());
+   * </code></pre>
+   */
+  @Deprecated
   public final com.google.example.library.v1.BookName getNameAsBookName() {
     java.lang.String str = getName();
     if (str.isEmpty()) {

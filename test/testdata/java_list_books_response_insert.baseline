@@ -969,6 +969,13 @@ public  final class ListBooksResponse extends
     }
 
 
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * protoObject.setBooks(index, bookName.toString());
+     * </code></pre>
+     */
+    @Deprecated
     public Builder setBooksWithBookName(int index, com.google.example.library.v1.BookName value) {
       if (value == null) {
         return setBooks(index, "");
@@ -976,6 +983,13 @@ public  final class ListBooksResponse extends
       return setBooks(index, value.toString());
     }
     
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * protoObject.addBooks(bookName.toString());
+     * </code></pre>
+     */
+    @Deprecated
     public Builder addBooksWithBookName(com.google.example.library.v1.BookName value) {
       if (value == null) {
         return addBooks("");
@@ -983,6 +997,21 @@ public  final class ListBooksResponse extends
       return addBooks(value.toString());
     }
     
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * List&lt;String&gt; list = new ArrayList&lt;&gt;();
+     * for (com.google.example.library.v1.BookName value : values) {
+     *   if (value == null) {
+     *     list.add("");
+     *   } else {
+     *     list.add(value.toString());
+     *   }
+     * }
+     * protoObject.addAllBooks(list);
+     * </code></pre>
+     */
+    @Deprecated
     public Builder addAllBooksWithBookNameList(java.lang.Iterable<com.google.example.library.v1.BookName> values) {
       java.util.List<java.lang.String> list = new java.util.ArrayList<java.lang.String>();
       for (com.google.example.library.v1.BookName value : values) {
@@ -995,6 +1024,13 @@ public  final class ListBooksResponse extends
       return addAllBooks(list);
     }
     
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * BookName.parse(protoObject.getBooks(index));
+     * </code></pre>
+     */
+    @Deprecated
     public com.google.example.library.v1.BookName getBooksAsBookName(int index) {
       java.lang.String str = getBooks(index);
       if (str.isEmpty()) {
@@ -1003,6 +1039,16 @@ public  final class ListBooksResponse extends
       return com.google.example.library.v1.BookName.parse(str);
     }
     
+    /**
+     * @deprecated Use the following instead:
+     * <pre><code>
+     * List&lt;com.google.example.library.v1.BookName&gt; list = new ArrayList&lt;&gt;();
+     * for (int i = 0; i < protoObject.getBooksCount(); i++) {
+     *   list.add(BookName.parse(protoObject.getBooks(i)));
+     * }
+     * </code></pre>
+     */
+    @Deprecated
     public java.util.List<com.google.example.library.v1.BookName> getBooksListAsBookNameList() {
       java.util.List<com.google.example.library.v1.BookName> list = new java.util.ArrayList<com.google.example.library.v1.BookName>();
       for (int i = 0; i < getBooksCount(); i++) {
@@ -1013,6 +1059,13 @@ public  final class ListBooksResponse extends
     // @@protoc_insertion_point(builder_scope:google.example.library.v1.ListBooksResponse)
   }
 
+  /**
+   * @deprecated Use the following instead:
+   * <pre><code>
+   * BookName.parse(protoObject.getBooks(index));
+   * </code></pre>
+   */
+  @Deprecated
   public com.google.example.library.v1.BookName getBooksAsBookName(int index) {
     java.lang.String str = getBooks(index);
     if (str.isEmpty()) {
@@ -1021,6 +1074,16 @@ public  final class ListBooksResponse extends
     return com.google.example.library.v1.BookName.parse(str);
   }
   
+  /**
+   * @deprecated Use the following instead:
+   * <pre><code>
+   * List&lt;com.google.example.library.v1.BookName&gt; list = new ArrayList&lt;&gt;();
+   * for (int i = 0; i < protoObject.getBooksCount(); i++) {
+   *   list.add(BookName.parse(protoObject.getBooks(i)));
+   * }
+   * </code></pre>
+   */
+  @Deprecated
   public java.util.List<com.google.example.library.v1.BookName> getBooksListAsBookNameList() {
     java.util.List<com.google.example.library.v1.BookName> list = new java.util.ArrayList<com.google.example.library.v1.BookName>();
     for (int i = 0; i < getBooksCount(); i++) {

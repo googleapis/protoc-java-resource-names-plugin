@@ -60,7 +60,17 @@ public class ShelfName implements ResourceName {
     return of(shelfId);
   }
 
+  public static String format(String shelfId) {
+    return newBuilder()
+      .setShelfId(shelfId)
+      .build()
+      .toString();
+  }
+
   public static ShelfName parse(String formattedString) {
+    if (formattedString.isEmpty()) {
+      return null;
+    }
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "ShelfName.parse: formattedString not in valid format");
     return of(matchMap.get("shelf_id"));
