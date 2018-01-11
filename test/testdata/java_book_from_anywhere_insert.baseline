@@ -903,7 +903,7 @@ public  final class BookFromAnywhere extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * protoObject.setName(bookNameOneof.toString());
+     * protoBuilder.setName(bookNameOneof.toString());
      * </code></pre>
      */
     @Deprecated
@@ -917,7 +917,7 @@ public  final class BookFromAnywhere extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * BookNameOneof.parse(protoObject.getName());
+     * BookNameOneof.parse(protoBuilder.getName());
      * </code></pre>
      */
     @Deprecated

@@ -16,10 +16,7 @@ public {{resourceTypeFullClassName}} get{{fieldNameUpper}}As{{resourceTypeClassN
 /**
  * @deprecated Use the following instead:
  * <pre><code>
- * List&lt;{{resourceTypeFullClassName}}&gt; list = new ArrayList&lt;&gt;();
- * for (int i = 0; i < protoObject.get{{fieldNameUpper}}Count(); i++) {
- *   list.add({{resourceTypeClassName}}.parse(protoObject.get{{fieldNameUpper}}(i)));
- * }
+ * {{resourceTypeClassName}}.parseList(protoObject.get{{fieldNameUpper}}List());
  * </code></pre>
  */
 @Deprecated
