@@ -666,7 +666,7 @@ public  final class Shelf extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * protoObject.setName(shelfName.toString());
+     * protoBuilder.setName(shelfName.toString());
      * </code></pre>
      */
     @Deprecated
@@ -680,7 +680,7 @@ public  final class Shelf extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * ShelfName.parse(protoObject.getName());
+     * ShelfName.parse(protoBuilder.getName());
      * </code></pre>
      */
     @Deprecated
@@ -694,7 +694,7 @@ public  final class Shelf extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * protoObject.setTheme(resourceName.toString());
+     * protoBuilder.setTheme(resourceName.toString());
      * </code></pre>
      */
     @Deprecated
@@ -708,7 +708,7 @@ public  final class Shelf extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * ResourceName.parse(protoObject.getTheme());
+     * ResourceName.parse(protoBuilder.getTheme());
      * </code></pre>
      */
     @Deprecated

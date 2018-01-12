@@ -972,7 +972,7 @@ public  final class ListBooksResponse extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * protoObject.setBooks(index, bookName.toString());
+     * protoBuilder.setBooks(index, bookName.toString());
      * </code></pre>
      */
     @Deprecated
@@ -986,7 +986,7 @@ public  final class ListBooksResponse extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * protoObject.addBooks(bookName.toString());
+     * protoBuilder.addBooks(bookName.toString());
      * </code></pre>
      */
     @Deprecated
@@ -1000,15 +1000,7 @@ public  final class ListBooksResponse extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * List&lt;String&gt; list = new ArrayList&lt;&gt;();
-     * for (com.google.example.library.v1.BookName value : values) {
-     *   if (value == null) {
-     *     list.add("");
-     *   } else {
-     *     list.add(value.toString());
-     *   }
-     * }
-     * protoObject.addAllBooks(list);
+     * protoBuilder.addAllBooks(com.google.example.library.v1.BookName.toStringList(values));
      * </code></pre>
      */
     @Deprecated
@@ -1027,7 +1019,7 @@ public  final class ListBooksResponse extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * BookName.parse(protoObject.getBooks(index));
+     * BookName.parse(protoBuilder.getBooks(index));
      * </code></pre>
      */
     @Deprecated
@@ -1042,10 +1034,7 @@ public  final class ListBooksResponse extends
     /**
      * @deprecated Use the following instead:
      * <pre><code>
-     * List&lt;com.google.example.library.v1.BookName&gt; list = new ArrayList&lt;&gt;();
-     * for (int i = 0; i < protoObject.getBooksCount(); i++) {
-     *   list.add(BookName.parse(protoObject.getBooks(i)));
-     * }
+     * BookName.parseList(protoBuilder.getBooksList());
      * </code></pre>
      */
     @Deprecated
@@ -1077,10 +1066,7 @@ public  final class ListBooksResponse extends
   /**
    * @deprecated Use the following instead:
    * <pre><code>
-   * List&lt;com.google.example.library.v1.BookName&gt; list = new ArrayList&lt;&gt;();
-   * for (int i = 0; i < protoObject.getBooksCount(); i++) {
-   *   list.add(BookName.parse(protoObject.getBooks(i)));
-   * }
+   * BookName.parseList(protoObject.getBooksList());
    * </code></pre>
    */
   @Deprecated
