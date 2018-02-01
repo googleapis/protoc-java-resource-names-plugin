@@ -14,22 +14,28 @@
 
 package {{package}};
 
-import {{resourceNameGlobalPackageName}}.ResourceNameType;
+{{#resourceTypes}}
+import {{resourcePackage}}.{{resourceTypeClassName}};
+{{/resourceTypes}}
 
-/**
- * @deprecated This class is no longer necessary given the switch from the Oneof pattern to inheritance
- * for one-of groupings.
- */
-@Deprecated
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{className}} implements ResourceNameType {
-
-  private static {{className}} instance = new {{className}}();
+public class {{className}} {
 
   private {{className}}() {}
 
-  public static {{className}} instance() {
-    return instance;
+  public static {{anyClassName}} parse(String resourceNameString) {
+    {{#singleResourceTypes}}
+    if ({{resourceTypeClassName}}.isParsableFrom(resourceNameString)) {
+      return {{resourceTypeClassName}}.parse(resourceNameString);
+    }
+    {{/singleResourceTypes}}
+    {{#fixedResourceTypes}}
+    if ({{resourceTypeClassName}}.matches(resourceNameString)) {
+      return {{resourceTypeClassName}}.instance();
+    }
+    {{/fixedResourceTypes}}
+    return {{untypedResourceClassName}}.parse(resourceNameString);
   }
 }
+

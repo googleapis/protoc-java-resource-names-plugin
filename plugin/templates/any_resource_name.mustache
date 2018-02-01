@@ -15,38 +15,8 @@
 package {{package}};
 
 import {{resourceNameGlobalPackageName}}.ResourceName;
-import {{resourceNameGlobalPackageName}}.ResourceNameType;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{className}} implements {{parentInterface}} {
-
-  private static final String FIXED_VALUE = "{{fixedValue}}";
-
-  private static final {{className}} instance = new {{className}}();
-
-  private {{className}}() {}
-
-  public static {{className}} instance() {
-    return instance;
-  }
-
-  /**
-   * @deprecated This method is no longer necessary given the switch from the Oneof pattern to inheritance
-   * for one-of groupings.
-   */
-  @Deprecated
-  public ResourceNameType getType() {
-    return {{className}}Type.instance();
-  }
-
-  public static boolean matches(String value) {
-    return FIXED_VALUE.equals(value);
-  }
-
-  @Override
-  public String toString() {
-    return FIXED_VALUE;
-  }
+public interface {{className}} extends ResourceName {
 }
-

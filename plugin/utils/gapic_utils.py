@@ -105,10 +105,10 @@ def load_collection_oneofs(config_list, existing_collections,
     existing_oneofs = {}
     for config in config_list:
         root_type_name = config['oneof_name']
-        collection_list = config['collection_names']
+        collection_names = config['collection_names']
         resources = []
         fixed_resources = []
-        for collection in collection_list:
+        for collection in collection_names:
             if (collection not in existing_collections and
                     collection not in fixed_collections):
                 raise ValueError(
@@ -127,7 +127,7 @@ def load_collection_oneofs(config_list, existing_collections,
             raise ValueError('Found two collection oneofs with same name: ' +
                              root_type_name)
         existing_oneofs[root_type_name] = CollectionOneof(
-            root_type_name, resources, fixed_resources)
+            root_type_name, resources, fixed_resources, collection_names)
     return existing_oneofs
 
 
@@ -172,10 +172,11 @@ class FixedCollectionConfig(object):
 
 class CollectionOneof(object):
 
-    def __init__(self, oneof_name, resources, fixed_resources):
+    def __init__(self, oneof_name, resources, fixed_resources, collection_names):
         self.oneof_name = oneof_name
         self.resource_list = resources
         self.fixed_resource_list = fixed_resources
+        self.collection_names = collection_names
 
 
 class GapicConfig(object):
