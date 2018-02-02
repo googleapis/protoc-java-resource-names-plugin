@@ -133,14 +133,6 @@ class TestProtocGapicPlugin(object):
         check_output(generated_any, PROTOC_OUTPUT_DIR, 'java_' + any_filename_fragment)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
-    def test_resource_name_factory_generation(self, run_protoc, oneof):
-        generated_factory = \
-            casing_utils.get_resource_name_factory_class_name(oneof)
-        factory_filename_fragment = \
-            casing_utils.get_resource_name_factory_lower_underscore(oneof)
-        check_output(generated_factory, PROTOC_OUTPUT_DIR, 'java_' + factory_filename_fragment)
-
-    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
     def test_untyped_resource_name_generation(self, run_protoc, oneof):
         generated_untyped = \
             casing_utils.get_untyped_resource_name_class_name(oneof)

@@ -80,11 +80,9 @@ def generate_resource_name_types(response, gapic_config, java_package):
     # Now deprecated
     resource_oneof = resource_name.ResourceNameOneof(oneof_config, java_package)
     any_resource = resource_name.AnyResourceName(oneof_config, java_package)
-    resource_factory = resource_name.ResourceNameFactory(oneof_config, java_package)
     untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
     render_new_file(renderer, response, resource_oneof)
     render_new_file(renderer, response, any_resource)
-    render_new_file(renderer, response, resource_factory)
     render_new_file(renderer, response, untyped_resource)
 
 

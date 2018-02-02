@@ -18,5 +18,20 @@ import {{resourceNameGlobalPackageName}}.ResourceName;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public interface {{className}} extends ResourceName {
+public abstract class {{className}} implements ResourceName {
+  protected {{className}}() {}
+
+  public static {{className}} parse(String resourceNameString) {
+    {{#singleResourceTypes}}
+    if ({{resourceTypeClassName}}.isParsableFrom(resourceNameString)) {
+      return {{resourceTypeClassName}}.parse(resourceNameString);
+    }
+    {{/singleResourceTypes}}
+    {{#fixedResourceTypes}}
+    if ({{resourceTypeClassName}}.matches(resourceNameString)) {
+      return {{resourceTypeClassName}}.instance();
+    }
+    {{/fixedResourceTypes}}
+    return {{untypedResourceClassName}}.parse(resourceNameString);
+  }
 }

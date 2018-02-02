@@ -14,6 +14,5 @@ cp test/testdata/test_output/com/google/example/library/v1/Shelf.java test/testd
 cp test/testdata/test_output/com/google/example/library/v1/ShelfName.java test/testdata/java_shelf_name.baseline
 cp test/testdata/test_output/com/google/example/library/v1/ShelfNameType.java test/testdata/java_shelf_name_type.baseline
 
-cp test/testdata/test_output/com/google/example/library/v1/BookNameFactory.java test/testdata/java_book_name_factory.baseline
 cp test/testdata/test_output/com/google/example/library/v1/AnyBookName.java test/testdata/java_any_book_name.baseline
 cp test/testdata/test_output/com/google/example/library/v1/UntypedBookName.java test/testdata/java_untyped_book_name.baseline
