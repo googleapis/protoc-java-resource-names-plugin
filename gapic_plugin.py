@@ -69,7 +69,7 @@ def generate_resource_name_types(response, gapic_config, java_package):
     render_new_file(renderer, response, resource_type)
 
   for fixed_config in gapic_config.fixed_collections.values():
-    oneof = get_oneof_for_resource(collection_config, gapic_config)
+    oneof = get_oneof_for_resource(fixed_config, gapic_config)
     resource = resource_name.ResourceNameFixed(fixed_config, java_package, oneof)
     # Now deprecated
     resource_type = resource_name.ResourceNameType(resource.className(), java_package)

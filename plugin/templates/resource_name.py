@@ -81,8 +81,10 @@ class ResourceName(ResourceNameBase):
         if oneof:
             self.parent_interface = casing_utils.get_any_resource_name_class_name(
                 oneof.oneof_name)
+            self.extension_keyword = 'extends'
         else:
             self.parent_interface = 'ResourceName'
+            self.extension_keyword = 'implements'
         self.parameter_list = [{
             'parameter': casing_utils.lower_underscore_to_lower_camel(lit),
             'parameter_name': lit,
@@ -100,6 +102,9 @@ class ResourceName(ResourceNameBase):
 
     def className(self):
         return self.format_name_upper
+
+    def extensionKeyword(self):
+        return self.extension_keyword
 
     def parentInterface(self):
         return self.parent_interface
@@ -219,6 +224,9 @@ class UntypedResourceName(ResourceNameBase):
     def parentInterface(self):
         return self.parent_interface
 
+    def extensionKeyword(self):
+        return 'extends'
+
     def package(self):
         return self.untyped_package_name
 
@@ -248,14 +256,19 @@ class ResourceNameFixed(ResourceNameBase):
         if oneof:
             self.parent_interface = casing_utils.get_any_resource_name_class_name(
                 oneof.oneof_name)
+            self.extension_keyword = 'extends'
         else:
             self.parent_interface = 'ResourceName'
+            self.extension_keyword = 'implements'
 
     def className(self):
         return self.format_name_upper
 
     def fixedValue(self):
         return self.fixed_value
+
+    def extensionKeyword(self):
+        return self.extension_keyword
 
     def parentInterface(self):
         return self.parent_interface
