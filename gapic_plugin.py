@@ -48,23 +48,42 @@ def render_new_file(renderer, response, resource):
   f.content = renderer.render(resource)
 
 
+def get_oneof_for_resource(collection_config, gapic_config):
+  oneof = None
+  for oneof_config in gapic_config.collection_oneofs.values():
+    for collection_name in oneof_config.collection_names:
+      if collection_name == collection_config.entity_name:
+        if oneof:
+          raise ValueError("A collection cannot be part of multiple oneofs")
+        oneof = oneof_config
+  return oneof
+
 def generate_resource_name_types(response, gapic_config, java_package):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
   for collection_config in gapic_config.collection_configs.values():
-    resource = resource_name.ResourceName(collection_config, java_package)
+    oneof = get_oneof_for_resource(collection_config, gapic_config)
+    resource = resource_name.ResourceName(collection_config, java_package, oneof)
+    # Now deprecated
     resource_type = resource_name.ResourceNameType(resource.className(), java_package)
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
 
   for fixed_config in gapic_config.fixed_collections.values():
-    resource = resource_name.ResourceNameFixed(fixed_config, java_package)
+    oneof = get_oneof_for_resource(fixed_config, gapic_config)
+    resource = resource_name.ResourceNameFixed(fixed_config, java_package, oneof)
+    # Now deprecated
     resource_type = resource_name.ResourceNameType(resource.className(), java_package)
     render_new_file(renderer, response, resource)
     render_new_file(renderer, response, resource_type)
 
   for oneof_config in gapic_config.collection_oneofs.values():
+    # Now deprecated
     resource_oneof = resource_name.ResourceNameOneof(oneof_config, java_package)
+    any_resource = resource_name.AnyResourceName(oneof_config, java_package)
+    untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
     render_new_file(renderer, response, resource_oneof)
+    render_new_file(renderer, response, any_resource)
+    render_new_file(renderer, response, untyped_resource)
 
 
 def generate_get_set_injection(response, gapic_config, request, java_package):
@@ -82,7 +101,8 @@ def generate_get_set_injection(response, gapic_config, request, java_package):
             concrete_resource = resource_name.ResourceNameUntyped()
           elif entity_name in gapic_config.collection_configs:
             collection = gapic_config.collection_configs.get(entity_name)
-            resource = resource_name.ResourceName(collection, java_package)
+            oneof = get_oneof_for_resource(collection, gapic_config)
+            resource = resource_name.ResourceName(collection, java_package, oneof)
           elif entity_name in gapic_config.collection_oneofs:
             collection = gapic_config.collection_oneofs.get(entity_name)
             resource = resource_name.ResourceNameOneof(collection, java_package)

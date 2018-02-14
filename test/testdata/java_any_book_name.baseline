@@ -15,38 +15,19 @@
 package com.google.example.library.v1;
 
 import com.google.api.resourcenames.ResourceName;
-import com.google.api.resourcenames.ResourceNameType;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class DeletedBook implements ResourceName {
+public abstract class AnyBookName implements ResourceName {
+  protected AnyBookName() {}
 
-  private static final String FIXED_VALUE = "_deleted-book_";
-
-  private static final DeletedBook instance = new DeletedBook();
-
-  private DeletedBook() {}
-
-  public static DeletedBook instance() {
-    return instance;
-  }
-
-  /**
-   * @deprecated This method is no longer necessary given the switch from the Oneof pattern to inheritance
-   * for one-of groupings.
-   */
-  @Deprecated
-  public ResourceNameType getType() {
-    return DeletedBookType.instance();
-  }
-
-  public static boolean matches(String value) {
-    return FIXED_VALUE.equals(value);
-  }
-
-  @Override
-  public String toString() {
-    return FIXED_VALUE;
+  public static AnyBookName parse(String resourceNameString) {
+    if (BookName.isParsableFrom(resourceNameString)) {
+      return BookName.parse(resourceNameString);
+    }
+    if (ArchivedBookName.isParsableFrom(resourceNameString)) {
+      return ArchivedBookName.parse(resourceNameString);
+    }
+    return UntypedBookName.parse(resourceNameString);
   }
 }
-

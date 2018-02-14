@@ -14,22 +14,23 @@
 
 package com.google.example.library.v1;
 
-import com.google.api.resourcenames.ResourceNameType;
+import com.google.example.library.v1.BookName;
+import com.google.example.library.v1.ArchivedBookName;
 
-/**
- * @deprecated This class is no longer necessary given the switch from the Oneof pattern to inheritance
- * for one-of groupings.
- */
-@Deprecated
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class BookNameType implements ResourceNameType {
+public class BookNameFactory {
 
-  private static BookNameType instance = new BookNameType();
+  private BookNameFactory() {}
 
-  private BookNameType() {}
-
-  public static BookNameType instance() {
-    return instance;
+  public static AnyBookName parse(String resourceNameString) {
+    if (BookName.isParsableFrom(resourceNameString)) {
+      return BookName.parse(resourceNameString);
+    }
+    if (ArchivedBookName.isParsableFrom(resourceNameString)) {
+      return ArchivedBookName.parse(resourceNameString);
+    }
+    return UntypedBookName.parse(resourceNameString);
   }
 }
+

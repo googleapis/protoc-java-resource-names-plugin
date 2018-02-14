@@ -95,7 +95,7 @@ def run_protoc():
 
 RESOURCE_NAMES_TO_GENERATE = ['book_name', 'shelf_name', 'archived_book_name',
                               'deleted_book']
-ONEOFS_TO_GENERATE = ['book_name_oneof']
+ONEOFS_TO_GENERATE = ['book_oneof']
 MESSAGE_CLASSES_TO_EXTEND = ['book', 'shelf', 'list_books_response',
                              'book_from_anywhere']
 
@@ -119,8 +119,26 @@ class TestProtocGapicPlugin(object):
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
     def test_resource_name_oneof_generation(self, run_protoc, oneof):
-        generated_oneof = casing_utils.lower_underscore_to_upper_camel(oneof)
-        check_output(generated_oneof, PROTOC_OUTPUT_DIR, 'java_' + oneof)
+        generated_oneof = \
+            casing_utils.get_oneof_class_name(oneof)
+        oneof_fragment = casing_utils.get_oneof_lower_underscore(oneof)
+        check_output(generated_oneof, PROTOC_OUTPUT_DIR, 'java_' + oneof_fragment)
+
+    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
+    def test_any_resource_name_generation(self, run_protoc, oneof):
+        generated_any = \
+            casing_utils.get_any_resource_name_class_name(oneof)
+        any_filename_fragment = \
+            casing_utils.get_any_resource_name_lower_underscore(oneof)
+        check_output(generated_any, PROTOC_OUTPUT_DIR, 'java_' + any_filename_fragment)
+
+    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
+    def test_untyped_resource_name_generation(self, run_protoc, oneof):
+        generated_untyped = \
+            casing_utils.get_untyped_resource_name_class_name(oneof)
+        untyped_filename_fragment = \
+            casing_utils.get_untyped_resource_name_lower_underscore(oneof)
+        check_output(generated_untyped, PROTOC_OUTPUT_DIR, 'java_' + untyped_filename_fragment)
 
     @pytest.mark.parametrize('message', MESSAGE_CLASSES_TO_EXTEND)
     def test_get_set_insertion(self, run_protoc, message):
