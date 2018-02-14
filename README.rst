@@ -1,6 +1,9 @@
 GAPIC Proto Compiler Plugin
 ================================
 
+.. image:: https://img.shields.io/travis/googleapis/protoc-java-resource-names-plugin.svg
+    :target: https://travis-ci.org/googleapis/protoc-java-resource-names-plugin
+
 The GAPIC Proto Compiler Plugin is used to add functionality to protobuf
 generated types. The additional functionality is required by client libraries
 generated using the GAPIC code generation tool, which reside in the
@@ -16,7 +19,7 @@ generated types.
 Python Versions
 ---------------
 
-GAPIC Proto Compiler Plugin is currently tested with Python 2.7.
+GAPIC Proto Compiler Plugin is currently tested with Python 2.7, 3.4, 3.5 and 3.6.
 
 
 Contributing
