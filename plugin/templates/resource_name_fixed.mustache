@@ -31,15 +31,6 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
     return instance;
   }
 
-  /**
-   * @deprecated This method is no longer necessary given the switch from the Oneof pattern to inheritance
-   * for one-of groupings.
-   */
-  @Deprecated
-  public ResourceNameType getType() {
-    return {{className}}Type.instance();
-  }
-
   public static boolean matches(String value) {
     return FIXED_VALUE.equals(value);
   }

@@ -31,15 +31,6 @@ public class DeletedBook implements ResourceName {
     return instance;
   }
 
-  /**
-   * @deprecated This method is no longer necessary given the switch from the Oneof pattern to inheritance
-   * for one-of groupings.
-   */
-  @Deprecated
-  public ResourceNameType getType() {
-    return DeletedBookType.instance();
-  }
-
   public static boolean matches(String value) {
     return FIXED_VALUE.equals(value);
   }

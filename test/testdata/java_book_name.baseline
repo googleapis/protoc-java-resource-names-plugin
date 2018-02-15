@@ -60,14 +60,6 @@ public class BookName extends AnyBookName {
       .build();
   }
 
-  /**
-   * @deprecated Use {@link #of(String, String)} instead.
-   */
-  @Deprecated
-  public static BookName create(String shelfId, String bookId) {
-    return of(shelfId, bookId);
-  }
-
   public static String format(String shelfId, String bookId) {
     return newBuilder()
       .setShelfId(shelfId)
@@ -107,15 +99,6 @@ public class BookName extends AnyBookName {
 
   public static boolean isParsableFrom(String formattedString) {
     return PATH_TEMPLATE.matches(formattedString);
-  }
-
-  /**
-   * @deprecated This method is no longer necessary given the switch from the Oneof pattern to inheritance
-   * for one-of groupings.
-   */
-  @Deprecated
-  public ResourceNameType getType() {
-    return BookNameType.instance();
   }
 
   @Override

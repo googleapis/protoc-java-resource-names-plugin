@@ -53,14 +53,6 @@ public class ShelfName implements ResourceName {
       .build();
   }
 
-  /**
-   * @deprecated Use {@link #of(String)} instead.
-   */
-  @Deprecated
-  public static ShelfName create(String shelfId) {
-    return of(shelfId);
-  }
-
   public static String format(String shelfId) {
     return newBuilder()
       .setShelfId(shelfId)
@@ -99,15 +91,6 @@ public class ShelfName implements ResourceName {
 
   public static boolean isParsableFrom(String formattedString) {
     return PATH_TEMPLATE.matches(formattedString);
-  }
-
-  /**
-   * @deprecated This method is no longer necessary given the switch from the Oneof pattern to inheritance
-   * for one-of groupings.
-   */
-  @Deprecated
-  public ResourceNameType getType() {
-    return ShelfNameType.instance();
   }
 
   @Override

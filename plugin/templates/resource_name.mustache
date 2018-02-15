@@ -59,14 +59,6 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
       .build();
   }
 
-  /**
-   * @deprecated Use {@link #of({{#parameterList}}String{{#not_last}}, {{/not_last}}{{/parameterList}})} instead.
-   */
-  @Deprecated
-  public static {{className}} create({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
-    return of({{#parameterList}}{{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}});
-  }
-
   public static String format({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
     return newBuilder(){{#formatFields}}
       .set{{upper}}({{lower}}){{/formatFields}}
@@ -105,15 +97,6 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
 
   public static boolean isParsableFrom(String formattedString) {
     return PATH_TEMPLATE.matches(formattedString);
-  }
-
-  /**
-   * @deprecated This method is no longer necessary given the switch from the Oneof pattern to inheritance
-   * for one-of groupings.
-   */
-  @Deprecated
-  public ResourceNameType getType() {
-    return {{typeNameUpper}}.instance();
   }
 
   @Override
