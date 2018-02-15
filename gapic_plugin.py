@@ -73,8 +73,10 @@ def generate_resource_name_types(response, gapic_config, java_package):
   for oneof_config in gapic_config.collection_oneofs.values():
     parent_resource = resource_name.ParentResourceName(oneof_config, java_package)
     untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
+    resource_factory = resource_name.ResourceNameFactory(oneof_config, java_package)
     render_new_file(renderer, response, parent_resource)
     render_new_file(renderer, response, untyped_resource)
+    render_new_file(renderer, response, resource_factory)
 
 
 def get_builder_view(field):

@@ -92,7 +92,7 @@ def get_parent_resource_name_class_name(entity_name):
 
 def get_resource_name_factory_lower_underscore(entity_name):
     entity_name = remove_suffix(entity_name, '_oneof')
-    return '_'.join([entity_name, 'name_factory'])
+    return '_'.join([entity_name, 'names'])
 
 
 def get_resource_name_factory_class_name(entity_name):

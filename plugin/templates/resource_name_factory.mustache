@@ -12,12 +12,26 @@
  * the License.
  */
 
-package com.google.example.library.v1;
+package {{package}};
 
-import com.google.api.resourcenames.ResourceName;
+import {{resourceNameGlobalPackageName}}.ResourceName;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public abstract class BookName implements ResourceName {
-  protected BookName() {}
+public abstract class {{className}} {
+  private {{className}}() {}
+
+  public static {{resourceClassName}} parse(String resourceNameString) {
+    {{#singleResourceTypes}}
+    if ({{resourceTypeClassName}}.isParsableFrom(resourceNameString)) {
+      return {{resourceTypeClassName}}.parse(resourceNameString);
+    }
+    {{/singleResourceTypes}}
+    {{#fixedResourceTypes}}
+    if ({{resourceTypeClassName}}.matches(resourceNameString)) {
+      return {{resourceTypeClassName}}.instance();
+    }
+    {{/fixedResourceTypes}}
+    return {{untypedResourceClassName}}.parse(resourceNameString);
+  }
 }

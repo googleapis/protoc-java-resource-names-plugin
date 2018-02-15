@@ -173,6 +173,21 @@ class ParentResourceName(ResourceNameBase):
         entity_name = oneof.oneof_name
         self.class_name = casing_utils.get_parent_resource_name_class_name(entity_name)
         self.package_name = java_package
+
+    def className(self):
+        return self.class_name
+
+    def package(self):
+        return self.package_name
+
+
+class ResourceNameFactory(ResourceNameBase):
+
+    def __init__(self, oneof, java_package):
+        entity_name = oneof.oneof_name
+        self.class_name = casing_utils.get_resource_name_factory_class_name(entity_name)
+        self.package_name = java_package
+        self.resource_class_name = casing_utils.get_parent_resource_name_class_name(entity_name)
         self.untyped_class_name = casing_utils.get_untyped_resource_name_class_name(entity_name)
         self.single_resource_types = [{
             'resourceTypeClassName': resource.className(),
@@ -191,6 +206,9 @@ class ParentResourceName(ResourceNameBase):
 
     def className(self):
         return self.class_name
+
+    def resourceClassName(self):
+        return self.resource_class_name
 
     def untypedResourceClassName(self):
         return self.untyped_class_name
