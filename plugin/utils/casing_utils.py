@@ -80,13 +80,13 @@ def get_oneof_class_name(entity_name):
     return lower_underscore_to_upper_camel(name)
 
 
-def get_any_resource_name_lower_underscore(entity_name):
+def get_parent_resource_name_lower_underscore(entity_name):
     entity_name = remove_suffix(entity_name, '_oneof')
-    return '_'.join(['any', entity_name, 'name'])
+    return '_'.join([entity_name, 'name'])
 
 
-def get_any_resource_name_class_name(entity_name):
-    name = get_any_resource_name_lower_underscore(entity_name)
+def get_parent_resource_name_class_name(entity_name):
+    name = get_parent_resource_name_lower_underscore(entity_name)
     return lower_underscore_to_upper_camel(name)
 
 

@@ -71,9 +71,9 @@ def generate_resource_name_types(response, gapic_config, java_package):
     render_new_file(renderer, response, resource)
 
   for oneof_config in gapic_config.collection_oneofs.values():
-    any_resource = resource_name.AnyResourceName(oneof_config, java_package)
+    parent_resource = resource_name.ParentResourceName(oneof_config, java_package)
     untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
-    render_new_file(renderer, response, any_resource)
+    render_new_file(renderer, response, parent_resource)
     render_new_file(renderer, response, untyped_resource)
 
 

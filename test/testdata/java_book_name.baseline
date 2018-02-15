@@ -18,10 +18,10 @@ import com.google.api.resourcenames.ResourceName;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public abstract class AnyBookName implements ResourceName {
-  protected AnyBookName() {}
+public abstract class BookName implements ResourceName {
+  protected BookName() {}
 
-  public static AnyBookName parse(String resourceNameString) {
+  public static BookName parse(String resourceNameString) {
     if (ShelfBookName.isParsableFrom(resourceNameString)) {
       return ShelfBookName.parse(resourceNameString);
     }

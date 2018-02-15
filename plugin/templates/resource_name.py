@@ -79,7 +79,7 @@ class ResourceName(ResourceNameBase):
         self.type_name_upper = casing_utils.get_resource_type_from_class_name(
             self.format_name_upper)
         if oneof:
-            self.parent_interface = casing_utils.get_any_resource_name_class_name(
+            self.parent_interface = casing_utils.get_parent_resource_name_class_name(
                 oneof.oneof_name)
             self.extension_keyword = 'extends'
         else:
@@ -130,7 +130,7 @@ class ResourceNameOneof(ResourceNameBase):
     def __init__(self, oneof, java_package):
         entity_name = oneof.oneof_name
         self.oneof_class_name = casing_utils.get_oneof_class_name(entity_name)
-        self.any_class_name = casing_utils.get_any_resource_name_class_name(entity_name)
+        self.parent_class_name = casing_utils.get_parent_resource_name_class_name(entity_name)
         self.single_resource_types = [{
             'resourceTypeClassName': resource.className(),
             'resourceTypeVarName': resource.varName(),
@@ -151,8 +151,8 @@ class ResourceNameOneof(ResourceNameBase):
     def className(self):
         return self.oneof_class_name
 
-    def anyClassName(self):
-        return self.any_class_name
+    def parentClassName(self):
+        return self.parent_class_name
 
     def resourceTypes(self):
         return self.resource_types
@@ -167,11 +167,11 @@ class ResourceNameOneof(ResourceNameBase):
         return self.oneof_package_name
 
 
-class AnyResourceName(ResourceNameBase):
+class ParentResourceName(ResourceNameBase):
 
     def __init__(self, oneof, java_package):
         entity_name = oneof.oneof_name
-        self.class_name = casing_utils.get_any_resource_name_class_name(entity_name)
+        self.class_name = casing_utils.get_parent_resource_name_class_name(entity_name)
         self.package_name = java_package
         self.untyped_class_name = casing_utils.get_untyped_resource_name_class_name(entity_name)
         self.single_resource_types = [{
@@ -214,7 +214,7 @@ class UntypedResourceName(ResourceNameBase):
         entity_name = oneof.oneof_name
         self.untyped_class_name = casing_utils.get_untyped_resource_name_class_name(
             entity_name)
-        self.parent_interface = casing_utils.get_any_resource_name_class_name(
+        self.parent_interface = casing_utils.get_parent_resource_name_class_name(
             oneof.oneof_name)
         self.untyped_package_name = java_package
 
@@ -254,7 +254,7 @@ class ResourceNameFixed(ResourceNameBase):
         self.fixed_value = fixed_config.fixed_value
         self.package_name = java_package
         if oneof:
-            self.parent_interface = casing_utils.get_any_resource_name_class_name(
+            self.parent_interface = casing_utils.get_parent_resource_name_class_name(
                 oneof.oneof_name)
             self.extension_keyword = 'extends'
         else:
@@ -275,15 +275,6 @@ class ResourceNameFixed(ResourceNameBase):
 
     def package(self):
         return self.package_name
-
-
-class ResourceNameAny(ResourceNameBase):
-
-    def className(self):
-        return 'ResourceName'
-
-    def package(self):
-        return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
 
 
 class ResourceNameUntyped(ResourceNameBase):
