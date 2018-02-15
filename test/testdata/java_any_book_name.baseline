@@ -22,8 +22,8 @@ public abstract class AnyBookName implements ResourceName {
   protected AnyBookName() {}
 
   public static AnyBookName parse(String resourceNameString) {
-    if (BookName.isParsableFrom(resourceNameString)) {
-      return BookName.parse(resourceNameString);
+    if (ShelfBookName.isParsableFrom(resourceNameString)) {
+      return ShelfBookName.parse(resourceNameString);
     }
     if (ArchivedBookName.isParsableFrom(resourceNameString)) {
       return ArchivedBookName.parse(resourceNameString);

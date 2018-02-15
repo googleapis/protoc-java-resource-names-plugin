@@ -24,7 +24,7 @@ import java.util.List;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class BookName extends AnyBookName {
+public class ShelfBookName extends AnyBookName {
 
   private static final PathTemplate PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}/books/{book_id}");
@@ -48,12 +48,12 @@ public class BookName extends AnyBookName {
     return new Builder(this);
   }
 
-  private BookName(Builder builder) {
+  private ShelfBookName(Builder builder) {
     shelfId = Preconditions.checkNotNull(builder.getShelfId());
     bookId = Preconditions.checkNotNull(builder.getBookId());
   }
 
-  public static BookName of(String shelfId, String bookId) {
+  public static ShelfBookName of(String shelfId, String bookId) {
     return newBuilder()
       .setShelfId(shelfId)
       .setBookId(bookId)
@@ -68,26 +68,26 @@ public class BookName extends AnyBookName {
       .toString();
   }
 
-  public static BookName parse(String formattedString) {
+  public static ShelfBookName parse(String formattedString) {
     if (formattedString.isEmpty()) {
       return null;
     }
     Map<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(formattedString, "BookName.parse: formattedString not in valid format");
+        PATH_TEMPLATE.validatedMatch(formattedString, "ShelfBookName.parse: formattedString not in valid format");
     return of(matchMap.get("shelf_id"), matchMap.get("book_id"));
   }
 
-  public static List<BookName> parseList(List<String> formattedStrings) {
-    List<BookName> list = new ArrayList<>(formattedStrings.size());
+  public static List<ShelfBookName> parseList(List<String> formattedStrings) {
+    List<ShelfBookName> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
     }
     return list;
   }
 
-  public static List<String> toStringList(List<BookName> values) {
+  public static List<String> toStringList(List<ShelfBookName> values) {
     List<String> list = new ArrayList<String>(values.size());
-    for (BookName value : values) {
+    for (ShelfBookName value : values) {
       if (value == null) {
         list.add("");
       } else {
@@ -106,7 +106,7 @@ public class BookName extends AnyBookName {
     return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "book_id", bookId);
   }
 
-  /** Builder for BookName. */
+  /** Builder for ShelfBookName. */
   public static class Builder {
 
     private String shelfId;
@@ -133,13 +133,13 @@ public class BookName extends AnyBookName {
     private Builder() {
     }
 
-    private Builder(BookName bookName) {
-      shelfId = bookName.shelfId;
-      bookId = bookName.bookId;
+    private Builder(ShelfBookName shelfBookName) {
+      shelfId = shelfBookName.shelfId;
+      bookId = shelfBookName.bookId;
     }
 
-    public BookName build() {
-      return new BookName(this);
+    public ShelfBookName build() {
+      return new ShelfBookName(this);
     }
   }
 
@@ -148,8 +148,8 @@ public class BookName extends AnyBookName {
     if (o == this) {
       return true;
     }
-    if (o instanceof BookName) {
-      BookName that = (BookName) o;
+    if (o instanceof ShelfBookName) {
+      ShelfBookName that = (ShelfBookName) o;
       return (this.shelfId.equals(that.shelfId))
           && (this.bookId.equals(that.bookId));
     }

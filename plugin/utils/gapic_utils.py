@@ -67,6 +67,11 @@ def load_collection_configs(config_list, existing_configs):
     for config in config_list:
         entity_name = config['entity_name']
         name_pattern = config['name_pattern']
+        java_entity_name = entity_name
+        if 'language_overrides' in config:
+          for override in config['language_overrides']:
+            if override['language'] == 'java':
+              java_entity_name = override['entity_name']
         if entity_name in existing_configs:
             existing_name_pattern = existing_configs[entity_name].name_pattern
             if existing_name_pattern != name_pattern:
@@ -75,7 +80,8 @@ def load_collection_configs(config_list, existing_configs):
                     'but different patterns. Name: ' + entity_name)
         else:
             existing_configs[entity_name] = CollectionConfig(entity_name,
-                                                             name_pattern)
+                                                             name_pattern,
+                                                             java_entity_name)
     return existing_configs
 
 
@@ -84,6 +90,9 @@ def load_fixed_configs(config_list, existing_collections):
     for config in config_list:
         entity_name = config['entity_name']
         fixed_value = config['fixed_value']
+        java_entity_name = entity_name
+        # TODO implement override support (only if necessary before this
+        # plugin is deprecated...)
         if entity_name in existing_collections:
             raise ValueError(
                 'Found different collection configs with same entity '
@@ -96,7 +105,8 @@ def load_fixed_configs(config_list, existing_collections):
                     'name but different values. Name: ' + entity_name)
         else:
             existing_configs[entity_name] = FixedCollectionConfig(entity_name,
-                                                                  fixed_value)
+                                                                  fixed_value,
+                                                                  java_entity_name)
     return existing_configs
 
 
@@ -158,16 +168,18 @@ def create_field_name(message_name, field):
 
 class CollectionConfig(object):
 
-    def __init__(self, entity_name, name_pattern):
+    def __init__(self, entity_name, name_pattern, java_entity_name):
         self.entity_name = entity_name
         self.name_pattern = name_pattern
+        self.java_entity_name = java_entity_name
 
 
 class FixedCollectionConfig(object):
 
-    def __init__(self, entity_name, fixed_value):
+    def __init__(self, entity_name, fixed_value, java_entity_name):
         self.entity_name = entity_name
         self.fixed_value = fixed_value
+        self.java_entity_name = java_entity_name
 
 
 class CollectionOneof(object):

@@ -64,7 +64,7 @@ class ResourceName(ResourceNameBase):
 
     def __init__(self, collection_config, java_package, oneof):
 
-        entity_name = collection_config.entity_name
+        entity_name = collection_config.java_entity_name
         name_template = path_template.PathTemplate(
             collection_config.name_pattern)
         id_segments = [
@@ -250,7 +250,7 @@ class ResourceNameFixed(ResourceNameBase):
     def __init__(self, fixed_config, java_package, oneof):
         self.format_name_upper = \
             casing_utils.get_fixed_resource_type_class_name(
-                fixed_config.entity_name)
+                fixed_config.java_entity_name)
         self.fixed_value = fixed_config.fixed_value
         self.package_name = java_package
         if oneof:

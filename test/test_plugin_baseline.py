@@ -93,7 +93,7 @@ def run_protoc():
                             'java')
 
 
-RESOURCE_NAMES_TO_GENERATE = ['book_name', 'shelf_name', 'archived_book_name',
+RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name', 'archived_book_name',
                               'deleted_book']
 ONEOFS_TO_GENERATE = ['book_oneof']
 MESSAGE_CLASSES_TO_EXTEND = ['book', 'shelf', 'list_books_response',
