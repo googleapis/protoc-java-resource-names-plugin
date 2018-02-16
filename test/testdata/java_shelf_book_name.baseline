@@ -101,6 +101,14 @@ public class ShelfBookName extends BookName {
     return PATH_TEMPLATE.matches(formattedString);
   }
 
+  /**
+   * @deprecated This method is only present to satisfy the ResourceName interface.
+   */
+  @Deprecated
+  public ResourceNameType getType() {
+    throw new UnsupportedOperationException("ShelfBookName.getType() not supported");
+  }
+
   @Override
   public String toString() {
     return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "book_id", bookId);

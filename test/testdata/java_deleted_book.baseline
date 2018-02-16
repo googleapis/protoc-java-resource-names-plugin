@@ -35,6 +35,14 @@ public class DeletedBook implements ResourceName {
     return FIXED_VALUE.equals(value);
   }
 
+  /**
+   * @deprecated This method is only present to satisfy the ResourceName interface.
+   */
+  @Deprecated
+  public ResourceNameType getType() {
+    throw new UnsupportedOperationException("DeletedBook.getType() not supported");
+  }
+
   @Override
   public String toString() {
     return FIXED_VALUE;

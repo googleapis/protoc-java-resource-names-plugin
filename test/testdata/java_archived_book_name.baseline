@@ -101,6 +101,14 @@ public class ArchivedBookName extends BookName {
     return PATH_TEMPLATE.matches(formattedString);
   }
 
+  /**
+   * @deprecated This method is only present to satisfy the ResourceName interface.
+   */
+  @Deprecated
+  public ResourceNameType getType() {
+    throw new UnsupportedOperationException("ArchivedBookName.getType() not supported");
+  }
+
   @Override
   public String toString() {
     return PATH_TEMPLATE.instantiate("archive_id", archiveId, "book_id", bookId);
