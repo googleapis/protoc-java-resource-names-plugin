@@ -38,7 +38,7 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-version = '0.0.5'
+version = '0.0.6'
 
 install_requires = [
     'pystache>=0.5.4',
