@@ -93,11 +93,9 @@ def run_protoc():
                             'java')
 
 
-RESOURCE_NAMES_TO_GENERATE = ['book_name', 'shelf_name', 'archived_book_name',
+RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name', 'archived_book_name',
                               'deleted_book']
-ONEOFS_TO_GENERATE = ['book_name_oneof']
-MESSAGE_CLASSES_TO_EXTEND = ['book', 'shelf', 'list_books_response',
-                             'book_from_anywhere']
+ONEOFS_TO_GENERATE = ['book_oneof']
 
 PROTOC_OUTPUT_DIR = os.path.join('com', 'google', 'example', 'library', 'v1')
 
@@ -110,20 +108,26 @@ class TestProtocGapicPlugin(object):
             resource)
         check_output(generated_class, PROTOC_OUTPUT_DIR, 'java_' + resource)
 
-    @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
-    def test_resource_name_type_generation(self, run_protoc, resource):
-        generated_type = \
-            casing_utils.lower_underscore_to_upper_camel(resource) + 'Type'
-        check_output(generated_type, PROTOC_OUTPUT_DIR,
-                     'java_' + resource + '_type')
+    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
+    def test_parent_resource_name_generation(self, run_protoc, oneof):
+        generated_parent = \
+            casing_utils.get_parent_resource_name_class_name(oneof)
+        parent_filename_fragment = \
+            casing_utils.get_parent_resource_name_lower_underscore(oneof)
+        check_output(generated_parent, PROTOC_OUTPUT_DIR, 'java_' + parent_filename_fragment)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
-    def test_resource_name_oneof_generation(self, run_protoc, oneof):
-        generated_oneof = casing_utils.lower_underscore_to_upper_camel(oneof)
-        check_output(generated_oneof, PROTOC_OUTPUT_DIR, 'java_' + oneof)
+    def test_untyped_resource_name_generation(self, run_protoc, oneof):
+        generated_untyped = \
+            casing_utils.get_untyped_resource_name_class_name(oneof)
+        untyped_filename_fragment = \
+            casing_utils.get_untyped_resource_name_lower_underscore(oneof)
+        check_output(generated_untyped, PROTOC_OUTPUT_DIR, 'java_' + untyped_filename_fragment)
 
-    @pytest.mark.parametrize('message', MESSAGE_CLASSES_TO_EXTEND)
-    def test_get_set_insertion(self, run_protoc, message):
-        proto_class = casing_utils.lower_underscore_to_upper_camel(message)
-        check_output(proto_class, PROTOC_OUTPUT_DIR,
-                     'java_' + message + '_insert')
+    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
+    def test_resource_name_factory_generation(self, run_protoc, oneof):
+        generated_parent = \
+            casing_utils.get_resource_name_factory_class_name(oneof)
+        parent_filename_fragment = \
+            casing_utils.get_resource_name_factory_lower_underscore(oneof)
+        check_output(generated_parent, PROTOC_OUTPUT_DIR, 'java_' + parent_filename_fragment)

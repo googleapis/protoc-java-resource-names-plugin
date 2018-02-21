@@ -21,6 +21,9 @@ interfaces:
     entity_name: shelf
   - name_pattern: shelves/{shelf_id}/books/{book_id}
     entity_name: book
+    language_overrides:
+      - language: java
+        entity_name: shelf_book
   - name_pattern: archives/{archive_id}/books/{book_id=**}
     entity_name: archived_book
   #smoke_test: <snip>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All Rights Reserved.
+ * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -12,19 +12,12 @@
  * the License.
  */
 
-package com.google.example.library.v1;
+package {{package}};
 
-import com.google.api.resourcenames.ResourceNameType;
+import {{resourceNameGlobalPackageName}}.ResourceName;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class BookNameType implements ResourceNameType {
-
-  private static BookNameType instance = new BookNameType();
-
-  private BookNameType() {}
-
-  public static BookNameType instance() {
-    return instance;
-  }
+public abstract class {{className}} implements ResourceName {
+  protected {{className}}() {}
 }

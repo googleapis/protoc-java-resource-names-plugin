@@ -48,56 +48,35 @@ def render_new_file(renderer, response, resource):
   f.content = renderer.render(resource)
 
 
+def get_oneof_for_resource(collection_config, gapic_config):
+  oneof = None
+  for oneof_config in gapic_config.collection_oneofs.values():
+    for collection_name in oneof_config.collection_names:
+      if collection_name == collection_config.entity_name:
+        if oneof:
+          raise ValueError("A collection cannot be part of multiple oneofs")
+        oneof = oneof_config
+  return oneof
+
 def generate_resource_name_types(response, gapic_config, java_package):
   renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
   for collection_config in gapic_config.collection_configs.values():
-    resource = resource_name.ResourceName(collection_config, java_package)
-    resource_type = resource_name.ResourceNameType(resource.className(), java_package)
+    oneof = get_oneof_for_resource(collection_config, gapic_config)
+    resource = resource_name.ResourceName(collection_config, java_package, oneof)
     render_new_file(renderer, response, resource)
-    render_new_file(renderer, response, resource_type)
 
   for fixed_config in gapic_config.fixed_collections.values():
-    resource = resource_name.ResourceNameFixed(fixed_config, java_package)
-    resource_type = resource_name.ResourceNameType(resource.className(), java_package)
+    oneof = get_oneof_for_resource(fixed_config, gapic_config)
+    resource = resource_name.ResourceNameFixed(fixed_config, java_package, oneof)
     render_new_file(renderer, response, resource)
-    render_new_file(renderer, response, resource_type)
 
   for oneof_config in gapic_config.collection_oneofs.values():
-    resource_oneof = resource_name.ResourceNameOneof(oneof_config, java_package)
-    render_new_file(renderer, response, resource_oneof)
-
-
-def generate_get_set_injection(response, gapic_config, request, java_package):
-  renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
-  for pf in get_protos_to_generate_for(request):
-    for item, package in proto_utils.traverse(pf):
-      filename = os.path.join(java_package.replace('.', os.path.sep), item.name + '.java')
-      for field in item.field:
-        entity_name = gapic_config.get_entity_name_for_message_field(
-            item.name, field.name)
-        if entity_name:
-          concrete_resource = None
-          if entity_name == gapic_utils.GAPIC_CONFIG_ANY:
-            resource = resource_name.ResourceNameAny()
-            concrete_resource = resource_name.ResourceNameUntyped()
-          elif entity_name in gapic_config.collection_configs:
-            collection = gapic_config.collection_configs.get(entity_name)
-            resource = resource_name.ResourceName(collection, java_package)
-          elif entity_name in gapic_config.collection_oneofs:
-            collection = gapic_config.collection_oneofs.get(entity_name)
-            resource = resource_name.ResourceNameOneof(collection, java_package)
-          else:
-            raise ValueError('entity name not found: ' + entity_name)
-
-          f = response.file.add()
-          f.name = filename
-          f.insertion_point = 'builder_scope:' + package + '.' + item.name
-          f.content = renderer.render(get_builder_view(field)(resource, field, concrete_resource))
-
-          f = response.file.add()
-          f.name = filename
-          f.insertion_point = 'class_scope:' + package + '.' + item.name
-          f.content = renderer.render(get_class_view(field)(resource, field, concrete_resource))
+    parent_resource = resource_name.ParentResourceName(oneof_config, java_package)
+    untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
+    resource_factory = resource_name.ResourceNameFactory(oneof_config, java_package)
+    render_new_file(renderer, response, parent_resource)
+    render_new_file(renderer, response, untyped_resource)
+    render_new_file(renderer, response, resource_factory)
 
 
 def get_builder_view(field):
@@ -149,7 +128,6 @@ def main(data):
   response = plugin.CodeGeneratorResponse()
 
   generate_resource_name_types(response, gapic_config, java_package)
-  generate_get_set_injection(response, gapic_config, request, java_package)
 
   # Serialise response message
   output = response.SerializeToString()

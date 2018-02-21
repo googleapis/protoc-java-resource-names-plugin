@@ -70,12 +70,41 @@ def get_resource_type_from_class_name(class_name):
     return class_name + 'Type'
 
 
-def get_oneof_class_name(entity_name):
+def get_oneof_lower_underscore(entity_name):
     entity_name = remove_suffix(entity_name, '_oneof')
-    name = '_'.join([entity_name, 'name_oneof'])
+    return '_'.join([entity_name, 'name_oneof'])
+
+
+def get_oneof_class_name(entity_name):
+    name = get_oneof_lower_underscore(entity_name)
     return lower_underscore_to_upper_camel(name)
 
 
-def get_oneof_var_name(entity_name):
-    name = '_'.join([entity_name, 'name_oneof'])
-    return lower_underscore_to_lower_camel(name)
+def get_parent_resource_name_lower_underscore(entity_name):
+    entity_name = remove_suffix(entity_name, '_oneof')
+    return '_'.join([entity_name, 'name'])
+
+
+def get_parent_resource_name_class_name(entity_name):
+    name = get_parent_resource_name_lower_underscore(entity_name)
+    return lower_underscore_to_upper_camel(name)
+
+
+def get_resource_name_factory_lower_underscore(entity_name):
+    entity_name = remove_suffix(entity_name, '_oneof')
+    return '_'.join([entity_name, 'names'])
+
+
+def get_resource_name_factory_class_name(entity_name):
+    name = get_resource_name_factory_lower_underscore(entity_name)
+    return lower_underscore_to_upper_camel(name)
+
+
+def get_untyped_resource_name_lower_underscore(entity_name):
+    entity_name = remove_suffix(entity_name, '_oneof')
+    return '_'.join(['untyped', entity_name, 'name'])
+
+
+def get_untyped_resource_name_class_name(entity_name):
+    name = get_untyped_resource_name_lower_underscore(entity_name)
+    return lower_underscore_to_upper_camel(name)
