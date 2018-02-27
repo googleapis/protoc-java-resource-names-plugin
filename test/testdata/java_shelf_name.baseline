@@ -108,7 +108,7 @@ public class ShelfName implements ResourceName {
   }
 
   public String getFieldValue(String fieldName) {
-    return fieldMap.get(fieldName);
+    return getFieldValuesMap().get(fieldName);
   }
 
   /**

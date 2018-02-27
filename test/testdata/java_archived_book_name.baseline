@@ -117,7 +117,7 @@ public class ArchivedBookName extends BookName {
   }
 
   public String getFieldValue(String fieldName) {
-    return fieldMap.get(fieldName);
+    return getFieldValuesMap().get(fieldName);
   }
 
   /**
