@@ -15,6 +15,7 @@
 package {{package}};
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.api.pathtemplate.PathTemplate;
 import {{resourceNameGlobalPackageName}}.ResourceName;
 import {{resourceNameGlobalPackageName}}.ResourceNameType;
@@ -28,6 +29,8 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
 
   private static final PathTemplate PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("{{formatString}}");
+
+  private volatile Map<String, String> fieldMap;
 
   {{#formatFields}}
   private final String {{lower}};
@@ -97,6 +100,23 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
 
   public static boolean isParsableFrom(String formattedString) {
     return PATH_TEMPLATE.matches(formattedString);
+  }
+
+  public Map<String, String> getFieldValuesMap() {
+    if (fieldMap != null) {
+      return fieldMap;
+    }
+    ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
+    {{#formatFields}}
+    fieldMapBuilder.put("{{lower}}", {{lower}});
+    {{/formatFields}}
+
+    fieldMap = fieldMapBuilder.build();
+    return fieldMap;
+  }
+
+  public String getFieldValue(String fieldName) {
+    return fieldMap.get(fieldName);
   }
 
   /**
