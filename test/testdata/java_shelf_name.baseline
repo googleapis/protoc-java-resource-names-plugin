@@ -30,7 +30,7 @@ public class ShelfName implements ResourceName {
   private static final PathTemplate PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}");
 
-  private volatile Map<String, String> fieldMap;
+  private volatile Map<String, String> fieldValuesMap;
 
   private final String shelfId;
 
@@ -97,14 +97,14 @@ public class ShelfName implements ResourceName {
   }
 
   public Map<String, String> getFieldValuesMap() {
-    if (fieldMap != null) {
-      return fieldMap;
+    if (fieldValuesMap != null) {
+      return fieldValuesMap;
     }
     ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
     fieldMapBuilder.put("shelfId", shelfId);
 
-    fieldMap = fieldMapBuilder.build();
-    return fieldMap;
+    fieldValuesMap = fieldMapBuilder.build();
+    return fieldValuesMap;
   }
 
   public String getFieldValue(String fieldName) {

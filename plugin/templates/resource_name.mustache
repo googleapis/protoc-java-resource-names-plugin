@@ -30,7 +30,7 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
   private static final PathTemplate PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("{{formatString}}");
 
-  private volatile Map<String, String> fieldMap;
+  private volatile Map<String, String> fieldValuesMap;
 
   {{#formatFields}}
   private final String {{lower}};
@@ -103,16 +103,16 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
   }
 
   public Map<String, String> getFieldValuesMap() {
-    if (fieldMap != null) {
-      return fieldMap;
+    if (fieldValuesMap != null) {
+      return fieldValuesMap;
     }
     ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
     {{#formatFields}}
     fieldMapBuilder.put("{{lower}}", {{lower}});
     {{/formatFields}}
 
-    fieldMap = fieldMapBuilder.build();
-    return fieldMap;
+    fieldValuesMap = fieldMapBuilder.build();
+    return fieldValuesMap;
   }
 
   public String getFieldValue(String fieldName) {
