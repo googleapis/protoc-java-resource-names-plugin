@@ -103,15 +103,17 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
   }
 
   public Map<String, String> getFieldValuesMap() {
-    if (fieldValuesMap != null) {
-      return fieldValuesMap;
+    if (fieldValuesMap == null) {
+      synchronized (this) {
+        if (fieldValuesMap == null) {
+          ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
+          {{#formatFields}}
+          fieldMapBuilder.put("{{lower}}", {{lower}});
+          {{/formatFields}}
+          fieldValuesMap = fieldMapBuilder.build();
+        }
+      }
     }
-    ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-    {{#formatFields}}
-    fieldMapBuilder.put("{{lower}}", {{lower}});
-    {{/formatFields}}
-
-    fieldValuesMap = fieldMapBuilder.build();
     return fieldValuesMap;
   }
 

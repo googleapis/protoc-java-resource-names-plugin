@@ -105,14 +105,16 @@ public class ShelfBookName extends BookName {
   }
 
   public Map<String, String> getFieldValuesMap() {
-    if (fieldValuesMap != null) {
-      return fieldValuesMap;
+    if (fieldValuesMap == null) {
+      synchronized (this) {
+        if (fieldValuesMap == null) {
+          ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
+          fieldMapBuilder.put("shelfId", shelfId);
+          fieldMapBuilder.put("bookId", bookId);
+          fieldValuesMap = fieldMapBuilder.build();
+        }
+      }
     }
-    ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-    fieldMapBuilder.put("shelfId", shelfId);
-    fieldMapBuilder.put("bookId", bookId);
-
-    fieldValuesMap = fieldMapBuilder.build();
     return fieldValuesMap;
   }
 

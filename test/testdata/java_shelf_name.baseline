@@ -97,13 +97,15 @@ public class ShelfName implements ResourceName {
   }
 
   public Map<String, String> getFieldValuesMap() {
-    if (fieldValuesMap != null) {
-      return fieldValuesMap;
+    if (fieldValuesMap == null) {
+      synchronized (this) {
+        if (fieldValuesMap == null) {
+          ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
+          fieldMapBuilder.put("shelfId", shelfId);
+          fieldValuesMap = fieldMapBuilder.build();
+        }
+      }
     }
-    ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-    fieldMapBuilder.put("shelfId", shelfId);
-
-    fieldValuesMap = fieldMapBuilder.build();
     return fieldValuesMap;
   }
 
