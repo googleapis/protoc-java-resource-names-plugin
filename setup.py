@@ -30,7 +30,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-import re
 import sys
 from setuptools import setup, find_packages
 
@@ -38,13 +37,13 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-version = '0.0.6'
+version = '0.0.7'
 
 install_requires = [
-    'pystache>=0.5.4',
-    'protobuf>=3.3',
-    'google-gax>=0.12.3',
-    'pyyaml>=3.12',
+    'pystache >= 0.5.4',
+    'protobuf >= 3.3',
+    'google-gax >= 0.12.3',
+    'pyyaml >= 3.12',
 ]
 
 setup(
