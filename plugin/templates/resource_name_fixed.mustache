@@ -16,12 +16,15 @@ package {{package}};
 
 import {{resourceNameGlobalPackageName}}.ResourceName;
 import {{resourceNameGlobalPackageName}}.ResourceNameType;
+import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
 public class {{className}} {{extensionKeyword}} {{parentInterface}} {
 
   private static final String FIXED_VALUE = "{{fixedValue}}";
+  private static final Map<String, String> valueMap = ImmutableMap.of("FIXED_VALUE", FIXED_VALUE);
 
   private static final {{className}} instance = new {{className}}();
 
@@ -33,6 +36,20 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
 
   public static boolean matches(String value) {
     return FIXED_VALUE.equals(value);
+  }
+
+  /**
+   * Return a map with a single value FIXED_VALUE keyed on the String "FIXED_VALUE".
+   */
+  public Map<String, String> getFieldValuesMap() {
+    return valueMap;
+  }
+
+  /**
+   * Return the FIXED_VALUE if @param fieldName is "FIXED_VALUE", else return null.
+   */
+  public String getFieldValue(String fieldName) {
+    return valueMap.get(fieldName);
   }
 
   /**
