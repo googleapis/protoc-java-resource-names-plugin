@@ -24,7 +24,7 @@ import java.util.Map;
 public class {{className}} {{extensionKeyword}} {{parentInterface}} {
 
   private static final String FIXED_VALUE = "{{fixedValue}}";
-  private static final Map<String, String> valueMap = ImmutableMap.of("FIXED_VALUE", FIXED_VALUE);
+  private static final Map<String, String> valueMap = ImmutableMap.of("", FIXED_VALUE);
 
   private static final {{className}} instance = new {{className}}();
 
@@ -39,14 +39,14 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
   }
 
   /**
-   * Return a map with a single value FIXED_VALUE keyed on the String "FIXED_VALUE".
+   * Return a map with a single value FIXED_VALUE keyed on an empty String "".
    */
   public Map<String, String> getFieldValuesMap() {
     return valueMap;
   }
 
   /**
-   * Return the FIXED_VALUE if @param fieldName is "FIXED_VALUE", else return null.
+   * Return the FIXED_VALUE if @param fieldName is an empty String "", else return null.
    */
   public String getFieldValue(String fieldName) {
     return valueMap.get(fieldName);
