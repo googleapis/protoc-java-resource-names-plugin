@@ -12,20 +12,25 @@ collection_oneofs:
     collection_names:
     - book
     - archived_book
+collections:
+- name_pattern: projects/{project_id}
+  entity_name: project
+  language_overrides:
+  - language: java
+    common_resource_name: com.google.cloud.ProjectName
+- name_pattern: shelves/{shelf_id}
+  entity_name: shelf
+- name_pattern: shelves/{shelf_id}/books/{book_id}
+  entity_name: book
+  language_overrides:
+    - language: java
+      entity_name: shelf_book
+- name_pattern: archives/{archive_id}/books/{book_id=**}
+  entity_name: archived_book
 interfaces:
 - name: google.example.library.v1.LibraryService
   #retry_codes_def: <snip>
   #retry_params_def: <snip>
-  collections:
-  - name_pattern: shelves/{shelf_id}
-    entity_name: shelf
-  - name_pattern: shelves/{shelf_id}/books/{book_id}
-    entity_name: book
-    language_overrides:
-      - language: java
-        entity_name: shelf_book
-  - name_pattern: archives/{archive_id}/books/{book_id=**}
-    entity_name: archived_book
   #smoke_test: <snip>
   #experimental_features: <snip>
   #methods: <snip>

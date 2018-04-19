@@ -96,6 +96,7 @@ def run_protoc():
 RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name', 'archived_book_name',
                               'deleted_book']
 ONEOFS_TO_GENERATE = ['book_oneof']
+DONT_GENERATE = ['project_name']
 
 PROTOC_OUTPUT_DIR = os.path.join('com', 'google', 'example', 'library', 'v1')
 
@@ -107,6 +108,15 @@ class TestProtocGapicPlugin(object):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
             resource)
         check_output(generated_class, PROTOC_OUTPUT_DIR, 'java_' + resource)
+
+    @pytest.mark.parametrize('resource', DONT_GENERATE)
+    def test_dont_generate(self, run_protoc, resource):
+        generated_class = casing_utils.lower_underscore_to_upper_camel(
+            resource)
+        file_name = os.path.join(TEST_OUTPUT_DIR,
+                                 PROTOC_OUTPUT_DIR,
+                                 generated_class + '.java')
+        assert not os.path.exists(file_name)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
     def test_parent_resource_name_generation(self, run_protoc, oneof):
