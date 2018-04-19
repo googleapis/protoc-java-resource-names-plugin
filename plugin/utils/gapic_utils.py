@@ -68,10 +68,17 @@ def load_collection_configs(config_list, existing_configs):
         entity_name = config['entity_name']
         name_pattern = config['name_pattern']
         java_entity_name = entity_name
-        if 'language_overrides' in config:
-            for override in config['language_overrides']:
-                if override['language'] == 'java':
-                    java_entity_name = override['entity_name']
+
+        overrides = config.get('language_overrides', [])
+        overrides = [ov for ov in overrides if ov['language'] == 'java']
+        if len(overrides) > 1:
+            raise ValueError('expected only one java override')
+        if len(overrides) == 1:
+            override = overrides[0]
+            if 'common_resource_name' in override:
+                continue
+            java_entity_name = override['entity_name']
+
         if entity_name in existing_configs:
             existing_name_pattern = existing_configs[entity_name].name_pattern
             if existing_name_pattern != name_pattern:
