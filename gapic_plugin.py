@@ -103,14 +103,12 @@ def get_protos_to_generate_for(request):
 def resolve_java_package_name(request):
   java_package = None
   for pf in get_protos_to_generate_for(request):
-    for item, package in proto_utils.traverse(pf):
-      for opt in proto_utils.get_named_options(pf, 'java_package'):
-        if java_package is not None and java_package != opt[1]:
-          raise ValueError('got conflicting java packages: '
-                           + str(java_package) + ' and '
-                           + str(opt[1]))
-        java_package = opt[1]
-        break
+    for opt in proto_utils.get_named_options(pf, 'java_package'):
+      if java_package is not None and java_package != opt[1]:
+        raise ValueError('got conflicting java packages: ' + str(java_package)
+                         + ' and ' + str(opt[1]))
+      java_package = opt[1]
+      break
   if java_package is None:
     raise ValueError('java package not defined')
   return java_package
