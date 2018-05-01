@@ -54,13 +54,7 @@ def read_from_gapic_yaml(yaml_file):
         oneofs = load_collection_oneofs(gapic_yaml['collection_oneofs'],
                                         collections, fixed_collections)
 
-    field_resource_name_map = {}
-    if 'resource_name_generation' in gapic_yaml:
-        field_resource_name_map = load_resource_name_map(
-            gapic_yaml['resource_name_generation'], oneofs, collections)
-
-    return GapicConfig(collections, fixed_collections, oneofs,
-                       field_resource_name_map)
+    return GapicConfig(collections, fixed_collections, oneofs)
 
 
 def load_collection_configs(config_list, existing_configs):
@@ -148,27 +142,6 @@ def load_collection_oneofs(config_list, existing_collections,
     return existing_oneofs
 
 
-def load_resource_name_map(resource_name_generation, oneofs, collections):
-    field_resource_name_map = {}
-    for message_config in resource_name_generation:
-        message_name = message_config['message_name']
-        for field, coll in message_config['field_entity_map'].items():
-            full_field_name = create_field_name(message_name, field)
-            if full_field_name in field_resource_name_map:
-                raise ValueError(
-                    'Found multiple specifications for '
-                    'same field in '
-                    'resource_name_generation config. Use'
-                    ' fully qualified message name to '
-                    'avoid conflicts. Name: ' + full_field_name)
-            if (coll not in oneofs and coll not in collections
-                    and coll != GAPIC_CONFIG_ANY):
-                raise ValueError('Unknown collection specified for field ' +
-                                 full_field_name + ': ' + coll)
-            field_resource_name_map[full_field_name] = coll
-    return field_resource_name_map
-
-
 def create_field_name(message_name, field):
     return message_name + '.' + field
 
@@ -204,13 +177,7 @@ class GapicConfig(object):
                  collection_configs={},
                  fixed_collections={},
                  collection_oneofs={},
-                 field_resource_name_map={},
                  **kwargs):
         self.collection_configs = collection_configs
         self.fixed_collections = fixed_collections
         self.collection_oneofs = collection_oneofs
-        self.field_resource_name_map = field_resource_name_map
-
-    def get_entity_name_for_message_field(self, message_name, field_name):
-        return self.field_resource_name_map.get(
-            create_field_name(message_name, field_name))
