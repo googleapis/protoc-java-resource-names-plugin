@@ -32,13 +32,9 @@ from google.gax import path_template
 from plugin.utils import casing_utils
 
 RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA = 'com.google.api.resourcenames'
-RESOURCE_NAMES_TYPE_PACKAGE_JAVA = 'com.google.api.resourcenames.types'
 
 
 class ResourceNameBase(object):
-
-    def resourceNameTypePackageName(self):
-        return RESOURCE_NAMES_TYPE_PACKAGE_JAVA
 
     def resourceNameGlobalPackageName(self):
         return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
@@ -247,20 +243,6 @@ class UntypedResourceName(ResourceNameBase):
 
     def package(self):
         return self.untyped_package_name
-
-
-class ResourceNameType(ResourceNameBase):
-
-    def __init__(self, class_name, java_package):
-        self.type_name_upper = casing_utils.get_resource_type_from_class_name(
-            class_name)
-        self.package_name = java_package
-
-    def className(self):
-        return self.type_name_upper
-
-    def package(self):
-        return self.package_name
 
 
 class ResourceNameFixed(ResourceNameBase):

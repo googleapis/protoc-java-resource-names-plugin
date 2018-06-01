@@ -16,7 +16,6 @@ package {{package}};
 
 import com.google.common.base.Preconditions;
 import {{resourceNameGlobalPackageName}}.ResourceName;
-import {{resourceNameGlobalPackageName}}.ResourceNameType;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,14 +77,6 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
    */
   public String getFieldValue(String fieldName) {
     return valueMap.get(fieldName);
-  }
-
-  /**
-   * @deprecated This method is only present to satisfy the ResourceName interface.
-   */
-  @Deprecated
-  public ResourceNameType getType() {
-    throw new UnsupportedOperationException("{{className}}.getType() not supported");
   }
 
   @Override
