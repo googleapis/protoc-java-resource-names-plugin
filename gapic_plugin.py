@@ -33,7 +33,7 @@ import os
 import sys
 import pystache
 
-from plugin.compiler import plugin_pb2 as plugin
+from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
 
 from plugin.templates import resource_name, insertion_points
