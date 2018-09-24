@@ -84,7 +84,7 @@ def run_protoc():
     clean_test_output()
     gapic_yaml = os.path.join(TEST_DIR, 'library_gapic.yaml')
     # TODO: make this path configurable
-    include_dirs = ['.', '../googleapis']
+    include_dirs = ['.', './googleapis']
     proto_files = ['library_simple.proto', 'archive.proto']
     run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
                             gapic_yaml,
