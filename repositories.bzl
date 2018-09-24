@@ -18,7 +18,7 @@ def com_google_protobuf():
     native.git_repository(
         name = "com_google_protobuf",
         remote = "https://github.com/google/protobuf.git",
-        tag = "v3.6.0",
+        tag = "v3.6.1",
     )
 
 def pypi_py_yaml():
