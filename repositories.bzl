@@ -11,7 +11,7 @@ def com_google_protoc_java_resource_names_plugin_repositories(
         pypi_py_yaml()
     if not omit_pypi_pystache:
         pypi_pystache()
-    if not omit_pypi_six :
+    if not omit_pypi_six:
         pypi_six()
 
 def com_google_protobuf():
