@@ -93,8 +93,8 @@ def run_protoc():
                             'java')
 
 
-RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name', 'archived_book_name',
-                              'deleted_book']
+RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name',
+                              'archived_book_name', 'deleted_book']
 ONEOFS_TO_GENERATE = ['book_oneof']
 DONT_GENERATE = ['project_name']
 
@@ -124,7 +124,9 @@ class TestProtocGapicPlugin(object):
             casing_utils.get_parent_resource_name_class_name(oneof)
         parent_filename_fragment = \
             casing_utils.get_parent_resource_name_lower_underscore(oneof)
-        check_output(generated_parent, PROTOC_OUTPUT_DIR, 'java_' + parent_filename_fragment)
+        check_output(generated_parent,
+                     PROTOC_OUTPUT_DIR,
+                     'java_' + parent_filename_fragment)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
     def test_untyped_resource_name_generation(self, run_protoc, oneof):
@@ -132,7 +134,9 @@ class TestProtocGapicPlugin(object):
             casing_utils.get_untyped_resource_name_class_name(oneof)
         untyped_filename_fragment = \
             casing_utils.get_untyped_resource_name_lower_underscore(oneof)
-        check_output(generated_untyped, PROTOC_OUTPUT_DIR, 'java_' + untyped_filename_fragment)
+        check_output(generated_untyped,
+                     PROTOC_OUTPUT_DIR,
+                     'java_' + untyped_filename_fragment)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
     def test_resource_name_factory_generation(self, run_protoc, oneof):
@@ -140,4 +144,6 @@ class TestProtocGapicPlugin(object):
             casing_utils.get_resource_name_factory_class_name(oneof)
         parent_filename_fragment = \
             casing_utils.get_resource_name_factory_lower_underscore(oneof)
-        check_output(generated_parent, PROTOC_OUTPUT_DIR, 'java_' + parent_filename_fragment)
+        check_output(generated_parent,
+                     PROTOC_OUTPUT_DIR,
+                     'java_' + parent_filename_fragment)

@@ -105,9 +105,8 @@ def load_fixed_configs(config_list, existing_collections):
                     'Found fixed collection configs with same entity '
                     'name but different values. Name: ' + entity_name)
         else:
-            existing_configs[entity_name] = FixedCollectionConfig(entity_name,
-                                                                  fixed_value,
-                                                                  java_entity_name)
+            existing_configs[entity_name] = FixedCollectionConfig(
+                entity_name, fixed_value, java_entity_name)
     return existing_configs
 
 
@@ -164,7 +163,8 @@ class FixedCollectionConfig(object):
 
 class CollectionOneof(object):
 
-    def __init__(self, oneof_name, resources, fixed_resources, collection_names):
+    def __init__(self, oneof_name, resources, fixed_resources,
+                 collection_names):
         self.oneof_name = oneof_name
         self.resource_list = resources
         self.fixed_resource_list = fixed_resources

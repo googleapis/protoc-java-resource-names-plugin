@@ -1,0 +1,11 @@
+py_binary(
+    name = "gapic_plugin",
+    srcs = ["gapic_plugin.py"] + glob(["plugin/**/*.py"]),
+    data = glob(["plugin/**/*.mustache"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_google_protobuf//:protobuf_python",
+        "@pypi_py_yaml//:lib",
+        "@pypi_pystache//:lib",
+    ],
+)
