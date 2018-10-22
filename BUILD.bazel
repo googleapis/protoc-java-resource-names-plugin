@@ -4,8 +4,9 @@ py_binary(
     data = glob(["plugin/**/*.mustache"]),
     visibility = ["//visibility:public"],
     deps = [
-        "@com_google_protobuf//:protobuf_python",
         "@pypi_py_yaml//:lib",
         "@pypi_pystache//:lib",
+        "@pypi_ply//:lib",
+        "@com_google_protobuf//:protobuf_python",
     ],
 )
