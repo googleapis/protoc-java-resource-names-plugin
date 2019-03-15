@@ -27,19 +27,19 @@ import java.util.List;
 public class ShelfBookName extends BookName {
 
   private static final PathTemplate PATH_TEMPLATE =
-      PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}/books/{return2}");
+      PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}/books/{return}");
 
   private volatile Map<String, String> fieldValuesMap;
 
   private final String shelfId;
-  private final String return2;
+  private final String return_;
 
   public String getShelfId() {
     return shelfId;
   }
 
   public String getReturn() {
-    return return2;
+    return return_;
   }
 
   public static Builder newBuilder() {
@@ -52,20 +52,20 @@ public class ShelfBookName extends BookName {
 
   private ShelfBookName(Builder builder) {
     shelfId = Preconditions.checkNotNull(builder.getShelfId());
-    return2 = Preconditions.checkNotNull(builder.getReturn());
+    return_ = Preconditions.checkNotNull(builder.getReturn());
   }
 
-  public static ShelfBookName of(String , String ) {
+  public static ShelfBookName of(String shelfId, String return) {
     return newBuilder()
       .setShelfId(shelfId)
-      .setReturn(return2)
+      .setReturn(return_)
       .build();
   }
 
-  public static String format(String , String ) {
+  public static String format(String shelfId, String return) {
     return newBuilder()
       .setShelfId(shelfId)
-      .setReturn(return2)
+      .setReturn(return_)
       .build()
       .toString();
   }
@@ -76,7 +76,7 @@ public class ShelfBookName extends BookName {
     }
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "ShelfBookName.parse: formattedString not in valid format");
-    return of(matchMap.get("shelf_id"), matchMap.get("return2"));
+    return of(matchMap.get("shelf_id"), matchMap.get("return"));
   }
 
   public static List<ShelfBookName> parseList(List<String> formattedStrings) {
@@ -109,7 +109,7 @@ public class ShelfBookName extends BookName {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
           fieldMapBuilder.put("shelfId", shelfId);
-          fieldMapBuilder.put("return2", return2);
+          fieldMapBuilder.put("return_", return_);
           fieldValuesMap = fieldMapBuilder.build();
         }
       }
@@ -123,21 +123,21 @@ public class ShelfBookName extends BookName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "return", return2);
+    return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "return", return);
   }
 
   /** Builder for ShelfBookName. */
   public static class Builder {
 
     private String shelfId;
-    private String return2;
+    private String return_;
 
     public String getShelfId() {
       return shelfId;
     }
 
     public String getReturn() {
-      return return2;
+      return return_;
     }
 
     public Builder setShelfId(String shelfId) {
@@ -145,8 +145,8 @@ public class ShelfBookName extends BookName {
       return this;
     }
 
-    public Builder setReturn(String return2) {
-      this.return2 = return2;
+    public Builder setReturn(String return_) {
+      this.return_ = return_;
       return this;
     }
 
@@ -155,7 +155,7 @@ public class ShelfBookName extends BookName {
 
     private Builder(ShelfBookName shelfBookName) {
       shelfId = shelfBookName.shelfId;
-      return2 = shelfBookName.return2;
+      return_ = shelfBookName.return_;
     }
 
     public ShelfBookName build() {
@@ -171,7 +171,7 @@ public class ShelfBookName extends BookName {
     if (o instanceof ShelfBookName) {
       ShelfBookName that = (ShelfBookName) o;
       return (this.shelfId.equals(that.shelfId))
-          && (this.return2.equals(that.return2));
+          && (this.return.equals(that.return));
     }
     return false;
   }

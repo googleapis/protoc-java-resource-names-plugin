@@ -47,11 +47,10 @@ class SymbolTable(object):
             self.symbol_table.add(desired_name)
             return desired_name
 
-        # Resolve collisions with a numeric suffix, starting with 2.
-        i = 2
-        while (desired_name + str(i)) in self.symbol_table:
-            self.symbol_table.add(desired_name + str(i))
-        return desired_name + str(i)
+        # Resolve collisions with one or more underscores.
+        while (desired_name + "_") in self.symbol_table:
+            self.symbol_table.add(desired_name + "_")
+        return desired_name + "_"
 
 
 java_reserved_symbols = {

@@ -49,13 +49,13 @@ public class ShelfName implements ResourceName {
     shelfId = Preconditions.checkNotNull(builder.getShelfId());
   }
 
-  public static ShelfName of(String ) {
+  public static ShelfName of(String shelfId) {
     return newBuilder()
       .setShelfId(shelfId)
       .build();
   }
 
-  public static String format(String ) {
+  public static String format(String shelfId) {
     return newBuilder()
       .setShelfId(shelfId)
       .build()
