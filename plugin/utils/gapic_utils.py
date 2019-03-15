@@ -34,7 +34,7 @@ GAPIC_CONFIG_ANY = '*'
 
 def read_from_gapic_yaml(yaml_file):
     with open(yaml_file) as f:
-        gapic_yaml = yaml.load(f)
+        gapic_yaml = yaml.full_load(f)
 
     collections = {}
     if 'collections' in gapic_yaml:

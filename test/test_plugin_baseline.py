@@ -14,10 +14,10 @@
 
 import os
 import pytest
-# import subprocess
+import subprocess
 import shutil
 import difflib
-# import sys
+from sys import stderr
 
 from plugin.utils import casing_utils
 
@@ -72,10 +72,10 @@ def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
              '--plugin=protoc-gen-gapic=gapic_plugin.py']
     args += ['-I' + path for path in include_dirs]
     args += proto_files
-    # try:
-    #     subprocess.check_call(args, stderr=sys.stderr)
-    # except subprocess.CalledProcessError as e:
-    #     sys.stderr.write(str(e))
+    try:
+        subprocess.check_call(args)
+    except subprocess.CalledProcessError as exc:
+        stderr.write("Status : FAIL, return code %s, message %s" % (exc.returncode, exc.output))
 
 
 def clean_test_output():
@@ -86,6 +86,8 @@ def clean_test_output():
 @pytest.fixture(scope='class')
 def run_protoc():
     clean_test_output()
+    assert(os.path.isdir(TEST_OUTPUT_DIR))
+    stderr.write("LKSDJFLKSDJFLKSDJF:LKSJF\n\n\n\nn\\nskfjlskdjflksdjf;" + str(os.path.isdir(TEST_OUTPUT_DIR)))
     gapic_yaml = os.path.join(TEST_DIR, 'library_gapic.yaml')
     # TODO: make this path configurable
     include_dirs = ['.', './googleapis']
