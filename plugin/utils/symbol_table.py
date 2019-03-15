@@ -31,6 +31,7 @@ A utility class used to get and store unique symbols.
 """
 
 import copy
+from sets import Set
 
 class SymbolTable(object):
 
@@ -43,17 +44,17 @@ class SymbolTable(object):
   def getNewSymbol(self, desired_name):
 
     if not (desired_name in self.symbol_table):
-      self.symbol_table.append(desired_name)
+      self.symbol_table.add(desired_name)
       return desired_name
 
     # Resolve collisions with a numeric suffix, starting with 2.
     i = 2
     while (desired_name + str(i)) in self.symbol_table :
-      self.symbol_table.append(desired_name + str(i))
+      self.symbol_table.add(desired_name + str(i))
     return desired_name + str(i)
 
 
-java_reserved_symbols = [
+java_reserved_symbols = Set([
     "abstract",
     "assert",
     "boolean",
@@ -106,4 +107,4 @@ java_reserved_symbols = [
     "try",
     "void",
     "volatile",
-    "while"]
+    "while"])
