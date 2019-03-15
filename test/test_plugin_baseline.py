@@ -75,7 +75,7 @@ def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
     try:
         subprocess.check_call(args)
     except subprocess.CalledProcessError as exc:
-        stderr.write("Status : FAIL, return code %s, message %s" % (exc.returncode, exc.output))
+        stderr.write("Status : FAIL, message %s" % exc.output)
 
 
 def clean_test_output():
@@ -86,8 +86,6 @@ def clean_test_output():
 @pytest.fixture(scope='class')
 def run_protoc():
     clean_test_output()
-    assert(os.path.isdir(TEST_OUTPUT_DIR))
-    stderr.write("LKSDJFLKSDJFLKSDJF:LKSJF\n\n\n\nn\\nskfjlskdjflksdjf;" + str(os.path.isdir(TEST_OUTPUT_DIR)))
     gapic_yaml = os.path.join(TEST_DIR, 'library_gapic.yaml')
     # TODO: make this path configurable
     include_dirs = ['.', './googleapis']
