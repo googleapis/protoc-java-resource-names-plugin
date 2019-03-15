@@ -109,7 +109,7 @@ public class ShelfBookName extends BookName {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
           fieldMapBuilder.put("shelfId", shelfId);
-          fieldMapBuilder.put("return_", return_);
+          fieldMapBuilder.put("return", return_);
           fieldValuesMap = fieldMapBuilder.build();
         }
       }

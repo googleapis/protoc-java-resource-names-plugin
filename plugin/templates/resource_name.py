@@ -97,6 +97,7 @@ class ResourceName(ResourceNameBase):
             'upper': casing_utils.lower_underscore_to_upper_camel(
                 f['parameter_name']),
             'lower': f['parameter'],
+            'parameter_name':  casing_utils.lower_underscore_to_lower_camel(f['parameter_name']),
         } for f in self.parameter_list]
         self.format_string = collection_config.name_pattern
         self.package_name = java_package
