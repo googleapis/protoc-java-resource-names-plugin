@@ -31,7 +31,6 @@ A utility class used to get and store unique symbols.
 """
 
 import copy
-from sets import Set
 
 
 class SymbolTable(object):
@@ -55,7 +54,7 @@ class SymbolTable(object):
         return desired_name + str(i)
 
 
-java_reserved_symbols = Set([
+java_reserved_symbols = set([
     "abstract",
     "assert",
     "boolean",
