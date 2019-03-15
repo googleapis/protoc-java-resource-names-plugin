@@ -54,7 +54,7 @@ class SymbolTable(object):
         return desired_name + str(i)
 
 
-java_reserved_symbols = set([
+java_reserved_symbols = {
     "abstract",
     "assert",
     "boolean",
@@ -107,4 +107,4 @@ java_reserved_symbols = set([
     "try",
     "void",
     "volatile",
-    "while"])
+    "while"}
