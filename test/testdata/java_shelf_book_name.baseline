@@ -55,14 +55,14 @@ public class ShelfBookName extends BookName {
     return_ = Preconditions.checkNotNull(builder.getReturn());
   }
 
-  public static ShelfBookName of(String shelfId, String return) {
+  public static ShelfBookName of(String shelfId, String return_) {
     return newBuilder()
       .setShelfId(shelfId)
       .setReturn(return_)
       .build();
   }
 
-  public static String format(String shelfId, String return) {
+  public static String format(String shelfId, String return_) {
     return newBuilder()
       .setShelfId(shelfId)
       .setReturn(return_)
@@ -123,7 +123,7 @@ public class ShelfBookName extends BookName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "return", return);
+    return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "return", return_);
   }
 
   /** Builder for ShelfBookName. */
@@ -171,7 +171,7 @@ public class ShelfBookName extends BookName {
     if (o instanceof ShelfBookName) {
       ShelfBookName that = (ShelfBookName) o;
       return (this.shelfId.equals(that.shelfId))
-          && (this.return.equals(that.return));
+          && (this.return_.equals(that.return_));
     }
     return false;
   }
