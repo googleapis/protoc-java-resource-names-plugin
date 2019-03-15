@@ -70,13 +70,14 @@ def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
         args.append(format_output_arg(lang_out, output_dir))
     args += [format_output_arg('gapic', output_dir, gapic_yaml),
              '--plugin=protoc-gen-gapic=gapic_plugin.py']
-    args += ['-I' + path for path in include_dirs]
+    args += ['-I ' + path for path in include_dirs]
     args += proto_files
     try:
-      subprocess.check_call(args, stderr=sys.stderr)
+        subprocess.check_call(args, stderr=sys.stderr)
     except subprocess.CalledProcessError as e:
-      sys.stderr.write(e.message)
-
+        # if e.hasAttr(message)
+        # sys.stderr.write(e.message)
+        sys.stderr.write(str(e))
 
 
 def clean_test_output():
