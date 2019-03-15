@@ -40,4 +40,3 @@ def test_symbol_table():
     # Make sure that a new instance of SymbolTable uses a different base set
     new_table = SymbolTable()
     assert new_table.getNewSymbol("interface") == "interface_"
-
