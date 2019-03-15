@@ -47,8 +47,8 @@ def pypi_six():
 def pypi_py_yaml():
     http_archive(
         name = "pypi_py_yaml",
-        url = ("https://files.pythonhosted.org/packages/4a/85/db5a2df477072b2902b0eb892feb37d88ac635d36245a72a6a69b23b383a/PyYAML-3.12.tar.gz"),
-        strip_prefix = "PyYAML-3.12/lib",
+        url = ("http://pyyaml.org/download/pyyaml/PyYAML-3.13.tar.gz"),
+        strip_prefix = "PyYAML-3.13/lib",
         build_file_content = _DEFAULT_PY_BUILD_FILE,
     )
 
