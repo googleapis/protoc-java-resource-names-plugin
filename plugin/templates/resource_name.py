@@ -30,6 +30,7 @@
 import os
 from plugin.utils import path_template
 from plugin.utils import casing_utils
+from plugin.utils.symbol_table import SymbolTable
 
 RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA = 'com.google.api.resourcenames'
 
@@ -59,6 +60,7 @@ class ResourceNameBase(object):
 class ResourceName(ResourceNameBase):
 
     def __init__(self, collection_config, java_package, oneof):
+        symbol_table = SymbolTable()
 
         entity_name = collection_config.java_entity_name
         name_template = path_template.PathTemplate(
@@ -92,7 +94,7 @@ class ResourceName(ResourceNameBase):
         self.parameter_list[-1]['not_last'] = False
         self.format_fields = [{
             'upper': casing_utils.lower_camel_to_upper_camel(f['parameter']),
-            'lower': f['parameter'],
+            'lower': symbol_table.getNewSymbol(f['parameter']),
         } for f in self.parameter_list]
         self.format_string = collection_config.name_pattern
         self.package_name = java_package
