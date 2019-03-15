@@ -50,6 +50,8 @@ class SymbolTable(object):
         # Resolve collisions with one or more underscores.
         while (desired_name + "_") in self.symbol_table:
             self.symbol_table.add(desired_name + "_")
+            desired_name = desired_name + "_"
+        self.symbol_table.add(desired_name + "_")
         return desired_name + "_"
 
 
