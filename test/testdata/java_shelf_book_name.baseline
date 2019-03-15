@@ -27,7 +27,7 @@ import java.util.List;
 public class ShelfBookName extends BookName {
 
   private static final PathTemplate PATH_TEMPLATE =
-      PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}/books/{return}");
+      PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}/books/{return2}");
 
   private volatile Map<String, String> fieldValuesMap;
 
@@ -55,14 +55,14 @@ public class ShelfBookName extends BookName {
     return2 = Preconditions.checkNotNull(builder.getReturn());
   }
 
-  public static ShelfBookName of(String shelfId, String return) {
+  public static ShelfBookName of(String , String ) {
     return newBuilder()
       .setShelfId(shelfId)
       .setReturn(return2)
       .build();
   }
 
-  public static String format(String shelfId, String return) {
+  public static String format(String , String ) {
     return newBuilder()
       .setShelfId(shelfId)
       .setReturn(return2)
@@ -76,7 +76,7 @@ public class ShelfBookName extends BookName {
     }
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "ShelfBookName.parse: formattedString not in valid format");
-    return of(matchMap.get("shelf_id"), matchMap.get("return"));
+    return of(matchMap.get("shelf_id"), matchMap.get("return2"));
   }
 
   public static List<ShelfBookName> parseList(List<String> formattedStrings) {
@@ -123,7 +123,7 @@ public class ShelfBookName extends BookName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "return", return);
+    return PATH_TEMPLATE.instantiate("shelf_id", shelfId, "return", return2);
   }
 
   /** Builder for ShelfBookName. */
@@ -171,7 +171,7 @@ public class ShelfBookName extends BookName {
     if (o instanceof ShelfBookName) {
       ShelfBookName that = (ShelfBookName) o;
       return (this.shelfId.equals(that.shelfId))
-          && (this.return.equals(that.return));
+          && (this.return2.equals(that.return2));
     }
     return false;
   }

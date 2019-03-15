@@ -55,14 +55,14 @@ public class ArchivedBookName extends BookName {
     bookId = Preconditions.checkNotNull(builder.getBookId());
   }
 
-  public static ArchivedBookName of(String archiveId, String bookId) {
+  public static ArchivedBookName of(String , String ) {
     return newBuilder()
       .setArchiveId(archiveId)
       .setBookId(bookId)
       .build();
   }
 
-  public static String format(String archiveId, String bookId) {
+  public static String format(String , String ) {
     return newBuilder()
       .setArchiveId(archiveId)
       .setBookId(bookId)
