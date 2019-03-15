@@ -33,25 +33,26 @@ A utility class used to get and store unique symbols.
 import copy
 from sets import Set
 
+
 class SymbolTable(object):
 
-  """
-  Initialize a case-sensitive SymbolTable with a set of symbols.
-  """
-  def __init__(self):
-    self.symbol_table = copy.deepcopy(java_reserved_symbols)
+    """
+    Initialize a case-sensitive SymbolTable with a set of symbols.
+    """
+    def __init__(self):
+        self.symbol_table = copy.deepcopy(java_reserved_symbols)
 
-  def getNewSymbol(self, desired_name):
+    def getNewSymbol(self, desired_name):
 
-    if not (desired_name in self.symbol_table):
-      self.symbol_table.add(desired_name)
-      return desired_name
+        if not (desired_name in self.symbol_table):
+            self.symbol_table.add(desired_name)
+            return desired_name
 
-    # Resolve collisions with a numeric suffix, starting with 2.
-    i = 2
-    while (desired_name + str(i)) in self.symbol_table :
-      self.symbol_table.add(desired_name + str(i))
-    return desired_name + str(i)
+        # Resolve collisions with a numeric suffix, starting with 2.
+        i = 2
+        while (desired_name + str(i)) in self.symbol_table:
+            self.symbol_table.add(desired_name + str(i))
+        return desired_name + str(i)
 
 
 java_reserved_symbols = Set([
