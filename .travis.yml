@@ -11,6 +11,6 @@ before_script:
   - export PATH=$PATH:$PWD/protoc-3.6.1/bin
   - git clone https://github.com/googleapis/googleapis.git
 install: pip install codecov tox-travis
-script: sudo tox test/test_plugin_baseline.py
+script: tox test/test_plugin_baseline.py
 after_success:
   - codecov
