@@ -182,7 +182,7 @@ public class ShelfBookName extends BookName {
     h *= 1000003;
     h ^= shelfId.hashCode();
     h *= 1000003;
-    h ^= return.hashCode();
+    h ^= return_.hashCode();
     return h;
   }
 }
