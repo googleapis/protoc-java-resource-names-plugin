@@ -107,7 +107,7 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
           {{#formatFields}}
-          fieldMapBuilder.put("{{lower}}", {{lower}});
+          fieldMapBuilder.put("{{parameter_name_in_map}}", {{lower}});
           {{/formatFields}}
           fieldValuesMap = fieldMapBuilder.build();
         }

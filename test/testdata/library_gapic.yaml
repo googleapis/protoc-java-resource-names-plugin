@@ -20,7 +20,7 @@ collections:
     common_resource_name: com.google.cloud.ProjectName
 - name_pattern: shelves/{shelf_id}
   entity_name: shelf
-- name_pattern: shelves/{shelf_id}/books/{book_id}
+- name_pattern: shelves/{shelf_id}/books/{return} # Test using a Java keyword ("return").
   entity_name: book
   language_overrides:
     - language: java
