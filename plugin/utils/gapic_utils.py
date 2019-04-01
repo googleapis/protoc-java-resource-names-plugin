@@ -48,13 +48,11 @@ def read_from_gapic_yaml(yaml_file):
     for collection in all_collections:
         all_entities.extend(collection)
 
-    # (single_collections, fixed_collections2) = find_single_and_fixed_entities(all_collections)
-    # for collection in single_collections:
-    for entity in all_entities:
-        collections = load_collection_configs(entity, collections)
+    (single_resource_names, fixed_resource_names) = \
+        find_single_and_fixed_entities(all_entities)
 
-    # for collection in all_collections:
-    #     collections = load_collection_configs(collection, collections)
+    for entity in single_resource_names:
+        collections = load_collection_configs(entity, collections)
 
     # TODO(andrealin): Remove the fixed_resource_name_values parsing once they no longer exist
     # in GAPIC configs.
@@ -70,18 +68,18 @@ def read_from_gapic_yaml(yaml_file):
     return GapicConfig(collections, fixed_collections, oneofs)
 
 
-def find_single_and_fixed_entities(all_collections):
-    single_collections = []
-    fixed_collections = []
+def find_single_and_fixed_entities(all_resource_names):
+    single_entities = []
+    fixed_entities = []
     #
-    for collection in all_collections:
+    for collection in all_resource_names:
         # name_pattern = collection['name_pattern']
-        single_collections.append(collection)
+        single_entities.append(collection)
     #     if '{' not in name_pattern:
     #         fixed_collections.append(collection)
     #     else:
     #         single_collections.append(collection)
-    return single_collections, fixed_collections
+    return single_entities, fixed_entities
 
 
 def load_collection_configs(config, existing_configs):
