@@ -42,7 +42,7 @@ def read_from_gapic_yaml(yaml_file):
     all_collections = [gapic_yaml['collections']] if 'collections' in gapic_yaml else []
     for interface in gapic_yaml.get('interfaces', []):
         if 'collections' in interface:
-            all_collections.add(interface['collections'])
+            all_collections.append(interface['collections'])
 
     for collection in all_collections:
         collections = load_collection_configs(collection, collections)
