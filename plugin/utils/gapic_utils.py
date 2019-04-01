@@ -44,10 +44,14 @@ def read_from_gapic_yaml(yaml_file):
         if 'collections' in interface:
             all_collections.append(interface['collections'])
 
+    all_entities = []
     for collection in all_collections:
-        collections = load_collection_configs(collection, collections)
+        all_entities.extend(collection)
 
-    # (collections, fixed_collections) = find_single_and_fixed_collections(all_collections)
+    # (single_collections, fixed_collections2) = find_single_and_fixed_entities(all_collections)
+    # for collection in single_collections:
+    for entity in all_entities:
+        collections = load_collection_configs(entity, collections)
 
     # for collection in all_collections:
     #     collections = load_collection_configs(collection, collections)
@@ -66,32 +70,45 @@ def read_from_gapic_yaml(yaml_file):
     return GapicConfig(collections, fixed_collections, oneofs)
 
 
-def load_collection_configs(config_list, existing_configs):
-    for config in config_list:
-        entity_name = config['entity_name']
-        name_pattern = config['name_pattern']
-        java_entity_name = entity_name
+def find_single_and_fixed_entities(all_collections):
+    single_collections = []
+    fixed_collections = []
+    #
+    for collection in all_collections:
+        # name_pattern = collection['name_pattern']
+        single_collections.append(collection)
+    #     if '{' not in name_pattern:
+    #         fixed_collections.append(collection)
+    #     else:
+    #         single_collections.append(collection)
+    return single_collections, fixed_collections
 
-        overrides = config.get('language_overrides', [])
-        overrides = [ov for ov in overrides if ov['language'] == 'java']
-        if len(overrides) > 1:
-            raise ValueError('expected only one java override')
-        if len(overrides) == 1:
-            override = overrides[0]
-            if 'common_resource_name' in override:
-                continue
-            java_entity_name = override['entity_name']
 
-        if entity_name in existing_configs:
-            existing_name_pattern = existing_configs[entity_name].name_pattern
-            if existing_name_pattern != name_pattern:
-                raise ValueError(
-                    'Found collection configs with same entity name '
-                    'but different patterns. Name: ' + entity_name)
-        else:
-            existing_configs[entity_name] = CollectionConfig(entity_name,
-                                                             name_pattern,
-                                                             java_entity_name)
+def load_collection_configs(config, existing_configs):
+    entity_name = config['entity_name']
+    name_pattern = config['name_pattern']
+    java_entity_name = entity_name
+
+    overrides = config.get('language_overrides', [])
+    overrides = [ov for ov in overrides if ov['language'] == 'java']
+    if len(overrides) > 1:
+        raise ValueError('expected only one java override')
+    if len(overrides) == 1:
+        override = overrides[0]
+        if 'common_resource_name' in override:
+            return existing_configs
+        java_entity_name = override['entity_name']
+
+    if entity_name in existing_configs:
+        existing_name_pattern = existing_configs[entity_name].name_pattern
+        if existing_name_pattern != name_pattern:
+            raise ValueError(
+                'Found collection configs with same entity name '
+                'but different patterns. Name: ' + entity_name)
+    else:
+        existing_configs[entity_name] = CollectionConfig(entity_name,
+                                                         name_pattern,
+                                                         java_entity_name)
     return existing_configs
 
 
