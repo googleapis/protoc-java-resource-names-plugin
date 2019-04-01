@@ -37,14 +37,17 @@ def read_from_gapic_yaml(yaml_file):
         gapic_yaml = yaml.load(f)
 
     collections = {}
-    if 'collections' in gapic_yaml:
-        collections = load_collection_configs(gapic_yaml['collections'],
-                                              collections)
-    for interface in gapic_yaml.get('interfaces', []):
-        if 'collections' in interface:
-            collections = load_collection_configs(interface['collections'],
-                                                  collections)
     fixed_collections = {}
+
+    all_collections = gapic_yaml['collections'] if 'collections' in gapic_yaml else []
+    all_collections.extend([interface['collections'] for interface in gapic_yaml.get('interfaces', [])])
+
+    # (collections, fixed_collections) = find_single_and_fixed_collections(all_collections)
+
+    collections = load_collection_configs(all_collections, collections)
+
+    # TODO(andrealin): Remove the fixed_resource_name_values parsing once they no longer exist
+    # in GAPIC configs.
     if 'fixed_resource_name_values' in gapic_yaml:
         fixed_collections = load_fixed_configs(
             gapic_yaml['fixed_resource_name_values'], collections)
