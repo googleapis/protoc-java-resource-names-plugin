@@ -71,14 +71,13 @@ def read_from_gapic_yaml(yaml_file):
 def find_single_and_fixed_entities(all_resource_names):
     single_entities = []
     fixed_entities = []
-    #
+
     for collection in all_resource_names:
-        # name_pattern = collection['name_pattern']
-        single_entities.append(collection)
-    #     if '{' not in name_pattern:
-    #         fixed_collections.append(collection)
-    #     else:
-    #         single_collections.append(collection)
+        name_pattern = collection['name_pattern']
+        if '{' not in name_pattern:
+            fixed_entities.append(collection)
+        else:
+            single_entities.append(collection)
     return single_entities, fixed_entities
 
 
