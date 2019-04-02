@@ -18,14 +18,17 @@ import os
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 GAPIC_CONFIG_PATH = os.path.join(TEST_DIR, 'testdata/library_gapic.yaml')
 
+
 class TestConfigParsing(TestCase):
     def test_config_parsing(self):
         gapic_config = gapic_utils.read_from_gapic_yaml(GAPIC_CONFIG_PATH)
         self.assertEqual(1, len(gapic_config.fixed_collections))
-        self.assertEqual("deleted_book", gapic_config.fixed_collections['deleted_book'].entity_name)
-        self.assertEqual("_deleted-book_", gapic_config.fixed_collections['deleted_book'].fixed_value)
-        self.assertEqual("deleted_book", gapic_config.fixed_collections['deleted_book'].java_entity_name)
-
-
-
-
+        self.assertEqual(
+            "deleted_book",
+            gapic_config.fixed_collections['deleted_book'].entity_name)
+        self.assertEqual(
+            "_deleted-book_",
+            gapic_config.fixed_collections['deleted_book'].fixed_value)
+        self.assertEqual(
+            "deleted_book",
+            gapic_config.fixed_collections['deleted_book'].java_entity_name)

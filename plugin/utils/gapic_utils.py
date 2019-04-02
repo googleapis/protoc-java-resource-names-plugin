@@ -39,7 +39,9 @@ def read_from_gapic_yaml(yaml_file):
     collections = {}
     fixed_collections = {}
 
-    all_collections = [gapic_yaml['collections']] if 'collections' in gapic_yaml else []
+    all_collections = []
+    if 'collections' in gapic_yaml:
+        all_collections = [gapic_yaml['collections']]
     for interface in gapic_yaml.get('interfaces', []):
         if 'collections' in interface:
             all_collections.append(interface['collections'])
@@ -54,13 +56,18 @@ def read_from_gapic_yaml(yaml_file):
     for entity in single_resource_names:
         collections = load_collection_configs(entity, collections)
 
-    # TODO(andrealin): Remove the fixed_resource_name_values parsing once they no longer exist
-    # in GAPIC configs.
+    # TODO(andrealin): Remove the fixed_resource_name_values
+    # parsing once they no longer exist in GAPIC configs.
     if 'fixed_resource_name_values' in gapic_yaml:
         fixed_collections = load_fixed_configs(
-            gapic_yaml['fixed_resource_name_values'], collections, "fixed_value")
+            gapic_yaml['fixed_resource_name_values'],
+            collections,
+            "fixed_value")
     if not fixed_collections:
-        fixed_collections = load_fixed_configs(fixed_resource_names, collections, "name_pattern")
+        fixed_collections = load_fixed_configs(
+            fixed_resource_names,
+            collections,
+            "name_pattern")
 
     oneofs = {}
     if 'collection_oneofs' in gapic_yaml:
