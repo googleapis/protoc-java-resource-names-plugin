@@ -39,18 +39,14 @@ def read_from_gapic_yaml(yaml_file):
     collections = {}
     fixed_collections = {}
 
-    all_collections = []
+    all_entities = []
     if 'collections' in gapic_yaml:
-        all_collections = [gapic_yaml['collections']]
+        all_entities.extend(gapic_yaml['collections'])
     for interface in gapic_yaml.get('interfaces', []):
         if 'collections' in interface:
-            all_collections.append(interface['collections'])
+            all_entities.extend(interface['collections'])
 
-    all_entities = []
-    for collection in all_collections:
-        all_entities.extend(collection)
-
-    (single_resource_names, fixed_resource_names) = \
+    single_resource_names, fixed_resource_names = \
         find_single_and_fixed_entities(all_entities)
 
     collections = load_collection_configs(single_resource_names, collections)
