@@ -32,3 +32,20 @@ class TestConfigParsing(TestCase):
         self.assertEqual(
             "deleted_book",
             gapic_config.fixed_collections['deleted_book'].java_entity_name)
+
+    def test_identify_single_and_fixed_entities(self):
+        project = {'name_pattern': 'projects/*', 'entity_name': 'project'}
+        deleted_book = {'name_pattern': '_deleted-book_',
+                        'entity_name': 'deleted_book'}
+        shelf = {'name_pattern': 'shelves/*/books/*',
+                 'entity_name': 'shelf'}
+        book = {'name_pattern': 'book/{book_id}',
+                'entity_name': 'book'}
+        all_resource_names = [project, deleted_book, shelf, book]
+        (singles, fixies) = gapic_utils.find_single_and_fixed_entities(
+            all_resource_names)
+
+        self.assertIn(project, singles)
+        self.assertIn(deleted_book, fixies)
+        self.assertIn(shelf, singles)
+        self.assertIn(book, singles)

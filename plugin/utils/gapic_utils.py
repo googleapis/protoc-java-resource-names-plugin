@@ -84,10 +84,10 @@ def find_single_and_fixed_entities(all_resource_names):
 
     for collection in all_resource_names:
         name_pattern = collection['name_pattern']
-        if '{' not in name_pattern:
-            fixed_entities.append(collection)
-        else:
+        if '{' in name_pattern or '*' in name_pattern:
             single_entities.append(collection)
+        else:
+            fixed_entities.append(collection)
     return single_entities, fixed_entities
 
 
@@ -118,6 +118,7 @@ def load_collection_configs(config_list, existing_configs):
                                                              name_pattern,
                                                              java_entity_name)
     return existing_configs
+
 
 def load_fixed_configs(config_list,
                        existing_configs,
