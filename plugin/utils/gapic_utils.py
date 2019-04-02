@@ -53,8 +53,7 @@ def read_from_gapic_yaml(yaml_file):
     (single_resource_names, fixed_resource_names) = \
         find_single_and_fixed_entities(all_entities)
 
-    for entity in single_resource_names:
-        collections = load_collection_configs(entity, collections)
+    collections = load_collection_configs(single_resource_names, collections)
 
     # TODO(andrealin): Remove the fixed_resource_name_values
     # parsing once they no longer exist in GAPIC configs.
@@ -92,33 +91,33 @@ def find_single_and_fixed_entities(all_resource_names):
     return single_entities, fixed_entities
 
 
-def load_collection_configs(config, existing_configs):
-    entity_name = config['entity_name']
-    name_pattern = config['name_pattern']
-    java_entity_name = entity_name
+def load_collection_configs(config_list, existing_configs):
+    for config in config_list:
+        entity_name = config['entity_name']
+        name_pattern = config['name_pattern']
+        java_entity_name = entity_name
 
-    overrides = config.get('language_overrides', [])
-    overrides = [ov for ov in overrides if ov['language'] == 'java']
-    if len(overrides) > 1:
-        raise ValueError('expected only one java override')
-    if len(overrides) == 1:
-        override = overrides[0]
-        if 'common_resource_name' in override:
-            return existing_configs
-        java_entity_name = override['entity_name']
+        overrides = config.get('language_overrides', [])
+        overrides = [ov for ov in overrides if ov['language'] == 'java']
+        if len(overrides) > 1:
+            raise ValueError('expected only one java override')
+        if len(overrides) == 1:
+            override = overrides[0]
+            if 'common_resource_name' in override:
+                continue
+            java_entity_name = override['entity_name']
 
-    if entity_name in existing_configs:
-        existing_name_pattern = existing_configs[entity_name].name_pattern
-        if existing_name_pattern != name_pattern:
-            raise ValueError(
-                'Found collection configs with same entity name '
-                'but different patterns. Name: ' + entity_name)
-    else:
-        existing_configs[entity_name] = CollectionConfig(entity_name,
-                                                         name_pattern,
-                                                         java_entity_name)
+        if entity_name in existing_configs:
+            existing_name_pattern = existing_configs[entity_name].name_pattern
+            if existing_name_pattern != name_pattern:
+                raise ValueError(
+                    'Found collection configs with same entity name '
+                    'but different patterns. Name: ' + entity_name)
+        else:
+            existing_configs[entity_name] = CollectionConfig(entity_name,
+                                                             name_pattern,
+                                                             java_entity_name)
     return existing_configs
-
 
 def load_fixed_configs(config_list,
                        existing_configs,
