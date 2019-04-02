@@ -58,7 +58,9 @@ def read_from_gapic_yaml(yaml_file):
     # in GAPIC configs.
     if 'fixed_resource_name_values' in gapic_yaml:
         fixed_collections = load_fixed_configs(
-            gapic_yaml['fixed_resource_name_values'], collections)
+            gapic_yaml['fixed_resource_name_values'], collections, "fixed_value")
+    if not fixed_collections:
+        fixed_collections = load_fixed_configs(fixed_resource_names, collections, "name_pattern")
 
     oneofs = {}
     if 'collection_oneofs' in gapic_yaml:
@@ -109,11 +111,11 @@ def load_collection_configs(config, existing_configs):
     return existing_configs
 
 
-def load_fixed_configs(config_list, existing_collections):
+def load_fixed_configs(config_list, existing_collections, pattern_key_name):
     existing_configs = {}
     for config in config_list:
         entity_name = config['entity_name']
-        fixed_value = config['fixed_value']
+        fixed_value = config[pattern_key_name]
         java_entity_name = entity_name
         # TODO implement override support (only if necessary before this
         # plugin is deprecated...)
