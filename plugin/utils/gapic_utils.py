@@ -60,14 +60,16 @@ def read_from_gapic_yaml(yaml_file):
     # parsing once they no longer exist in GAPIC configs.
     if 'fixed_resource_name_values' in gapic_yaml:
         fixed_collections = load_fixed_configs(
+            fixed_collections,
             gapic_yaml['fixed_resource_name_values'],
             collections,
             "fixed_value")
-    if not fixed_collections:
-        fixed_collections = load_fixed_configs(
-            fixed_resource_names,
-            collections,
-            "name_pattern")
+    # Add the fixed resource names that are defined in the collections.
+    fixed_collections = load_fixed_configs(
+        fixed_resource_names,
+        fixed_collections,
+        collections,
+        "name_pattern")
 
     oneofs = {}
     if 'collection_oneofs' in gapic_yaml:
@@ -118,8 +120,10 @@ def load_collection_configs(config, existing_configs):
     return existing_configs
 
 
-def load_fixed_configs(config_list, existing_collections, pattern_key_name):
-    existing_configs = {}
+def load_fixed_configs(config_list,
+                       existing_configs,
+                       existing_collections,
+                       pattern_key_name):
     for config in config_list:
         entity_name = config['entity_name']
         fixed_value = config[pattern_key_name]
