@@ -37,8 +37,6 @@ def read_from_gapic_yaml(yaml_file):
         gapic_yaml = yaml.load(f)
 
     collections = {}
-    fixed_collections = {}
-
     all_entities = []
     if 'collections' in gapic_yaml:
         all_entities.extend(gapic_yaml['collections'])
@@ -51,6 +49,7 @@ def read_from_gapic_yaml(yaml_file):
 
     collections = load_collection_configs(single_resource_names, collections)
 
+    fixed_collections = {}
     # TODO(andrealin): Remove the fixed_resource_name_values
     # parsing once they no longer exist in GAPIC configs.
     if 'fixed_resource_name_values' in gapic_yaml:
