@@ -37,17 +37,33 @@ def read_from_gapic_yaml(yaml_file):
         gapic_yaml = yaml.load(f)
 
     collections = {}
+    all_entities = []
     if 'collections' in gapic_yaml:
-        collections = load_collection_configs(gapic_yaml['collections'],
-                                              collections)
+        all_entities.extend(gapic_yaml['collections'])
     for interface in gapic_yaml.get('interfaces', []):
         if 'collections' in interface:
-            collections = load_collection_configs(interface['collections'],
-                                                  collections)
+            all_entities.extend(interface['collections'])
+
+    single_resource_names, fixed_resource_names = \
+        find_single_and_fixed_entities(all_entities)
+
+    collections = load_collection_configs(single_resource_names, collections)
+
     fixed_collections = {}
+    # TODO(andrealin): Remove the fixed_resource_name_values
+    # parsing once they no longer exist in GAPIC configs.
     if 'fixed_resource_name_values' in gapic_yaml:
         fixed_collections = load_fixed_configs(
-            gapic_yaml['fixed_resource_name_values'], collections)
+            gapic_yaml['fixed_resource_name_values'],
+            fixed_collections,
+            collections,
+            "fixed_value")
+    # Add the fixed resource names that are defined in the collections.
+    fixed_collections = load_fixed_configs(
+        fixed_resource_names,
+        fixed_collections,
+        collections,
+        "name_pattern")
 
     oneofs = {}
     if 'collection_oneofs' in gapic_yaml:
@@ -55,6 +71,19 @@ def read_from_gapic_yaml(yaml_file):
                                         collections, fixed_collections)
 
     return GapicConfig(collections, fixed_collections, oneofs)
+
+
+def find_single_and_fixed_entities(all_resource_names):
+    single_entities = []
+    fixed_entities = []
+
+    for collection in all_resource_names:
+        name_pattern = collection['name_pattern']
+        if '{' in name_pattern or '*' in name_pattern:
+            single_entities.append(collection)
+        else:
+            fixed_entities.append(collection)
+    return single_entities, fixed_entities
 
 
 def load_collection_configs(config_list, existing_configs):
@@ -86,11 +115,13 @@ def load_collection_configs(config_list, existing_configs):
     return existing_configs
 
 
-def load_fixed_configs(config_list, existing_collections):
-    existing_configs = {}
+def load_fixed_configs(config_list,
+                       existing_configs,
+                       existing_collections,
+                       pattern_key_name):
     for config in config_list:
         entity_name = config['entity_name']
-        fixed_value = config['fixed_value']
+        fixed_value = config[pattern_key_name]
         java_entity_name = entity_name
         # TODO implement override support (only if necessary before this
         # plugin is deprecated...)
