@@ -27,14 +27,51 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from collections import OrderedDict
+import copy
+
 import yaml
+
+from google.api import resource_pb2
+
+from .casing_utils import to_snake
+
 
 GAPIC_CONFIG_ANY = '*'
 
 
-def read_from_gapic_yaml(yaml_file):
-    with open(yaml_file) as f:
-        gapic_yaml = yaml.load(f)
+def read_from_gapic_yaml(request):
+    """Read the GAPIC YAML from disk and process it.
+
+    Args:
+        request (~.plugins_pb2.CodeGeneratorRequest): A code generator
+            request received from protoc. The name of the YAML file
+            is in ``request.parameter``.
+    """
+    # Load the YAML file from disk.
+    yaml_file = request.parameter
+    if yaml_file:
+        with open(yaml_file) as f:
+            gapic_yaml = yaml.load(f)
+    else:
+        gapic_yaml = {}
+
+    # It is possible we got a "GAPIC v2", or no GAPIC YAML at all.
+    # GAPIC v2 is a stripped down GAPIC config that moves most of the relevant
+    # configuration, including resource names, over to annotations.
+    # No GAPIC YAML at all means all config is in annotations.
+    #
+    # If either of these situations apply, "build back" what the GAPIC v1
+    # would have looked like, allowing the rest of the logic to stay the
+    # same.
+    #
+    # Prop 65 Warning: The GAPIC config is known to the state of California
+    # to cause cancer and reproductive harm. The reason we do not refactor
+    # away from it here is because this tool is supposed to have a short
+    # shelf life, and it is safer to be backwards-looking than
+    # forward-looking in this case.
+    if not gapic_yaml or gapic_yaml['config_schema_version'] != '1.0.0':
+        gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
 
     collections = {}
     all_entities = []
@@ -71,6 +108,150 @@ def read_from_gapic_yaml(yaml_file):
                                         collections, fixed_collections)
 
     return GapicConfig(collections, fixed_collections, oneofs)
+
+
+def reconstruct_gapic_yaml(gapic_config, request):
+    """Reconstruct a full GAPIC v1 config based on proto annotations.
+
+    Args:
+        gapic_config (dict): A dictionary representing the GAPIC config
+            read from disk. This is must be a GAPIC config with a schema
+            version other than 1.0.0. It may be an empty dictionary
+            if no GAPIC config was present.
+        request (~.plugin_pb2.CodeGeneratorRequest): A code generator
+            request received from protoc.
+
+    Returns:
+        dict: A reconstructed GAPIC v1 config (at least as far as resource
+            names are concerned).
+    """
+    # Make a shallow copy of the GAPIC config, so that we are not
+    # modifying the passed dictionary in-place.
+    gapic_config = copy.copy(gapic_config)
+
+    # For debugability, set the schema version to something new and exciting.
+    gapic_config.setdefault('config_schema_version', 'missing')
+    gapic_config['config_schema_version'] += 'reconstructed'
+
+    # Sort existing collections in a dictionary so we can look up by
+    # entity names. (This makes it easier to avoid plowing over stuff that
+    # is explicitly defined in YAML.)
+    collections = OrderedDict([(i['entity_name'], i) for i in
+                              gapic_config.get('collections', ())])
+    for interface in gapic_config.get('interfaces', ()):
+        collections.update([(i['entity_name'], i) for i in
+                           interface.get('collections', ())])
+
+    # Do the same thing for collection oneofs.
+    collection_oneofs = OrderedDict([(i['oneof_name'], i) for i in
+                                    gapic_config.get('collection_oneofs', ())])
+    for interface in gapic_config.get('interfaces', ()):
+        collection_oneofs.update([(i['oneof_name'], i) for i in
+                                 interface.get('collection_oneofs', ())])
+
+    # Iterate over the files to be generated looking for messages that have
+    # a google.api.resource annotation.
+    # This annotation corresponds to a collection in the GAPIC v1 config.
+    for proto_file in request.proto_file:
+        # We only want to do stuff with files we were explicitly asked to
+        # generate. Ignore the rest.
+        if proto_file.name not in request.file_to_generate:
+            continue
+
+        # Iterate over all of the messages in the file.
+        for message in proto_file.message:
+            for field in message.field:
+                # If this is a single resource, build a collection.
+                res = field.options.Extensions[resource_pb2.resource]
+                if res:
+                    name = to_snake(res.symbol if res.symbol else message.name)
+                    collections.setdefault(name, {
+                        'entity_name': name,
+                        'name_pattern': res.pattern,
+                    })
+                    continue
+
+                # If this is a resource set, build that collection.
+                res_set = field.options.Extensions[resource_pb2.resource_set]
+                if res_set:
+                    collection_names = []
+
+                    # Any resources declared as part of this resource set
+                    # correspond to an explicitly declared collection in the
+                    # GAPIC config.
+                    for res in res_set.resources:
+                        name = to_snake(
+                            res.symbol if res.symbol else message.name)
+                        collections.set_default(name, {
+                            'entity_name': name,
+                            'name_pattern': res.pattern,
+                        })
+                        collection_names.append(name)
+
+                    # Any resources that are referenced in the resource set
+                    # correspond to a resource which should have been declared
+                    # separately.
+                    #
+                    # In this case, we just blindly assume that the collection
+                    # will have been declared and hope for the best.
+                    for ref in res_set.resource_references:
+                        collection_names.append(to_snake(ref.split('.')[-1]))
+
+                    # Add the resource set to "collection_oneofs".
+                    name = res_set.symbol if res_set.symbol else message.name
+                    collection_oneofs.setdefault(name, {
+                        'oneof_name': name,
+                        'collection_names': collection_names,
+                    })
+
+        # Resource references are fundamentally applied to RPCs in the GAPIC
+        # config, so we need to place them into that structure.
+        # In order to do that, we need to get the interfaces and methods into
+        # a dictionary structure rather than a list structure.
+        interfaces = OrderedDict([(i['name'], i) for i in
+                                 gapic_config.get('interfaces', ())])
+        for interface in interfaces:
+            interface['methods'] = OrderedDict([(i['name'], i) for i in
+                                                interface.get('methods', ())])
+
+        # At this point, all collections that are declared in any of our
+        # messages should be in place, so now we take resource references
+        # and add them.
+        #
+        # These become "field_name_patterns" in the GAPIC config, with
+        # the field name being the key and the name of the collection or
+        # collection_oneof being the value.
+        for message in proto_file.message:
+            for field in message.field:
+                # Get the resource reference for this field, if any.
+                ref_annotation = resource_pb2.resource_reference
+                ref = message.options.Extensions[ref_annotation]
+                if not ref:
+                    continue
+
+                # Find the method for which this message is the input,
+                # and get the GAPIC YAML portion for it.
+                # -------------------------
+                # TODO: populate `service` -- need to figure out the RPC(s)
+                # where this is used by iterating over them and then get to
+                # the service name from that.
+                # -------------------------
+                method_yaml = interfaces.get(service, {}).get('methods', {})
+
+                # Apply this field name pattern.
+                method_yaml.setdefault('field_name_patterns', {})
+                method_yaml['field_name_patterns'].setdefault(
+                    field.name,
+                    to_snake(ref.split('.')[-1]),
+                )
+
+    # Take the collections and collection_oneofs, convert them back to lists,
+    # and drop them on the GAPIC YAML.
+    gapic_yaml['collections'] = list(collections.values())
+    gapic_yaml['collection_oneofs'] = list(collection_oneofs.values())
+
+    # Done; Return the modified GAPIC YAML.
+    return gapic_yaml
 
 
 def find_single_and_fixed_entities(all_resource_names):

@@ -120,7 +120,7 @@ def main(data):
   request.ParseFromString(data)
 
   java_package = resolve_java_package_name(request)
-  gapic_config = gapic_utils.read_from_gapic_yaml(request.parameter)
+  gapic_config = gapic_utils.read_from_gapic_yaml(request)
 
   # Generate output
   response = plugin.CodeGeneratorResponse()
