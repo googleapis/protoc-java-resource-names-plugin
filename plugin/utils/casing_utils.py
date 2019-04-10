@@ -63,6 +63,7 @@ def to_snake(s):
     # Done; return the camel-cased string.
     return s.lower()
 
+
 def lower_underscore_to_lower_camel(snake_str):
     components = snake_str.split('_')
     return components[0] + ''.join(x.title() for x in components[1:])

@@ -110,7 +110,7 @@ def read_from_gapic_yaml(request):
     return GapicConfig(collections, fixed_collections, oneofs)
 
 
-def reconstruct_gapic_yaml(gapic_config, request):
+def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
     """Reconstruct a full GAPIC v1 config based on proto annotations.
 
     Args:
@@ -182,7 +182,7 @@ def reconstruct_gapic_yaml(gapic_config, request):
                     for res in res_set.resources:
                         name = to_snake(
                             res.symbol if res.symbol else message.name)
-                        collections.set_default(name, {
+                        collections.setdefault(name, {
                             'entity_name': name,
                             'name_pattern': res.pattern,
                         })
