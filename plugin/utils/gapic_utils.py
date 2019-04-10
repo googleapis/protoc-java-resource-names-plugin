@@ -131,7 +131,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
 
     # For debugability, set the schema version to something new and exciting.
     gapic_config.setdefault('config_schema_version', 'unspecified')
-    gapic_config['config_schema_version'] += 'reconstructed'
+    gapic_config['config_schema_version'] += '-reconstructed'
 
     # Sort existing collections in a dictionary so we can look up by
     # entity names. (This makes it easier to avoid plowing over stuff that
@@ -209,7 +209,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
         # a dictionary structure rather than a list structure.
         interfaces = OrderedDict([(i['name'], i) for i in
                                  gapic_config.get('interfaces', ())])
-        for interface in interfaces:
+        for interface in interfaces.values():
             interface['methods'] = OrderedDict([(i['name'], i) for i in
                                                 interface.get('methods', ())])
 
@@ -250,16 +250,16 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                         if method.input_type.split('.')[-1] == message.name:
                             # Ensure the structure we need is present and
                             # set it up otherwise.
-                            interfaces.setdefault(service.name, OrderedDict({
+                            interfaces.setdefault(service.name, {
                                 'name': service.name,
-                            }))
+                            })
                             interfaces[service.name].setdefault(
                                 'methods',
                                 OrderedDict(),
                             )
                             interfaces[service.name]['methods'].setdefault(
                                 method.name,
-                                OrderedDict({'name': method.name}),
+                                {'name': method.name},
                             )
 
                             # Grab a reference to the method's YAML
@@ -284,9 +284,9 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
 
     # Take the interfaces and methods, convert them back to lists, and
     # drop them on the GAPIC YAML also.
-    for interface in interfaces.values():
-        interface['methods'] = list(interface['methods'].values())
     gapic_config['interfaces'] = list(interfaces.values())
+    for interface in gapic_config['interfaces']:
+        interface['methods'] = list(interface['methods'].values())
 
     # Done; Return the modified GAPIC YAML.
     return gapic_config
