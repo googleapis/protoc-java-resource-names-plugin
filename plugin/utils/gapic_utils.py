@@ -130,7 +130,7 @@ def reconstruct_gapic_yaml(gapic_config, request):
     gapic_config = copy.copy(gapic_config)
 
     # For debugability, set the schema version to something new and exciting.
-    gapic_config.setdefault('config_schema_version', 'missing')
+    gapic_config.setdefault('config_schema_version', 'unspecified')
     gapic_config['config_schema_version'] += 'reconstructed'
 
     # Sort existing collections in a dictionary so we can look up by
@@ -229,29 +229,68 @@ def reconstruct_gapic_yaml(gapic_config, request):
                 if not ref:
                     continue
 
-                # Find the method for which this message is the input,
-                # and get the GAPIC YAML portion for it.
-                # -------------------------
-                # TODO: populate `service` -- need to figure out the RPC(s)
-                # where this is used by iterating over them and then get to
-                # the service name from that.
-                # -------------------------
-                method_yaml = interfaces.get(service, {}).get('methods', {})
+                # Get the name of the service and method where this message
+                # is the input message.
+                #
+                # It is rare but possible that there may be more than one.
+                for service in proto_file.service:
+                    for method in service.method:
+                        # Sanity check: Ensure we do not get false positive
+                        # methods.
+                        #
+                        # In this case, we can safely ignore anything where
+                        # the input type is not in the same package as the
+                        # API itself.
+                        if not method.input_type.lstrip('.').startswith(
+                                proto_file.package):
+                            continue
 
-                # Apply this field name pattern.
-                method_yaml.setdefault('field_name_patterns', {})
-                method_yaml['field_name_patterns'].setdefault(
-                    field.name,
-                    to_snake(ref.split('.')[-1]),
-                )
+                        # If this method accepts this message as input, then
+                        # we have a match, and we need to apply this
+                        # field name pattern to the method.
+                        if method.input_type.split('.')[-1] == message.name:
+                            # Ensure the structure we need is present and
+                            # set it up otherwise.
+                            interfaces.setdefault(service.name, OrderedDict({
+                                'name': service.name,
+                            }))
+                            interfaces[service.name].setdefault(
+                                'methods',
+                                OrderedDict(),
+                            )
+                            interfaces[service.name]['methods'].setdefault(
+                                method.name,
+                                OrderedDict({'name': method.name}),
+                            )
+
+                            # Grab a reference to the method's YAML
+                            # representation.
+                            #
+                            # NOTE: This is a reference, not a copy.
+                            # Modifying this modifies the overall structure.
+                            method_yaml = interfaces[service.name][
+                                    'methods'][method.name]
+
+                            # Apply this field name pattern.
+                            method_yaml.setdefault('field_name_patterns', {})
+                            method_yaml['field_name_patterns'].setdefault(
+                                field.name,
+                                to_snake(ref.split('.')[-1]),
+                            )
 
     # Take the collections and collection_oneofs, convert them back to lists,
     # and drop them on the GAPIC YAML.
-    gapic_yaml['collections'] = list(collections.values())
-    gapic_yaml['collection_oneofs'] = list(collection_oneofs.values())
+    gapic_config['collections'] = list(collections.values())
+    gapic_config['collection_oneofs'] = list(collection_oneofs.values())
+
+    # Take the interfaces and methods, convert them back to lists, and
+    # drop them on the GAPIC YAML also.
+    for interface in interfaces.values():
+        interface['methods'] = list(interface['methods'].values())
+    gapic_config['interfaces'] = list(interfaces.values())
 
     # Done; Return the modified GAPIC YAML.
-    return gapic_yaml
+    return gapic_config
 
 
 def find_single_and_fixed_entities(all_resource_names):
