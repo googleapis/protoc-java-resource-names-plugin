@@ -159,7 +159,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
             continue
 
         # Iterate over all of the messages in the file.
-        for message in proto_file.message:
+        for message in proto_file.message_type:
             for field in message.field:
                 # If this is not a resource, move on.
                 res = field.options.Extensions[resource_pb2.resource]
@@ -171,7 +171,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                     name = to_snake(message.name)
                     collections.setdefault(name, {
                         'entity_name': name,
-                        'name_pattern': res.pattern,
+                        'name_pattern': res[0].pattern,
                     })
                     continue
 
@@ -220,12 +220,12 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
         # These become "field_name_patterns" in the GAPIC config, with
         # the field name being the key and the name of the collection or
         # collection_oneof being the value.
-        for message in proto_file.message:
+        for message in proto_file.message_type:
             for field in message.field:
                 # Get the resource reference for this field, if any.
                 ref_annotation = resource_pb2.resource_reference
-                ref = message.options.Extensions[ref_annotation]
-                if not ref.reference:
+                ref = field.options.Extensions[ref_annotation]
+                if not ref.resource:
                     continue
 
                 # Get the name of the service and method where this message
@@ -274,7 +274,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                             method_yaml.setdefault('field_name_patterns', {})
                             method_yaml['field_name_patterns'].setdefault(
                                 field.name,
-                                to_snake(ref.split('.')[-1]),
+                                to_snake(ref.resource.split('.')[-1]),
                             )
 
     # Take the collections and collection_oneofs, convert them back to lists,

@@ -38,7 +38,7 @@ from google.protobuf.compiler import plugin_pb2
 from plugin.utils import gapic_utils
 
 
-if __name__ == '__main__':
+def entrypoint():
     try:
         source = sys.stdin.buffer
         dest = sys.stdout.buffer
@@ -65,8 +65,7 @@ if __name__ == '__main__':
     F = plugin_pb2.CodeGeneratorResponse.File
     dest.write(plugin_pb2.CodeGeneratorResponse(file=[
         F(name=output_filename, content=yaml.dump(
-            sys.stdout,
             gapic_v1,
             default_flow_style=False,
         ))
-    ]))
+    ]).SerializeToString())

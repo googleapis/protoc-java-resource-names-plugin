@@ -132,7 +132,8 @@ def main(data):
 
   return output
 
-if __name__ == '__main__':
+
+def entrypoint():
   try:
     source = sys.stdin.buffer
     dest = sys.stdout.buffer
