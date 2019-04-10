@@ -29,12 +29,12 @@
 
 from collections import OrderedDict
 import copy
+import re
 
 import yaml
 
-from google.api import resource_pb2
-
-from .casing_utils import to_snake
+from plugin.pb2 import resource_pb2
+from plugin.utils.casing_utils import to_snake
 
 
 GAPIC_CONFIG_ANY = '*'
@@ -161,10 +161,14 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
         # Iterate over all of the messages in the file.
         for message in proto_file.message:
             for field in message.field:
-                # If this is a single resource, build a collection.
+                # If this is not a resource, move on.
                 res = field.options.Extensions[resource_pb2.resource]
-                if res:
-                    name = to_snake(res.symbol if res.symbol else message.name)
+                if not res:
+                    continue
+
+                # If this is a single resource, build a collection.
+                if len(res) == 1:
+                    name = to_snake(message.name)
                     collections.setdefault(name, {
                         'entity_name': name,
                         'name_pattern': res.pattern,
@@ -172,35 +176,30 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                     continue
 
                 # If this is a resource set, build that collection.
-                res_set = field.options.Extensions[resource_pb2.resource_set]
-                if res_set:
+                if len(res) > 1:
                     collection_names = []
 
                     # Any resources declared as part of this resource set
                     # correspond to an explicitly declared collection in the
                     # GAPIC config.
-                    for res in res_set.resources:
-                        name = to_snake(
-                            res.symbol if res.symbol else message.name)
+                    for r in res:
+                        # The second-to-last variable in the pattern should
+                        # be the variable name we need to reconstruct the
+                        # entity name in GAPIC v1.
+                        var = re.findall(r'\{([\w_]+)\}', r.pattern)[-2]
+
+                        # Create the GAPIC v1 collection for this parent-entity
+                        # permutation.
+                        name = to_snake(var + '_' + message.name)
                         collections.setdefault(name, {
                             'entity_name': name,
-                            'name_pattern': res.pattern,
+                            'name_pattern': r.pattern,
                         })
                         collection_names.append(name)
 
-                    # Any resources that are referenced in the resource set
-                    # correspond to a resource which should have been declared
-                    # separately.
-                    #
-                    # In this case, we just blindly assume that the collection
-                    # will have been declared and hope for the best.
-                    for ref in res_set.resource_references:
-                        collection_names.append(to_snake(ref.split('.')[-1]))
-
                     # Add the resource set to "collection_oneofs".
-                    name = res_set.symbol if res_set.symbol else message.name
                     collection_oneofs.setdefault(name, {
-                        'oneof_name': name,
+                        'oneof_name': message.name,
                         'collection_names': collection_names,
                     })
 
@@ -226,7 +225,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                 # Get the resource reference for this field, if any.
                 ref_annotation = resource_pb2.resource_reference
                 ref = message.options.Extensions[ref_annotation]
-                if not ref:
+                if not ref.reference:
                     continue
 
                 # Get the name of the service and method where this message
