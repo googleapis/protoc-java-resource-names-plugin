@@ -70,8 +70,8 @@ def read_from_gapic_yaml(request):
     # away from it here is because this tool is supposed to have a short
     # shelf life, and it is safer to be backwards-looking than
     # forward-looking in this case.
-    if not gapic_yaml or gapic_yaml['config_schema_version'] != '1.0.0':
-        gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
+    # if not gapic_yaml or gapic_yaml['config_schema_version'] != '1.0.0':
+    #     gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
 
     collections = {}
     all_entities = []

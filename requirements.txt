@@ -1,3 +1,4 @@
+googleapis-common-protos>=1.5.9
 pystache>=0.5.4
 protobuf>=3.6.1
 pyyaml>=3.12

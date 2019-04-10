@@ -11,9 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from plugin.utils import gapic_utils
 from unittest import TestCase
 import os
+
+from google.protobuf.compiler import plugin_pb2
+
+from plugin.utils import gapic_utils
+
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 GAPIC_CONFIG_PATH = os.path.join(TEST_DIR, 'testdata/library_gapic.yaml')
@@ -22,7 +26,8 @@ GAPIC_CONFIG_V1_PATH = os.path.join(TEST_DIR, 'testdata/library_gapic_v1.yaml')
 
 class TestConfigParsing(TestCase):
     def test_config_parsing(self):
-        gapic_config = gapic_utils.read_from_gapic_yaml(GAPIC_CONFIG_PATH)
+        request = plugin_pb2.CodeGeneratorRequest(parameter=GAPIC_CONFIG_PATH)
+        gapic_config = gapic_utils.read_from_gapic_yaml(request)
         self.assertEqual(1, len(gapic_config.fixed_collections))
         self.assertEqual(
             "deleted_book",
@@ -52,7 +57,10 @@ class TestConfigParsing(TestCase):
         self.assertIn(book, singles)
 
     def test_explicit_fixed_name_config_parsing(self):
-        gapic_config = gapic_utils.read_from_gapic_yaml(GAPIC_CONFIG_V1_PATH)
+        request = plugin_pb2.CodeGeneratorRequest(
+            parameter=GAPIC_CONFIG_V1_PATH,
+        )
+        gapic_config = gapic_utils.read_from_gapic_yaml(request)
         self.assertEqual(1, len(gapic_config.fixed_collections))
         self.assertEqual(
             "deleted_book",

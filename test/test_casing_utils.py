@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from gapic.utils import case
+from plugin.utils.casing_utils import to_snake
 
 
 def test_pascal_to_snake():
-    assert case.to_snake_case('PascalCaseThing') == 'pascal_case_thing'
+    assert to_snake('PascalCaseThing') == 'pascal_case_thing'
 
 
 def test_camel_to_snake():
-    assert case.to_snake_case('camelCaseThing') == 'camel_case_thing'
+    assert to_snake('camelCaseThing') == 'camel_case_thing'
 
 
 def test_constant_to_snake():
-    assert case.to_snake_case('CONSTANT_CASE_THING') == 'constant_case_thing'
+    assert to_snake('CONSTANT_CASE_THING') == 'constant_case_thing'
