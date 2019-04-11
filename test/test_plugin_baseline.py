@@ -59,18 +59,11 @@ def diff(expected_output, actual_output, fromfile, tofile):
 
 def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
                             lang_out=None):
-    def format_output_arg(output_dir, extra_arg=None):
-        name = 'java_resource_names'
-        if extra_arg:
-            return '--{}_out={}:{}'.format(name, extra_arg, output_dir)
-        else:
-            return '--{}_out={}'.format(name, output_dir)
-
     args = ['protoc']
 
     # If there is a language being called first (e.g. --java_out), add that.
     if lang_out is not None:
-        args.append('--{0}={1}'.format(lang_out, output_dir))
+        args.append('--{0}_out={1}'.format(lang_out, output_dir))
 
     # Add the flag and GAPIC YAML argument for this plugin.
     args.append('--java_resource_names_out={0}'.format(output_dir))
