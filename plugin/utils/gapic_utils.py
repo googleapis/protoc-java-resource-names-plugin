@@ -248,16 +248,20 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                         # we have a match, and we need to apply this
                         # field name pattern to the method.
                         if method.input_type.split('.')[-1] == message.name:
+                            service_name = '.'.join((
+                                proto_file.package,
+                                service.name,
+                            ))
                             # Ensure the structure we need is present and
                             # set it up otherwise.
-                            interfaces.setdefault(service.name, {
-                                'name': service.name,
+                            interfaces.setdefault(service_name, {
+                                'name': service_name,
                             })
-                            interfaces[service.name].setdefault(
+                            interfaces[service_name].setdefault(
                                 'methods',
                                 OrderedDict(),
                             )
-                            interfaces[service.name]['methods'].setdefault(
+                            interfaces[service_name]['methods'].setdefault(
                                 method.name,
                                 {'name': method.name},
                             )
@@ -267,7 +271,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                             #
                             # NOTE: This is a reference, not a copy.
                             # Modifying this modifies the overall structure.
-                            method_yaml = interfaces[service.name][
+                            method_yaml = interfaces[service_name][
                                     'methods'][method.name]
 
                             # Apply this field name pattern.

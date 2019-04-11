@@ -52,7 +52,7 @@ def entrypoint():
     if r.parameter:
         with open(r.parameter, 'r') as f:
             gapic_v2 = yaml.load(f)
-        output_filename = re.sub(r'[._]v[\d]', '.v1', output_filename)
+        output_filename = re.sub(r'[._]v[\d]', '.v1', r.parameter)
         if '.v1' not in output_filename:
             output_filename = re.sub(r'\.ya?ml$', '.v1.yaml', output_filename)
     else:
