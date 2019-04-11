@@ -225,7 +225,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                 # Get the resource reference for this field, if any.
                 ref_annotation = resource_pb2.resource_reference
                 ref = field.options.Extensions[ref_annotation]
-                if not ref.resource:
+                if not ref.message:
                     continue
 
                 # Get the name of the service and method where this message
@@ -278,7 +278,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                             method_yaml.setdefault('field_name_patterns', {})
                             method_yaml['field_name_patterns'].setdefault(
                                 field.name,
-                                to_snake(ref.resource.split('.')[-1]),
+                                to_snake(ref.message.split('.')[-1]),
                             )
 
     # Take the collections and collection_oneofs, convert them back to lists,
