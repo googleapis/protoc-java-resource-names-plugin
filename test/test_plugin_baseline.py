@@ -67,7 +67,7 @@ def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
 
     # Add the flag and GAPIC YAML argument for this plugin.
     args.append('--java_resource_names_out={0}'.format(output_dir))
-    args.append('--java_resource_names_opt="{0}"'.format(gapic_yaml))
+    args.append('--java_resource_names_opt={0}'.format(gapic_yaml))
     args += ['--proto_path={0}'.format(path) for path in include_dirs]
     args += proto_files
     try:
