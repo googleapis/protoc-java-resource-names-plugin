@@ -160,48 +160,50 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
 
         # Iterate over all of the messages in the file.
         for message in proto_file.message_type:
-            for field in message.field:
-                # If this is not a resource, move on.
-                res = field.options.Extensions[resource_pb2.resource]
-                if not res:
-                    continue
+            # If this is not a resource, move on.
+            res = message.options.Extensions[resource_pb2.resource]
+            if not res:
+                continue
 
-                # If this is a single resource, build a collection.
-                if len(res) == 1:
-                    name = to_snake(message.name)
+            # Determine the name.
+            name = to_snake(message.name)
+            if res[0].type:
+                name = to_snake(res.type.split('/')[-1])
+
+            # If this is a single resource, build a collection.
+            if len(res.pattern) == 1:
+                collections.setdefault(name, {
+                    'entity_name': name,
+                    'name_pattern': res.pattern[0],
+                })
+                continue
+
+            # If this is a resource set, build that collection.
+            if len(res.pattern) > 1:
+                collection_names = []
+
+                # Any resources declared as part of this resource set
+                # correspond to an explicitly declared collection in the
+                # GAPIC config.
+                for pattern in res.pattern:
+                    # The second-to-last variable in the pattern should
+                    # be the variable name we need to reconstruct the
+                    # entity name in GAPIC v1.
+                    var = re.findall(r'\{([\w_]+)\}', pattern)[-2]
+
+                    # Create the GAPIC v1 collection for this parent-entity
+                    # permutation.
                     collections.setdefault(name, {
-                        'entity_name': name,
-                        'name_pattern': res[0].pattern,
+                        'entity_name': '%s_%s' % (var, name),
+                        'name_pattern': pattern,
                     })
-                    continue
+                    collection_names.append(name)
 
-                # If this is a resource set, build that collection.
-                if len(res) > 1:
-                    collection_names = []
-
-                    # Any resources declared as part of this resource set
-                    # correspond to an explicitly declared collection in the
-                    # GAPIC config.
-                    for r in res:
-                        # The second-to-last variable in the pattern should
-                        # be the variable name we need to reconstruct the
-                        # entity name in GAPIC v1.
-                        var = re.findall(r'\{([\w_]+)\}', r.pattern)[-2]
-
-                        # Create the GAPIC v1 collection for this parent-entity
-                        # permutation.
-                        name = to_snake(var + '_' + message.name)
-                        collections.setdefault(name, {
-                            'entity_name': name,
-                            'name_pattern': r.pattern,
-                        })
-                        collection_names.append(name)
-
-                    # Add the resource set to "collection_oneofs".
-                    collection_oneofs.setdefault(name, {
-                        'oneof_name': message.name,
-                        'collection_names': collection_names,
-                    })
+                # Add the resource set to "collection_oneofs".
+                collection_oneofs.setdefault(name, {
+                    'oneof_name': name,
+                    'collection_names': collection_names,
+                })
 
         # Resource references are fundamentally applied to RPCs in the GAPIC
         # config, so we need to place them into that structure.
