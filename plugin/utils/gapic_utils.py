@@ -149,6 +149,24 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
         collection_oneofs.update([(i['oneof_name'], i) for i in
                                  interface.get('collection_oneofs', ())])
 
+    # Find all unified resource types that have child references. For these
+    # resources, we need to generate collection configs for their parents
+    # patterns.
+    types_with_child_references = set()
+    for proto_file in request.proto_file:
+        # We only want to do stuff with files we were explicitly asked to
+        # generate. Ignore the rest.
+        if proto_file.name not in request.file_to_generate:
+            continue
+
+        for message in proto_file.message_type:
+            for field in message.field:
+                # Get the resource reference for this field, if any.
+                ref_annotation = resource_pb2.resource_reference
+                ref = field.options.Extensions[ref_annotation]
+                if ref.child_type:
+                    types_with_child_references.add(ref.child_type)
+
     # Iterate over the files to be generated looking for messages that have
     # a google.api.resource annotation.
     # This annotation corresponds to a collection in the GAPIC v1 config.
@@ -170,132 +188,106 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
             if res[0].type:
                 name = to_snake(res.type.split('/')[-1])
 
-            # If this is a single resource, build a collection.
-            if len(res.pattern) == 1:
+            has_oneof = len(res.pattern) > 1 or res.history == resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
+
+            # Build a map from patterns to names. These need to be built
+            # together to resolve conflicts
+            entity_names = build_entity_names(res.pattern, name)
+
+            # TODO
+            # If ORIGINALLY_SINGLE_PATTERN is set or there is only one pattern
+            # and FUTURE_MULTI_PATTERN is NOT set, then we need special naming
+            # for that pattern.
+
+            collection_names = []
+            # Build collections for all of the patterns in the descriptor
+            for pattern in res.pattern:
                 collections.setdefault(name, {
-                    'entity_name': name,
-                    'name_pattern': res.pattern[0],
+                    'entity_name': entity_names[pattern],
+                    'name_pattern': pattern,
                 })
-                continue
+                collection_names.append(entity_names[pattern])
 
-            # If this is a resource set, build that collection.
-            if len(res.pattern) > 1:
-                collection_names = []
-
-                # Any resources declared as part of this resource set
-                # correspond to an explicitly declared collection in the
-                # GAPIC config.
-                for pattern in res.pattern:
-                    # The second-to-last variable in the pattern should
-                    # be the variable name we need to reconstruct the
-                    # entity name in GAPIC v1.
-                    var = re.findall(r'\{([\w_]+)\}', pattern)[-2]
-
-                    # Create the GAPIC v1 collection for this parent-entity
-                    # permutation.
-                    collections.setdefault(name, {
-                        'entity_name': '%s_%s' % (var, name),
-                        'name_pattern': pattern,
-                    })
-                    collection_names.append(name)
-
-                # Add the resource set to "collection_oneofs".
+            if has_oneof:
+                # Add the resource collection to "collection_oneofs".
                 collection_oneofs.setdefault(name, {
                     'oneof_name': name,
                     'collection_names': collection_names,
                 })
 
-        # Resource references are fundamentally applied to RPCs in the GAPIC
-        # config, so we need to place them into that structure.
-        # In order to do that, we need to get the interfaces and methods into
-        # a dictionary structure rather than a list structure.
-        interfaces = OrderedDict([(i['name'], i) for i in
-                                 gapic_config.get('interfaces', ())])
-        for interface in interfaces.values():
-            interface['methods'] = OrderedDict([(i['name'], i) for i in
-                                                interface.get('methods', ())])
+            if res[0].type in types_with_child_references:
+                # Derive patterns for the parent resources
+                parent_patterns = build_parent_patterns(res.pattern)
 
-        # At this point, all collections that are declared in any of our
-        # messages should be in place, so now we take resource references
-        # and add them.
-        #
-        # These become "field_name_patterns" in the GAPIC config, with
-        # the field name being the key and the name of the collection or
-        # collection_oneof being the value.
-        for message in proto_file.message_type:
-            for field in message.field:
-                # Get the resource reference for this field, if any.
-                ref_annotation = resource_pb2.resource_reference
-                ref = field.options.Extensions[ref_annotation]
-                if not ref.message:
-                    continue
+                # Build a map from patterns to names. These need to be built
+                # together to resolve conflicts
+                parent_entity_names = build_entity_names(parent_patterns, '')
 
-                # Get the name of the service and method where this message
-                # is the input message.
-                #
-                # It is rare but possible that there may be more than one.
-                for service in proto_file.service:
-                    for method in service.method:
-                        # Sanity check: Ensure we do not get false positive
-                        # methods.
-                        #
-                        # In this case, we can safely ignore anything where
-                        # the input type is not in the same package as the
-                        # API itself.
-                        if not method.input_type.lstrip('.').startswith(
-                                proto_file.package):
-                            continue
+                parent_collection_names = []
+                for pattern in parent_patterns:
+                    collections.setdefault(name, {
+                        'entity_name': parent_entity_names[pattern],
+                        'name_pattern': pattern,
+                    })
+                    parent_collection_names.append(parent_entity_names[pattern])
 
-                        # If this method accepts this message as input, then
-                        # we have a match, and we need to apply this
-                        # field name pattern to the method.
-                        if method.input_type.split('.')[-1] == message.name:
-                            service_name = '.'.join((
-                                proto_file.package,
-                                service.name,
-                            ))
-                            # Ensure the structure we need is present and
-                            # set it up otherwise.
-                            interfaces.setdefault(service_name, {
-                                'name': service_name,
-                            })
-                            interfaces[service_name].setdefault(
-                                'methods',
-                                OrderedDict(),
-                            )
-                            interfaces[service_name]['methods'].setdefault(
-                                method.name,
-                                {'name': method.name},
-                            )
-
-                            # Grab a reference to the method's YAML
-                            # representation.
-                            #
-                            # NOTE: This is a reference, not a copy.
-                            # Modifying this modifies the overall structure.
-                            method_yaml = interfaces[service_name][
-                                    'methods'][method.name]
-
-                            # Apply this field name pattern.
-                            method_yaml.setdefault('field_name_patterns', {})
-                            method_yaml['field_name_patterns'].setdefault(
-                                field.name,
-                                to_snake(ref.message.split('.')[-1]),
-                            )
+                if has_oneof:
+                    # Add the resource collection to "collection_oneofs".
+                    collection_oneofs.setdefault(name, {
+                        'oneof_name': 'parent_oneof',
+                        'collection_names': collection_names,
+                    })
 
     # Take the collections and collection_oneofs, convert them back to lists,
     # and drop them on the GAPIC YAML.
     gapic_config['collections'] = list(collections.values())
     gapic_config['collection_oneofs'] = list(collection_oneofs.values())
 
-    # Take the interfaces and methods, convert them back to lists, and
-    # drop them on the GAPIC YAML also.
-    gapic_config['interfaces'] = list(interfaces.values())
-    for interface in gapic_config['interfaces']:
-        interface['methods'] = list(interface['methods'].values())
-
     # Done; Return the modified GAPIC YAML.
     return gapic_config
+
+
+def build_entity_names(patterns, suffix):
+    def _reversed_variable_segments(ptn):
+        segs = []
+        for seg in ptn.split('/')[::-1]:
+            if _is_variable_segment(seg):
+                segs.append(seg[1:-2])
+        return segs
+    segments_list = [_reversed_variable_segments(p) for p in patterns]
+    trie = {}
+    for segments in segments_list:
+        node = trie
+        for segment in segments:
+            node.setdefault(segment, {})
+            node = node[segment]
+    name_map = {}
+    for pattern, segments in zip(patterns, segments_list):
+        node = trie
+        name_components = []
+        if suffix:
+            name_components.append(suffix)
+        for segment in segments:
+            if len(node[segment]) > 1:
+                name_components.append(segment)
+            node = node[segment]
+        name_map[pattern] = '_'.join(name_components[::-1])
+    return name_map
+
+
+def build_parent_patterns(patterns):
+    def _parent_pattern(pattern):
+        segs = pattern.split('/')
+        last_index = len(segs) - 2
+        while last_index >= 0 and _is_variable_segment(segs[last_index]):
+            last_index -= 1
+        last_index += 1
+        return '/'.join(segs[:last_index])
+    return [_parent_pattern(p) for p in patterns]
+
+
+def _is_variable_segment(segment):
+    return len(segment) > 0 and segment[0] == '{' and segment[-1] == '}'
 
 
 def find_single_and_fixed_entities(all_resource_names):
