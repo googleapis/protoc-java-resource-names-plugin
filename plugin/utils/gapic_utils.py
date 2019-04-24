@@ -247,6 +247,10 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
     return gapic_config
 
 
+# Build a map from patterns to entity names. We use a trie structure to resolve
+# the entity name in a unique fashion, by looking to see which keys in the
+# trie have multiple entries, meaning that that entry distinguishes a pattern
+# from another pattern (i.e. the trie branches at that node).
 def build_entity_names(patterns, suffix):
     def _reversed_variable_segments(ptn):
         segs = []
