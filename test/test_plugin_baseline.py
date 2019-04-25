@@ -110,7 +110,7 @@ def run_protoc_v2():
 
 
 RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name',
-                              'archive_book_name', 'deleted_book']
+                              'archived_book_name', 'deleted_book']
 ONEOFS_TO_GENERATE = ['book_oneof']
 DONT_GENERATE = ['project_name']
 

@@ -25,6 +25,9 @@ collections:
       entity_name: shelf_book
 - name_pattern: archives/{archive}/books/{book}
   entity_name: archive_book
+  language_overrides:
+    - language: java
+      entity_name: archived_book
 - name_pattern: _deleted-book_
   entity_name: deleted_book
 interfaces:

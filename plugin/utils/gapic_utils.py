@@ -227,7 +227,7 @@ def update_collections(
     # Build collections for all of the patterns in the descriptor
     for pattern in res.pattern:
         collection_name = entity_names[pattern]
-        collections.setdefault(collection_name, {
+        collections.setdefault(collection_name, {}).update({
             'entity_name': collection_name,
             'name_pattern': pattern,
         })
@@ -236,7 +236,7 @@ def update_collections(
     if has_oneof:
         # Add the resource collection to "collection_oneofs".
         oneof_name = name + '_oneof'
-        collection_oneofs.setdefault(oneof_name, {
+        collection_oneofs.setdefault(oneof_name, {}).update({
             'oneof_name': oneof_name,
             'collection_names': collection_names,
         })
@@ -251,7 +251,7 @@ def update_collections(
 
         parent_collection_names = []
         for pattern in parent_patterns:
-            collections.setdefault(name, {
+            collections.setdefault(name, {}).update({
                 'entity_name': parent_entity_names[pattern],
                 'name_pattern': pattern,
             })
@@ -259,7 +259,7 @@ def update_collections(
 
         if has_oneof:
             # Add the resource collection to "collection_oneofs".
-            collection_oneofs.setdefault(name, {
+            collection_oneofs.setdefault(name, {}).update({
                 'oneof_name': 'parent_oneof',
                 'collection_names': collection_names,
             })
