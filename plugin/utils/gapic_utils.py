@@ -69,7 +69,8 @@ def read_from_gapic_yaml(request):
     # away from it here is because this tool is supposed to have a short
     # shelf life, and it is safer to be backwards-looking than
     # forward-looking in this case.
-    if not gapic_yaml or gapic_yaml.get('config_schema_version', '1.0.0') != '1.0.0':
+    if not gapic_yaml or gapic_yaml.get(
+            'config_schema_version', '1.0.0') != '1.0.0':
         gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
 
     collections = {}
@@ -142,8 +143,9 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                             interface.get('collections', ())])
 
     # Do the same thing for collection oneofs.
-    collection_oneofs = OrderedDict([(i['oneof_name'], i) for i in
-                                     gapic_config.get('collection_oneofs', ())])
+    collection_oneofs = OrderedDict(
+        [(i['oneof_name'], i) for i in gapic_config.get(
+            'collection_oneofs', ())])
     for interface in gapic_config.get('interfaces', ()):
         collection_oneofs.update([(i['oneof_name'], i) for i in
                                   interface.get('collection_oneofs', ())])
@@ -194,12 +196,13 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
     return gapic_config
 
 
-def update_collections(res, types_with_child_references, collections, collection_oneofs):
+def update_collections(
+        res, types_with_child_references, collections, collection_oneofs):
     # Determine the name.
     name = to_snake(res.type.split('/')[-1])
 
-    has_oneof = len(
-        res.pattern) > 1 or res.history == resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
+    has_oneof = len(res.pattern) > 1 or res.history == \
+        resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
 
     # Build a map from patterns to names. These need to be built
     # together to resolve conflicts
@@ -208,9 +211,12 @@ def update_collections(res, types_with_child_references, collections, collection
     # If ORIGINALLY_SINGLE_PATTERN is set or there is only one pattern
     # and FUTURE_MULTI_PATTERN is NOT set, then we need special naming
     # for that pattern.
-    single_pattern_naming = res.history == resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN or (
-        len(res.pattern) == 1 and res.history != resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
-    )
+    single_pattern_naming = \
+        res.history == \
+        resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN or (
+            len(res.pattern) == 1 and res.history !=
+            resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
+        )
     if single_pattern_naming:
         entity_names[res.pattern[0]] = name
 

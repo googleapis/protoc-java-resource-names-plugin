@@ -32,10 +32,10 @@ def test_build_parent_patterns():
 
 
 def test_reversed_variable_segments():
-    assert gapic_utils.reversed_variable_segments("foos/{foo}/bars/{bar}") == \
-           ["bar", "foo"]
-    assert gapic_utils.reversed_variable_segments("foos/{foo}/busy/bars/{bar}") == \
-           ["bar", "foo"]
+    assert gapic_utils.reversed_variable_segments(
+        "foos/{foo}/bars/{bar}") == ["bar", "foo"]
+    assert gapic_utils.reversed_variable_segments(
+        "foos/{foo}/busy/bars/{bar}") == ["bar", "foo"]
 
 
 def test_build_trie_from_segments_list():
@@ -49,31 +49,34 @@ def test_build_trie_from_segments_list():
             "baz": {"foo": {}}
         }
     }
-    assert gapic_utils.build_trie_from_segments_list(segments_list) == expected_trie
+    assert gapic_utils.build_trie_from_segments_list(
+        segments_list) == expected_trie
 
 
 def test_build_entity_names():
-    assert gapic_utils.build_entity_names(["foos/{foo}/bars/{bar}"], "") == \
-           {"foos/{foo}/bars/{bar}": "bar"}
-    assert gapic_utils.build_entity_names(["foos/{foo}/bars/{bar}"], "fuzz") == \
-           {"foos/{foo}/bars/{bar}": "fuzz"}
+    assert gapic_utils.build_entity_names([
+        "foos/{foo}/bars/{bar}"], "") == \
+        {"foos/{foo}/bars/{bar}": "bar"}
+    assert gapic_utils.build_entity_names([
+        "foos/{foo}/bars/{bar}"], "fuzz") == \
+        {"foos/{foo}/bars/{bar}": "fuzz"}
     assert gapic_utils.build_entity_names([
         "foos/{foo}/bars/{bar}",
         "foos/{foo}/bazs/{baz}/bars/{bar}"], "") == \
-           {"foos/{foo}/bars/{bar}": "foo",
-            "foos/{foo}/bazs/{baz}/bars/{bar}": "baz"}
+        {"foos/{foo}/bars/{bar}": "foo",
+         "foos/{foo}/bazs/{baz}/bars/{bar}": "baz"}
     assert gapic_utils.build_entity_names([
         "foos/{foo}/bars/{bar}",
         "foos/{foo}/bazs/{baz}/bars/{bar}"], "bar") == \
-           {"foos/{foo}/bars/{bar}": "foo_bar",
-            "foos/{foo}/bazs/{baz}/bars/{bar}": "baz_bar"}
+        {"foos/{foo}/bars/{bar}": "foo_bar",
+         "foos/{foo}/bazs/{baz}/bars/{bar}": "baz_bar"}
     assert gapic_utils.build_entity_names([
         "foos/{foo}/bars/{bar}",
         "foos/{foo}/bazs/{baz}/bars/{bar}",
         "foos/{foo}/wizzs/{wizz}/bazs/{baz}/bars/{bar}"
     ], "bar") == \
-           {"foos/{foo}/bars/{bar}": "foo_bar",
-            "foos/{foo}/bazs/{baz}/bars/{bar}": "foo_baz_bar",
+        {"foos/{foo}/bars/{bar}": "foo_bar",
+         "foos/{foo}/bazs/{baz}/bars/{bar}": "foo_baz_bar",
             "foos/{foo}/wizzs/{wizz}/bazs/{baz}/bars/{bar}": "wizz_baz_bar"}
 
 
