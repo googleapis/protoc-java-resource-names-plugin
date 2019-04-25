@@ -29,7 +29,6 @@
 
 from collections import OrderedDict
 import copy
-import re
 
 import yaml
 
@@ -137,17 +136,17 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
     # entity names. (This makes it easier to avoid plowing over stuff that
     # is explicitly defined in YAML.)
     collections = OrderedDict([(i['entity_name'], i) for i in
-                              gapic_config.get('collections', ())])
+                               gapic_config.get('collections', ())])
     for interface in gapic_config.get('interfaces', ()):
         collections.update([(i['entity_name'], i) for i in
-                           interface.get('collections', ())])
+                            interface.get('collections', ())])
 
     # Do the same thing for collection oneofs.
     collection_oneofs = OrderedDict([(i['oneof_name'], i) for i in
-                                    gapic_config.get('collection_oneofs', ())])
+                                     gapic_config.get('collection_oneofs', ())])
     for interface in gapic_config.get('interfaces', ()):
         collection_oneofs.update([(i['oneof_name'], i) for i in
-                                 interface.get('collection_oneofs', ())])
+                                  interface.get('collection_oneofs', ())])
 
     # Find all unified resource types that have child references. For these
     # resources, we need to generate collection configs for their parents
@@ -183,7 +182,8 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
             if not res:
                 continue
 
-            update_collections(res, types_with_child_references, collections, collection_oneofs)
+            update_collections(res, types_with_child_references,
+                               collections, collection_oneofs)
 
     # Take the collections and collection_oneofs, convert them back to lists,
     # and drop them on the GAPIC YAML.
@@ -198,7 +198,8 @@ def update_collections(res, types_with_child_references, collections, collection
     # Determine the name.
     name = to_snake(res.type.split('/')[-1])
 
-    has_oneof = len(res.pattern) > 1 or res.history == resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
+    has_oneof = len(
+        res.pattern) > 1 or res.history == resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
 
     # Build a map from patterns to names. These need to be built
     # together to resolve conflicts
@@ -208,7 +209,7 @@ def update_collections(res, types_with_child_references, collections, collection
     # and FUTURE_MULTI_PATTERN is NOT set, then we need special naming
     # for that pattern.
     single_pattern_naming = res.history == resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN or (
-            len(res.pattern) == 1 and res.history != resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
+        len(res.pattern) == 1 and res.history != resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
     )
     if single_pattern_naming:
         entity_names[res.pattern[0]] = name
