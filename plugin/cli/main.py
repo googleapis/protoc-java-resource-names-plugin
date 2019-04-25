@@ -32,8 +32,6 @@
 import os
 import sys
 import pystache
-import json
-import pprint
 
 from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
@@ -128,10 +126,6 @@ def main(data):
   response = plugin.CodeGeneratorResponse()
 
   generate_resource_name_types(response, gapic_config, java_package)
-
-  f = response.file.add()
-  f.name = "gapic_yaml_out.yaml"
-  f.content = pprint.pformat(vars(gapic_config))
 
   # Serialise response message
   output = response.SerializeToString()

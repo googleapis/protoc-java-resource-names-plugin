@@ -396,8 +396,7 @@ def load_collection_oneofs(config_list, existing_collections,
                     'Collection specified in collection '
                     'oneof, but no matching collection '
                     'was found. Oneof: ' +
-                    root_type_name + ', Collection: ' + collection +
-                    ', existing_collections: ' + ','.join(existing_collections.keys()))
+                    root_type_name + ', Collection: ' + collection)
             if collection in existing_collections:
                 resources.append(existing_collections[collection])
             else:
