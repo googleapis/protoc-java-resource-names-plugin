@@ -252,19 +252,8 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
 # trie have multiple entries, meaning that that entry distinguishes a pattern
 # from another pattern (i.e. the trie branches at that node).
 def build_entity_names(patterns, suffix):
-    def _reversed_variable_segments(ptn):
-        segs = []
-        for seg in ptn.split('/')[::-1]:
-            if _is_variable_segment(seg):
-                segs.append(seg[1:-2])
-        return segs
-    segments_list = [_reversed_variable_segments(p) for p in patterns]
-    trie = {}
-    for segments in segments_list:
-        node = trie
-        for segment in segments:
-            node.setdefault(segment, {})
-            node = node[segment]
+    segments_list = [reversed_variable_segments(p) for p in patterns]
+    trie = build_trie_from_segments_list(segments_list)
     name_map = {}
     for pattern, segments in zip(patterns, segments_list):
         node = trie
@@ -272,18 +261,40 @@ def build_entity_names(patterns, suffix):
         if suffix:
             name_components.append(suffix)
         for segment in segments:
-            if len(node[segment]) > 1:
+            if len(node) > 1:
                 name_components.append(segment)
             node = node[segment]
+        if not name_components:
+            # This can occur for a single pattern and empty suffix
+            if segments:
+                name_components.append(segments[0])
         name_map[pattern] = '_'.join(name_components[::-1])
     return name_map
+
+
+def build_trie_from_segments_list(segments_list):
+    trie = {}
+    for segments in segments_list:
+        node = trie
+        for segment in segments:
+            node.setdefault(segment, {})
+            node = node[segment]
+    return trie
+
+
+def reversed_variable_segments(ptn):
+    segs = []
+    for seg in ptn.split('/')[::-1]:
+        if _is_variable_segment(seg):
+            segs.append(seg[1:-1])
+    return segs
 
 
 def build_parent_patterns(patterns):
     def _parent_pattern(pattern):
         segs = pattern.split('/')
         last_index = len(segs) - 2
-        while last_index >= 0 and _is_variable_segment(segs[last_index]):
+        while last_index >= 0 and not _is_variable_segment(segs[last_index]):
             last_index -= 1
         last_index += 1
         return '/'.join(segs[:last_index])
