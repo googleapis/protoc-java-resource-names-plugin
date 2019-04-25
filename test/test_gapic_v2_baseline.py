@@ -99,7 +99,7 @@ def run_protoc():
 
 
 RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name',
-                              'archived_book_name', 'deleted_book']
+                              'archive_book_name', 'deleted_book']
 ONEOFS_TO_GENERATE = ['book_oneof']
 DONT_GENERATE = ['project_name']
 
@@ -114,7 +114,6 @@ class TestProtocGapicPlugin(object):
             resource)
         check_output(generated_class, PROTOC_OUTPUT_DIR, 'java_' + resource)
 
-'''
     @pytest.mark.parametrize('resource', DONT_GENERATE)
     def test_dont_generate(self, run_protoc, resource):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
@@ -153,4 +152,3 @@ class TestProtocGapicPlugin(object):
         check_output(generated_parent,
                      PROTOC_OUTPUT_DIR,
                      'java_' + parent_filename_fragment)
-'''

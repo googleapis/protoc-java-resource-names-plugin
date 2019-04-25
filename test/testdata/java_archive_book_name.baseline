@@ -24,10 +24,10 @@ import java.util.List;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class ArchivedBookName extends BookName {
+public class ArchiveBookName extends BookName {
 
   private static final PathTemplate PATH_TEMPLATE =
-      PathTemplate.createWithoutUrlEncoding("archives/{archive}/books/{book=**}");
+      PathTemplate.createWithoutUrlEncoding("archives/{archive}/books/{book}");
 
   private volatile Map<String, String> fieldValuesMap;
 
@@ -50,12 +50,12 @@ public class ArchivedBookName extends BookName {
     return new Builder(this);
   }
 
-  private ArchivedBookName(Builder builder) {
+  private ArchiveBookName(Builder builder) {
     archive = Preconditions.checkNotNull(builder.getArchive());
     book = Preconditions.checkNotNull(builder.getBook());
   }
 
-  public static ArchivedBookName of(String archive, String book) {
+  public static ArchiveBookName of(String archive, String book) {
     return newBuilder()
       .setArchive(archive)
       .setBook(book)
@@ -70,26 +70,26 @@ public class ArchivedBookName extends BookName {
       .toString();
   }
 
-  public static ArchivedBookName parse(String formattedString) {
+  public static ArchiveBookName parse(String formattedString) {
     if (formattedString.isEmpty()) {
       return null;
     }
     Map<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(formattedString, "ArchivedBookName.parse: formattedString not in valid format");
+        PATH_TEMPLATE.validatedMatch(formattedString, "ArchiveBookName.parse: formattedString not in valid format");
     return of(matchMap.get("archive"), matchMap.get("book"));
   }
 
-  public static List<ArchivedBookName> parseList(List<String> formattedStrings) {
-    List<ArchivedBookName> list = new ArrayList<>(formattedStrings.size());
+  public static List<ArchiveBookName> parseList(List<String> formattedStrings) {
+    List<ArchiveBookName> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
     }
     return list;
   }
 
-  public static List<String> toStringList(List<ArchivedBookName> values) {
+  public static List<String> toStringList(List<ArchiveBookName> values) {
     List<String> list = new ArrayList<String>(values.size());
-    for (ArchivedBookName value : values) {
+    for (ArchiveBookName value : values) {
       if (value == null) {
         list.add("");
       } else {
@@ -126,7 +126,7 @@ public class ArchivedBookName extends BookName {
     return PATH_TEMPLATE.instantiate("archive", archive, "book", book);
   }
 
-  /** Builder for ArchivedBookName. */
+  /** Builder for ArchiveBookName. */
   public static class Builder {
 
     private String archive;
@@ -153,13 +153,13 @@ public class ArchivedBookName extends BookName {
     private Builder() {
     }
 
-    private Builder(ArchivedBookName archivedBookName) {
-      archive = archivedBookName.archive;
-      book = archivedBookName.book;
+    private Builder(ArchiveBookName archiveBookName) {
+      archive = archiveBookName.archive;
+      book = archiveBookName.book;
     }
 
-    public ArchivedBookName build() {
-      return new ArchivedBookName(this);
+    public ArchiveBookName build() {
+      return new ArchiveBookName(this);
     }
   }
 
@@ -168,8 +168,8 @@ public class ArchivedBookName extends BookName {
     if (o == this) {
       return true;
     }
-    if (o instanceof ArchivedBookName) {
-      ArchivedBookName that = (ArchivedBookName) o;
+    if (o instanceof ArchiveBookName) {
+      ArchiveBookName that = (ArchiveBookName) o;
       return (this.archive.equals(that.archive))
           && (this.book.equals(that.book));
     }

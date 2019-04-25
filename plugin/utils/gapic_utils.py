@@ -183,60 +183,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
             if not res:
                 continue
 
-            # Determine the name.
-            name = to_snake(message.name)
-            if res.type:
-                name = to_snake(res.type.split('/')[-1])
-
-            has_oneof = len(res.pattern) > 1 or res.history == resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
-
-            # Build a map from patterns to names. These need to be built
-            # together to resolve conflicts
-            entity_names = build_entity_names(res.pattern, name)
-
-            # TODO
-            # If ORIGINALLY_SINGLE_PATTERN is set or there is only one pattern
-            # and FUTURE_MULTI_PATTERN is NOT set, then we need special naming
-            # for that pattern.
-
-            collection_names = []
-            # Build collections for all of the patterns in the descriptor
-            for pattern in res.pattern:
-                collections.setdefault(name, {
-                    'entity_name': entity_names[pattern],
-                    'name_pattern': pattern,
-                })
-                collection_names.append(entity_names[pattern])
-
-            if has_oneof:
-                # Add the resource collection to "collection_oneofs".
-                collection_oneofs.setdefault(name, {
-                    'oneof_name': name,
-                    'collection_names': collection_names,
-                })
-
-            if res.type in types_with_child_references:
-                # Derive patterns for the parent resources
-                parent_patterns = build_parent_patterns(res.pattern)
-
-                # Build a map from patterns to names. These need to be built
-                # together to resolve conflicts
-                parent_entity_names = build_entity_names(parent_patterns, '')
-
-                parent_collection_names = []
-                for pattern in parent_patterns:
-                    collections.setdefault(name, {
-                        'entity_name': parent_entity_names[pattern],
-                        'name_pattern': pattern,
-                    })
-                    parent_collection_names.append(parent_entity_names[pattern])
-
-                if has_oneof:
-                    # Add the resource collection to "collection_oneofs".
-                    collection_oneofs.setdefault(name, {
-                        'oneof_name': 'parent_oneof',
-                        'collection_names': collection_names,
-                    })
+            update_collections(res, types_with_child_references, collections, collection_oneofs)
 
     # Take the collections and collection_oneofs, convert them back to lists,
     # and drop them on the GAPIC YAML.
@@ -245,6 +192,67 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
 
     # Done; Return the modified GAPIC YAML.
     return gapic_config
+
+
+def update_collections(res, types_with_child_references, collections, collection_oneofs):
+    # Determine the name.
+    name = to_snake(res.type.split('/')[-1])
+
+    has_oneof = len(res.pattern) > 1 or res.history == resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
+
+    # Build a map from patterns to names. These need to be built
+    # together to resolve conflicts
+    entity_names = build_entity_names(res.pattern, name)
+
+    # If ORIGINALLY_SINGLE_PATTERN is set or there is only one pattern
+    # and FUTURE_MULTI_PATTERN is NOT set, then we need special naming
+    # for that pattern.
+    single_pattern_naming = res.history == resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN or (
+            len(res.pattern) == 1 and res.history != resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
+    )
+    if single_pattern_naming:
+        entity_names[res.pattern[0]] = name
+
+    collection_names = []
+    # Build collections for all of the patterns in the descriptor
+    for pattern in res.pattern:
+        collection_name = entity_names[pattern]
+        collections.setdefault(collection_name, {
+            'entity_name': collection_name,
+            'name_pattern': pattern,
+        })
+        collection_names.append(entity_names[pattern])
+
+    if has_oneof:
+        # Add the resource collection to "collection_oneofs".
+        oneof_name = name + '_oneof'
+        collection_oneofs.setdefault(oneof_name, {
+            'oneof_name': oneof_name,
+            'collection_names': collection_names,
+        })
+
+    if res.type in types_with_child_references:
+        # Derive patterns for the parent resources
+        parent_patterns = build_parent_patterns(res.pattern)
+
+        # Build a map from patterns to names. These need to be built
+        # together to resolve conflicts
+        parent_entity_names = build_entity_names(parent_patterns, '')
+
+        parent_collection_names = []
+        for pattern in parent_patterns:
+            collections.setdefault(name, {
+                'entity_name': parent_entity_names[pattern],
+                'name_pattern': pattern,
+            })
+            parent_collection_names.append(parent_entity_names[pattern])
+
+        if has_oneof:
+            # Add the resource collection to "collection_oneofs".
+            collection_oneofs.setdefault(name, {
+                'oneof_name': 'parent_oneof',
+                'collection_names': collection_names,
+            })
 
 
 # Build a map from patterns to entity names. We use a trie structure to resolve
@@ -388,7 +396,8 @@ def load_collection_oneofs(config_list, existing_collections,
                     'Collection specified in collection '
                     'oneof, but no matching collection '
                     'was found. Oneof: ' +
-                    root_type_name + ', Collection: ' + collection)
+                    root_type_name + ', Collection: ' + collection +
+                    ', existing_collections: ' + ','.join(existing_collections.keys()))
             if collection in existing_collections:
                 resources.append(existing_collections[collection])
             else:

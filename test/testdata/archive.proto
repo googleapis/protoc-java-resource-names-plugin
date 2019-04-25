@@ -26,15 +26,9 @@ service LibraryArchiveService {
 
 // A single book in the archives.
 message BookFromArchive {
-  option (google.api.resource) = {
-    type: "library.googleapis.com/ArchiveBook",
-    pattern: "archives/{archive}/books/{book}"
-  };
   // The resource name of the book.
   // Book names have the form `archives/{archive_id}/books/{book_id}`.
-  string name = 1 [
-    (google.api.resource_reference).type = "library.googleapis.com/ArchiveBook"
-  ];
+  string name = 1;
 
   // The name of the book author.
   string author = 2;
@@ -51,9 +45,7 @@ message BookFromAnywhere {
   // The resource name of the book.
   // Book names have the form `bookShelves/{shelf_id}/books/{book_id}` or
   // `archives/{archive_id}/books/{book_id}`.
-  string name = 1 [
-    (google.api.resource_reference).type = "library.googleapis.com/Book"
-  ];
+  string name = 1;
 
   // The name of the book author.
   string author = 2;
@@ -68,15 +60,11 @@ message BookFromAnywhere {
 // Request message for LibraryService.GetBookFromArchive.
 message GetBookFromArchiveRequest {
   // The name of the book to retrieve.
-  string name = 1 [
-    (google.api.resource_reference).type = "library.googleapis.com/ArchiveBook"
-  ];
+  string name = 1;
 }
 
 // Request message for LibraryService.GetBookFromAnywhere.
 message GetBookFromAnywhereRequest {
   // The name of the book to retrieve.
-  string name = 1 [
-    (google.api.resource_reference).type = "library.googleapis.com/Book"
-  ];
+  string name = 1;
 }

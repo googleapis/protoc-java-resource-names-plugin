@@ -3,13 +3,13 @@ type: com.google.api.codegen.ConfigProto
 #license_header: <snip>
 config_schema_version: 1.0.0
 collections:
-  - name_pattern: archives/{archive}/books/{book=**}
-    entity_name: archived_book
+  - name_pattern: archives/{archive}/books/{book}
+    entity_name: archive_book
 collection_oneofs:
   - oneof_name: book_oneof
     collection_names:
     - book
-    - archived_book
+    - archive_book
 collections:
 - name_pattern: projects/{project}
   entity_name: project
@@ -18,13 +18,13 @@ collections:
     common_resource_name: com.google.cloud.ProjectName
 - name_pattern: shelves/{shelf}
   entity_name: shelf
-- name_pattern: shelves/{shelf}/books/{return} # Test using a Java keyword ("return").
+- name_pattern: shelves/{shelf}/books/{book}
   entity_name: book
   language_overrides:
     - language: java
       entity_name: shelf_book
-- name_pattern: archives/{archive}/books/{book=**}
-  entity_name: archived_book
+- name_pattern: archives/{archive}/books/{book}
+  entity_name: archive_book
 - name_pattern: _deleted-book_
   entity_name: deleted_book
 interfaces:

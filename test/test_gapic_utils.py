@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from plugin.pb2 import resource_pb2
 from plugin.utils import gapic_utils
 
 
@@ -77,6 +77,29 @@ def test_build_entity_names():
             "foos/{foo}/wizzs/{wizz}/bazs/{baz}/bars/{bar}": "wizz_baz_bar"}
 
 
-def test_reconstruct_gapic_yaml():
-    empty_gapic = {}
-    reconstructed_yaml = gapic_utils.reconstruct_gapic_yaml()
+def test_update_collections():
+    res = resource_pb2.ResourceDescriptor()
+    res.type = 'test/Book'
+    res.pattern.append("shelves/{shelf}/books/{book}")
+    res.pattern.append("archives/{archive}/books/{book}")
+    res.history = resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN
+
+    collections = {}
+    collection_oneofs = {}
+    gapic_utils.update_collections(res, {}, collections, collection_oneofs)
+    assert collections == {
+        'book': {
+            'entity_name': 'book',
+            'name_pattern': 'shelves/{shelf}/books/{book}'
+        },
+        'archive_book': {
+            'entity_name': 'archive_book',
+            'name_pattern': 'archives/{archive}/books/{book}'
+        }
+    }
+    assert collection_oneofs == {
+        'book_oneof': {
+            'collection_names': ['book', 'archive_book'],
+            'oneof_name': 'book_oneof'
+        }
+    }
