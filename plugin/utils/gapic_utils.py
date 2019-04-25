@@ -52,7 +52,7 @@ def read_from_gapic_yaml(request):
     yaml_file = request.parameter
     if yaml_file:
         with open(yaml_file) as f:
-            gapic_yaml = yaml.load(f)
+            gapic_yaml = yaml.load(f, Loader=yaml.SafeLoader)
     else:
         gapic_yaml = {}
 
@@ -70,8 +70,8 @@ def read_from_gapic_yaml(request):
     # away from it here is because this tool is supposed to have a short
     # shelf life, and it is safer to be backwards-looking than
     # forward-looking in this case.
-    # if not gapic_yaml or gapic_yaml['config_schema_version'] != '1.0.0':
-    #     gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
+    if not gapic_yaml or gapic_yaml['config_schema_version'] != '1.0.0':
+        gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
 
     collections = {}
     all_entities = []
@@ -185,7 +185,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
 
             # Determine the name.
             name = to_snake(message.name)
-            if res[0].type:
+            if res.type:
                 name = to_snake(res.type.split('/')[-1])
 
             has_oneof = len(res.pattern) > 1 or res.history == resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
@@ -215,7 +215,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                     'collection_names': collection_names,
                 })
 
-            if res[0].type in types_with_child_references:
+            if res.type in types_with_child_references:
                 # Derive patterns for the parent resources
                 parent_patterns = build_parent_patterns(res.pattern)
 

@@ -75,3 +75,8 @@ def test_build_entity_names():
            {"foos/{foo}/bars/{bar}": "foo_bar",
             "foos/{foo}/bazs/{baz}/bars/{bar}": "foo_baz_bar",
             "foos/{foo}/wizzs/{wizz}/bazs/{baz}/bars/{bar}": "wizz_baz_bar"}
+
+
+def test_reconstruct_gapic_yaml():
+    empty_gapic = {}
+    reconstructed_yaml = gapic_utils.reconstruct_gapic_yaml()

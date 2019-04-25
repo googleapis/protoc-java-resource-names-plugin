@@ -87,20 +87,6 @@ def clean_test_output():
 @pytest.fixture(scope='class')
 def run_protoc():
     clean_test_output()
-    gapic_yaml = os.path.join(TEST_DIR, 'library_gapic.yaml')
-    # TODO: make this path configurable
-    include_dirs = ['.', './googleapis']
-    proto_files = ['library_simple.proto', 'archive.proto']
-    run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
-                            gapic_yaml,
-                            include_dirs,
-                            [os.path.join(TEST_DIR, x) for x in proto_files],
-                            'java')
-
-
-@pytest.fixture(scope='class')
-def run_protoc_gapic_v2():
-    clean_test_output()
     gapic_yaml = os.path.join(TEST_DIR, 'library_gapic_v2.yaml')
     # TODO: make this path configurable
     include_dirs = ['.', './googleapis']
@@ -128,6 +114,7 @@ class TestProtocGapicPlugin(object):
             resource)
         check_output(generated_class, PROTOC_OUTPUT_DIR, 'java_' + resource)
 
+'''
     @pytest.mark.parametrize('resource', DONT_GENERATE)
     def test_dont_generate(self, run_protoc, resource):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
@@ -166,3 +153,4 @@ class TestProtocGapicPlugin(object):
         check_output(generated_parent,
                      PROTOC_OUTPUT_DIR,
                      'java_' + parent_filename_fragment)
+'''

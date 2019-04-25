@@ -27,19 +27,19 @@ import java.util.List;
 public class ArchivedBookName extends BookName {
 
   private static final PathTemplate PATH_TEMPLATE =
-      PathTemplate.createWithoutUrlEncoding("archives/{archive_id}/books/{book_id=**}");
+      PathTemplate.createWithoutUrlEncoding("archives/{archive}/books/{book=**}");
 
   private volatile Map<String, String> fieldValuesMap;
 
-  private final String archiveId;
-  private final String bookId;
+  private final String archive;
+  private final String book;
 
-  public String getArchiveId() {
-    return archiveId;
+  public String getArchive() {
+    return archive;
   }
 
-  public String getBookId() {
-    return bookId;
+  public String getBook() {
+    return book;
   }
 
   public static Builder newBuilder() {
@@ -51,21 +51,21 @@ public class ArchivedBookName extends BookName {
   }
 
   private ArchivedBookName(Builder builder) {
-    archiveId = Preconditions.checkNotNull(builder.getArchiveId());
-    bookId = Preconditions.checkNotNull(builder.getBookId());
+    archive = Preconditions.checkNotNull(builder.getArchive());
+    book = Preconditions.checkNotNull(builder.getBook());
   }
 
-  public static ArchivedBookName of(String archiveId, String bookId) {
+  public static ArchivedBookName of(String archive, String book) {
     return newBuilder()
-      .setArchiveId(archiveId)
-      .setBookId(bookId)
+      .setArchive(archive)
+      .setBook(book)
       .build();
   }
 
-  public static String format(String archiveId, String bookId) {
+  public static String format(String archive, String book) {
     return newBuilder()
-      .setArchiveId(archiveId)
-      .setBookId(bookId)
+      .setArchive(archive)
+      .setBook(book)
       .build()
       .toString();
   }
@@ -76,7 +76,7 @@ public class ArchivedBookName extends BookName {
     }
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "ArchivedBookName.parse: formattedString not in valid format");
-    return of(matchMap.get("archive_id"), matchMap.get("book_id"));
+    return of(matchMap.get("archive"), matchMap.get("book"));
   }
 
   public static List<ArchivedBookName> parseList(List<String> formattedStrings) {
@@ -108,8 +108,8 @@ public class ArchivedBookName extends BookName {
       synchronized (this) {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-          fieldMapBuilder.put("archiveId", archiveId);
-          fieldMapBuilder.put("bookId", bookId);
+          fieldMapBuilder.put("archive", archive);
+          fieldMapBuilder.put("book", book);
           fieldValuesMap = fieldMapBuilder.build();
         }
       }
@@ -123,30 +123,30 @@ public class ArchivedBookName extends BookName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("archive_id", archiveId, "book_id", bookId);
+    return PATH_TEMPLATE.instantiate("archive", archive, "book", book);
   }
 
   /** Builder for ArchivedBookName. */
   public static class Builder {
 
-    private String archiveId;
-    private String bookId;
+    private String archive;
+    private String book;
 
-    public String getArchiveId() {
-      return archiveId;
+    public String getArchive() {
+      return archive;
     }
 
-    public String getBookId() {
-      return bookId;
+    public String getBook() {
+      return book;
     }
 
-    public Builder setArchiveId(String archiveId) {
-      this.archiveId = archiveId;
+    public Builder setArchive(String archive) {
+      this.archive = archive;
       return this;
     }
 
-    public Builder setBookId(String bookId) {
-      this.bookId = bookId;
+    public Builder setBook(String book) {
+      this.book = book;
       return this;
     }
 
@@ -154,8 +154,8 @@ public class ArchivedBookName extends BookName {
     }
 
     private Builder(ArchivedBookName archivedBookName) {
-      archiveId = archivedBookName.archiveId;
-      bookId = archivedBookName.bookId;
+      archive = archivedBookName.archive;
+      book = archivedBookName.book;
     }
 
     public ArchivedBookName build() {
@@ -170,8 +170,8 @@ public class ArchivedBookName extends BookName {
     }
     if (o instanceof ArchivedBookName) {
       ArchivedBookName that = (ArchivedBookName) o;
-      return (this.archiveId.equals(that.archiveId))
-          && (this.bookId.equals(that.bookId));
+      return (this.archive.equals(that.archive))
+          && (this.book.equals(that.book));
     }
     return false;
   }
@@ -180,9 +180,9 @@ public class ArchivedBookName extends BookName {
   public int hashCode() {
     int h = 1;
     h *= 1000003;
-    h ^= archiveId.hashCode();
+    h ^= archive.hashCode();
     h *= 1000003;
-    h ^= bookId.hashCode();
+    h ^= book.hashCode();
     return h;
   }
 }
