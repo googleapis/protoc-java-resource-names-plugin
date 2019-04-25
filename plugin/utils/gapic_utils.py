@@ -201,22 +201,25 @@ def update_collections(
     # Determine the name.
     name = to_snake(res.type.split('/')[-1])
 
+    # pylint: disable=no-member
     has_oneof = len(res.pattern) > 1 or res.history == \
-        resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN # pylint: disable=no-member,line-too-long
- 
-    # Build a map from patterns to names. These need to be built
-    # together to resolve conflicts
-    entity_names = build_entity_names(res.pattern, name)
+        resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
 
     # If ORIGINALLY_SINGLE_PATTERN is set or there is only one pattern
     # and FUTURE_MULTI_PATTERN is NOT set, then we need special naming
     # for that pattern.
     single_pattern_naming = \
         res.history == \
-        resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN or ( # pylint: disable=no-member,line-too-long
+        resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN or (
             len(res.pattern) == 1 and res.history !=
-            resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN # pylint: disable=no-member,line-too-long
+            resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
         )
+    # pylint: enable=no-member
+
+    # Build a map from patterns to names. These need to be built
+    # together to resolve conflicts
+    entity_names = build_entity_names(res.pattern, name)
+
     if single_pattern_naming:
         entity_names[res.pattern[0]] = name
 
