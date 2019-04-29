@@ -53,16 +53,6 @@ class TestConfigParsing(TestCase):
 
     def test_explicit_fixed_name_config_parsing(self):
         gapic_config = gapic_utils.read_from_gapic_yaml(GAPIC_CONFIG_V1_PATH)
-        self.assertEqual(1, len(gapic_config.fixed_collections))
-        self.assertEqual(
-            "deleted_book",
-            gapic_config.fixed_collections['deleted_book'].entity_name)
-        self.assertEqual(
-            "_deleted-book_",
-            gapic_config.fixed_collections['deleted_book'].fixed_value)
-        self.assertEqual(
-            "deleted_book",
-            gapic_config.fixed_collections['deleted_book'].java_entity_name)
 
         self.assertEqual(2, len(gapic_config.collection_configs))
         # Project name won't be included because it is a common resource name.
