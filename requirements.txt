@@ -1,4 +1,4 @@
 pystache>=0.5.4
-protobuf>=3.6.1
+protobuf>=3.7.1
 pyyaml>=3.12
 ply == 3.8
