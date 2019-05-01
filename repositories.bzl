@@ -18,10 +18,12 @@ def com_google_protoc_java_resource_names_plugin_repositories(
         pypi_ply()
 
 def com_google_protobuf():
-    native.git_repository(
+    _protobuf_version = "3.7.1"
+
+    http_archive(
         name = "com_google_protobuf",
-        remote = "https://github.com/google/protobuf.git",
-        tag = "v3.6.1",
+        urls = ["https://github.com/protocolbuffers/protobuf/archive/v%s.zip" % _protobuf_version],
+        strip_prefix = "protobuf-%s" % _protobuf_version
     )
 
 _DEFAULT_PY_BUILD_FILE = """
