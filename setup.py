@@ -55,6 +55,7 @@ setup(
     author_email='googleapis-packages@google.com',
     url='https://github.com/googleapis/proto-compiler-plugin',
     packages=find_packages(),
+    scripts=['gapic_plugin.py'],
     entry_points="""[console_scripts]
         protoc-gen-java_resource_names=plugin.cli.main:entrypoint
         protoc-gen-gapic_v1=plugin.cli.dump_gapic_v1:entrypoint
