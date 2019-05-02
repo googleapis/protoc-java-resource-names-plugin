@@ -41,6 +41,11 @@ def com_google_protobuf():
         urls = ["https://zlib.net/zlib-1.2.11.tar.gz"]
     )
 
+    native.bind(
+        name = "zlib",
+        actual = "@net_zlib//:zlib"
+    )
+
 _DEFAULT_PY_BUILD_FILE = """
 py_library(
     name = "lib",
