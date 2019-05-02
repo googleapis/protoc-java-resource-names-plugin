@@ -5,3 +5,13 @@ dist
 test/testdata/test_output
 .cache
 *.egg-info/
+
+# Developer
+.idea/
+
+# Bazel
+bazel-bin
+bazel-out
+bazel-genfiles
+bazel-protoc-java-resource-names-plugin
+bazel-testlogs
