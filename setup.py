@@ -57,7 +57,7 @@ setup(
     packages=find_packages(),
     scripts=['plugin/cli/gapic_plugin.py'],
     entry_points="""[console_scripts]
-        protoc-gen-java_resource_names=plugin.cli.main:entrypoint
+        protoc-gen-java_resource_names=plugin.cli.gapic_plugin:entrypoint
         protoc-gen-gapic_v1=plugin.cli.dump_gapic_v1:entrypoint
     """,
     package_data={'plugin.templates': ['*.mustache']},

@@ -181,7 +181,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
         for message in proto_file.message_type:
             # If this is not a resource, move on.
             res = message.options.Extensions[resource_pb2.resource]
-            if not res:
+            if not res.pattern:
                 continue
 
             update_collections(res, types_with_child_references,
@@ -251,9 +251,11 @@ def update_collections(
 
         parent_collection_names = []
         for pattern in parent_patterns:
-            collections.setdefault(name, {}).update({
-                'entity_name': parent_entity_names[pattern],
-                'name_pattern': pattern,
+            collections.update({
+                parent_entity_names[pattern]: {
+                    'entity_name': parent_entity_names[pattern],
+                    'name_pattern': pattern,
+                }
             })
             parent_collection_names.append(parent_entity_names[pattern])
 

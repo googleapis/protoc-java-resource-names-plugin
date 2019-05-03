@@ -67,7 +67,9 @@ def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
 
     # Add the flag and GAPIC YAML argument for this plugin.
     args.append('--java_resource_names_out={0}'.format(output_dir))
-    args.append('--java_resource_names_opt={0}'.format(gapic_yaml))
+
+    if gapic_yaml:
+        args.append('--java_resource_names_opt={0}'.format(gapic_yaml))
     args += ['--proto_path={0}'.format(path) for path in include_dirs]
     args += proto_files
     try:
@@ -107,6 +109,20 @@ def run_protoc_v2():
                             include_dirs,
                             [os.path.join(TEST_DIR, x) for x in proto_files],
                             'java')
+#
+#
+# @pytest.fixture(scope='class')
+# def run_protoc_pubsub():
+#   clean_test_output()
+#   # TODO: make this path configurable
+#   include_dirs = ['.', './googleapis']
+#   TEST_PUBSUB_DIR = "../googleapis/google/pubsub/v1"
+#   proto_files = ['pubsub.proto']
+#   run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
+#                           None,
+#                           include_dirs,
+#                           [os.path.join(TEST_PUBSUB_DIR, x) for x in proto_files],
+#                           'java')
 
 
 RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name',
@@ -211,3 +227,23 @@ class TestProtocGapicPluginV2(object):
         check_output(generated_parent,
                      PROTOC_OUTPUT_DIR,
                      'java_' + parent_filename_fragment)
+#
+# PUBSUB_RESOURCE_NAMES_TO_GENERATE = ['project_name', 'topic_name', 'subscripion_name'
+#                               'deleted_topic_name']
+#
+# class TestProtocGapicPluginVision(object):
+#
+#     @pytest.mark.parametrize('resource', PUBSUB_RESOURCE_NAMES_TO_GENERATE)
+#     def test_resource_name_generation(self, run_protoc_pubsub, resource):
+#         generated_class = casing_utils.lower_underscore_to_upper_camel(
+#             resource)
+#         check_output(generated_class, PROTOC_OUTPUT_DIR, 'java_' + resource)
+#
+#     @pytest.mark.parametrize('resource', DONT_GENERATE)
+#     def test_dont_generate(self, run_protoc_pubsub, resource):
+#         generated_class = casing_utils.lower_underscore_to_upper_camel(
+#             resource)
+#         file_name = os.path.join(TEST_OUTPUT_DIR,
+#                                  PROTOC_OUTPUT_DIR,
+#                                  generated_class + '.java')
+#         assert not os.path.exists(file_name)
