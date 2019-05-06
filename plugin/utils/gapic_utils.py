@@ -34,9 +34,64 @@ import yaml
 
 from plugin.pb2 import resource_pb2
 from plugin.utils.casing_utils import to_snake
-
+from plugin.templates import resource_name
+from google.protobuf.compiler.plugin_pb2 import CodeGeneratorRequest
 
 GAPIC_CONFIG_ANY = '*'
+
+
+class GapicConfig(object):
+
+    def __init__(self,
+                 collection_configs={},
+                 fixed_collections={},
+                 collection_oneofs={},
+                 **kwargs):
+        self.collection_configs = collection_configs
+        self.fixed_collections = fixed_collections
+        self.collection_oneofs = collection_oneofs
+
+
+def __create_gapic_config(gapic_yaml):
+    """ Create a GapicConfig object from a gapic yaml.
+    Args:
+        gapic_yaml: Serialized GAPIC yaml.
+    """
+    collections = {}
+    all_entities = []
+    if 'collections' in gapic_yaml:
+        all_entities.extend(gapic_yaml['collections'])
+    for interface in gapic_yaml.get('interfaces', []):
+        if 'collections' in interface:
+            all_entities.extend(interface['collections'])
+
+    single_resource_names, fixed_resource_names = \
+        find_single_and_fixed_entities(all_entities)
+
+    collections = load_collection_configs(single_resource_names, collections)
+
+    fixed_collections = {}
+    # TODO(andrealin): Remove the fixed_resource_name_values
+    # parsing once they no longer exist in GAPIC configs.
+    if 'fixed_resource_name_values' in gapic_yaml:
+        fixed_collections = load_fixed_configs(
+            gapic_yaml['fixed_resource_name_values'],
+            fixed_collections,
+            collections,
+            "fixed_value")
+    # Add the fixed resource names that are defined in the collections.
+    fixed_collections = load_fixed_configs(
+        fixed_resource_names,
+        fixed_collections,
+        collections,
+        "name_pattern")
+
+    oneofs = {}
+    if 'collection_oneofs' in gapic_yaml:
+        oneofs = load_collection_oneofs(gapic_yaml['collection_oneofs'],
+                                        collections, fixed_collections)
+
+    return GapicConfig(collections, fixed_collections, oneofs)
 
 
 def read_from_gapic_yaml(request):
@@ -73,41 +128,7 @@ def read_from_gapic_yaml(request):
             'config_schema_version', '1.0.0') != '1.0.0':
         gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
 
-    collections = {}
-    all_entities = []
-    if 'collections' in gapic_yaml:
-        all_entities.extend(gapic_yaml['collections'])
-    for interface in gapic_yaml.get('interfaces', []):
-        if 'collections' in interface:
-            all_entities.extend(interface['collections'])
-
-    single_resource_names, fixed_resource_names = \
-        find_single_and_fixed_entities(all_entities)
-
-    collections = load_collection_configs(single_resource_names, collections)
-
-    fixed_collections = {}
-    # TODO(andrealin): Remove the fixed_resource_name_values
-    # parsing once they no longer exist in GAPIC configs.
-    if 'fixed_resource_name_values' in gapic_yaml:
-        fixed_collections = load_fixed_configs(
-            gapic_yaml['fixed_resource_name_values'],
-            fixed_collections,
-            collections,
-            "fixed_value")
-    # Add the fixed resource names that are defined in the collections.
-    fixed_collections = load_fixed_configs(
-        fixed_resource_names,
-        fixed_collections,
-        collections,
-        "name_pattern")
-
-    oneofs = {}
-    if 'collection_oneofs' in gapic_yaml:
-        oneofs = load_collection_oneofs(gapic_yaml['collection_oneofs'],
-                                        collections, fixed_collections)
-
-    return GapicConfig(collections, fixed_collections, oneofs)
+    return __create_gapic_config(gapic_yaml)
 
 
 def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
@@ -275,13 +296,10 @@ def update_collections(
 # trie have multiple entries, meaning that that entry distinguishes a pattern
 # from another pattern (i.e. the trie branches at that node).
 def build_entity_names(patterns, suffix):
-    all_segments_list = [(p, reversed_variable_segments(p), isFixedPattern(p)) for p in patterns]
-
-    # Add single resource names.
-    segments_list = [(p, segments) for (p, segments, isFixed) in all_segments_list if not isFixed]
-    trie = build_trie_from_segments_list([segments for (p, segments) in segments_list])
+    segments_list = [reversed_variable_segments(p) for p in patterns]
+    trie = build_trie_from_segments_list(segments_list)
     name_map = {}
-    for pattern, segments in segments_list:
+    for pattern, segments in zip(patterns, segments_list):
         node = trie
         name_components = []
         if suffix:
@@ -295,11 +313,6 @@ def build_entity_names(patterns, suffix):
             if segments:
                 name_components.append(segments[0])
         name_map[pattern] = '_'.join(name_components[::-1])
-
-    # Add fixed resource names.
-    for (pattern, segments) in [(p, segments) for (p, segments, isFixed) in all_segments_list if isFixed]:
-        name_map[pattern] = '_'.join(segments[::-1])
-
     return name_map
 
 
@@ -447,6 +460,43 @@ def load_collection_oneofs(config_list, existing_collections,
     return existing_oneofs
 
 
+
+def collect_resource_name_types(gapic_config, java_package):
+  resources = []
+
+  for collection_config in gapic_config.collection_configs.values():
+    oneof = get_oneof_for_resource(collection_config, gapic_config)
+    resource = resource_name.ResourceName(collection_config, java_package, oneof)
+    resources.append(resource)
+
+  for fixed_config in gapic_config.fixed_collections.values():
+    oneof = get_oneof_for_resource(fixed_config, gapic_config)
+    resource = resource_name.ResourceNameFixed(fixed_config, java_package, oneof)
+    resources.append(resource)
+
+  for oneof_config in gapic_config.collection_oneofs.values():
+    parent_resource = resource_name.ParentResourceName(oneof_config, java_package)
+    untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
+    resource_factory = resource_name.ResourceNameFactory(oneof_config, java_package)
+    resources.append(parent_resource)
+    resources.append(untyped_resource)
+    resources.append(resource_factory)
+
+  return resources
+
+
+
+def get_oneof_for_resource(collection_config, gapic_config):
+  oneof = None
+  for oneof_config in gapic_config.collection_oneofs.values():
+    for collection_name in oneof_config.collection_names:
+      if collection_name == collection_config.entity_name:
+        if oneof:
+          raise ValueError("A collection cannot be part of multiple oneofs")
+        oneof = oneof_config
+  return oneof
+
+
 def create_field_name(message_name, field):
     return message_name + '.' + field
 
@@ -475,15 +525,3 @@ class CollectionOneof(object):
         self.resource_list = resources
         self.fixed_resource_list = fixed_resources
         self.collection_names = collection_names
-
-
-class GapicConfig(object):
-
-    def __init__(self,
-                 collection_configs={},
-                 fixed_collections={},
-                 collection_oneofs={},
-                 **kwargs):
-        self.collection_configs = collection_configs
-        self.fixed_collections = fixed_collections
-        self.collection_oneofs = collection_oneofs
