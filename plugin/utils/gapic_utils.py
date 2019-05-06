@@ -29,7 +29,7 @@
 
 from collections import OrderedDict
 import copy
-
+import re
 import yaml
 
 from plugin.pb2 import resource_pb2
@@ -303,11 +303,17 @@ def build_trie_from_segments_list(segments_list):
 
 
 def reversed_variable_segments(ptn):
-    segs = []
-    for seg in ptn.split('/')[::-1]:
-        if _is_variable_segment(seg):
-            segs.append(seg[1:-1])
-    return segs
+    if isFixedPattern(ptn):
+        start_index = next(i for (i, c) in enumerate(list(ptn)) if c.isalpha())
+        end_index = len(ptn) - next(
+            i for (i, c) in enumerate(list(ptn)[::-1]) if c.isalpha())
+        return re.split(r'[^a-zA-Z]', ptn[start_index:end_index])
+    else:
+        segs = []
+        for seg in ptn.split('/')[::-1]:
+            if _is_variable_segment(seg):
+                segs.append(seg[1:-1])
+        return segs
 
 
 def build_parent_patterns(patterns):
@@ -331,11 +337,15 @@ def find_single_and_fixed_entities(all_resource_names):
 
     for collection in all_resource_names:
         name_pattern = collection['name_pattern']
-        if '{' in name_pattern or '*' in name_pattern:
-            single_entities.append(collection)
-        else:
+        if isFixedPattern(name_pattern):
             fixed_entities.append(collection)
+        else:
+            single_entities.append(collection)
     return single_entities, fixed_entities
+
+
+def isFixedPattern(pattern):
+    return not('{' in pattern or '*' in pattern)
 
 
 def load_collection_configs(config_list, existing_configs):
