@@ -39,6 +39,8 @@ def test_reversed_variable_segments():
         "foos/{foo}/bars/{bar}") == ["bar", "foo"]
     assert gapic_utils.reversed_variable_segments(
         "foos/{foo}/busy/bars/{bar}") == ["bar", "foo"]
+    assert gapic_utils.reversed_variable_segments(
+        "_deleted-topic_") == ["topic", "deleted"]
 
 
 def test_build_trie_from_segments_list():
@@ -81,6 +83,12 @@ def test_build_entity_names():
         {"foos/{foo}/bars/{bar}": "foo_bar",
          "foos/{foo}/bazs/{baz}/bars/{bar}": "foo_baz_bar",
             "foos/{foo}/wizzs/{wizz}/bazs/{baz}/bars/{bar}": "wizz_baz_bar"}
+    assert gapic_utils.build_entity_names([
+        "projects/{project}/topics/{topic}",
+        "_deleted-topic_",
+    ], "topic") == \
+           {"projects/{project}/topics/{topic}": "topic",
+            "_deleted-topic_": "deleted_topic"}
 
 
 def test_update_collections():
@@ -143,19 +151,27 @@ def test_pubsub():
     request.proto_file.extend(file_descriptor_set.file)
 
     reconstructed_gapic_config = gapic_utils.reconstruct_gapic_yaml(gapic_config, request)
-    assert reconstructed_gapic_config['collections'] == {
-        'topic': {
+    assert reconstructed_gapic_config['collections'] == [
+        {
             'entity_name': 'topic',
             'name_pattern': 'projects/{project}/topics/{topic}'
         },
-        'subscription': {
-            'entity_name': 'product',
+        {
+            'entity_name': 'deleted_topic',
+            'name_pattern': '_deleted-topic_'
+        },
+        {
+            'entity_name': 'subscription',
             'name_pattern': 'projects/{project}/subscriptions/{subscription}'
         },
-    }
-    assert reconstructed_gapic_config['collections_oneof'] == {
-        'topic_oneof': {}
-    }
+    ]
+    assert reconstructed_gapic_config['collection_oneofs'] == [
+        {
+            'collection_names': ['topic', 'deleted_topic'],
+            'oneof_name': 'topic_oneof'
+        }
+    ]
+
 
 #
 # def test_vision():

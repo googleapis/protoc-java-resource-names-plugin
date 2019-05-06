@@ -243,6 +243,9 @@ def update_collections(
 
     if res.type in types_with_child_references:
         # Derive patterns for the parent resources
+        if (isFixedPattern(res.pattern)):
+            return
+
         parent_patterns = build_parent_patterns(res.pattern)
 
         # Build a map from patterns to names. These need to be built
@@ -272,10 +275,13 @@ def update_collections(
 # trie have multiple entries, meaning that that entry distinguishes a pattern
 # from another pattern (i.e. the trie branches at that node).
 def build_entity_names(patterns, suffix):
-    segments_list = [reversed_variable_segments(p) for p in patterns]
-    trie = build_trie_from_segments_list(segments_list)
+    all_segments_list = [(p, reversed_variable_segments(p), isFixedPattern(p)) for p in patterns]
+
+    # Add single resource names.
+    segments_list = [(p, segments) for (p, segments, isFixed) in all_segments_list if not isFixed]
+    trie = build_trie_from_segments_list([segments for (p, segments) in segments_list])
     name_map = {}
-    for pattern, segments in zip(patterns, segments_list):
+    for pattern, segments in segments_list:
         node = trie
         name_components = []
         if suffix:
@@ -289,6 +295,11 @@ def build_entity_names(patterns, suffix):
             if segments:
                 name_components.append(segments[0])
         name_map[pattern] = '_'.join(name_components[::-1])
+
+    # Add fixed resource names.
+    for (pattern, segments) in [(p, segments) for (p, segments, isFixed) in all_segments_list if isFixed]:
+        name_map[pattern] = '_'.join(segments[::-1])
+
     return name_map
 
 
@@ -307,7 +318,9 @@ def reversed_variable_segments(ptn):
         start_index = next(i for (i, c) in enumerate(list(ptn)) if c.isalpha())
         end_index = len(ptn) - next(
             i for (i, c) in enumerate(list(ptn)[::-1]) if c.isalpha())
-        return re.split(r'[^a-zA-Z]', ptn[start_index:end_index])
+        name_parts = re.split(r'[^a-zA-Z]', ptn[start_index:end_index])
+        name_parts.reverse()
+        return name_parts
     else:
         segs = []
         for seg in ptn.split('/')[::-1]:
