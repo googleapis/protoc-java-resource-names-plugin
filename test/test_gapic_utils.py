@@ -170,7 +170,6 @@ def test_library_gapic_v1():
         renderer.render(resource)
 
 
-
 def test_library_gapic_v2():
 
     request = plugin_pb2.CodeGeneratorRequest()

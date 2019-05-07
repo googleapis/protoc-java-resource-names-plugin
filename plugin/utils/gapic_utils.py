@@ -35,7 +35,6 @@ import yaml
 from plugin.pb2 import resource_pb2
 from plugin.utils.casing_utils import to_snake
 from plugin.templates import resource_name
-from google.protobuf.compiler.plugin_pb2 import CodeGeneratorRequest
 
 GAPIC_CONFIG_ANY = '*'
 
@@ -264,7 +263,6 @@ def update_collections(
 
     if res.type in types_with_child_references:
         # Derive patterns for the parent resources
-
         parent_patterns = build_parent_patterns(res.pattern)
 
         # Build a map from patterns to names. These need to be built
@@ -280,14 +278,6 @@ def update_collections(
                 }
             })
             parent_collection_names.append(parent_entity_names[pattern])
-
-        #
-        # if has_oneof:
-        #     # Add the resource collection to "collection_oneofs".
-        #     collection_oneofs.setdefault(name, {}).update({
-        #         'oneof_name': 'parent_oneof',
-        #         'collection_names': collection_names,
-        #     })
 
 
 # Build a map from patterns to entity names. We use a trie structure to resolve
@@ -464,18 +454,23 @@ def collect_resource_name_types(gapic_config, java_package):
 
     for collection_config in gapic_config.collection_configs.values():
         oneof = get_oneof_for_resource(collection_config, gapic_config)
-        resource = resource_name.ResourceName(collection_config, java_package, oneof)
+        resource = resource_name.ResourceName(
+            collection_config, java_package, oneof)
         resources.append(resource)
 
     for fixed_config in gapic_config.fixed_collections.values():
         oneof = get_oneof_for_resource(fixed_config, gapic_config)
-        resource = resource_name.ResourceNameFixed(fixed_config, java_package, oneof)
+        resource = resource_name.ResourceNameFixed(
+            fixed_config, java_package, oneof)
         resources.append(resource)
 
     for oneof_config in gapic_config.collection_oneofs.values():
-        parent_resource = resource_name.ParentResourceName(oneof_config, java_package)
-        untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
-        resource_factory = resource_name.ResourceNameFactory(oneof_config, java_package)
+        parent_resource = resource_name.ParentResourceName(
+            oneof_config, java_package)
+        untyped_resource = resource_name.UntypedResourceName(
+            oneof_config, java_package)
+        resource_factory = resource_name.ResourceNameFactory(
+            oneof_config, java_package)
         resources.append(parent_resource)
         resources.append(untyped_resource)
         resources.append(resource_factory)
@@ -489,7 +484,8 @@ def get_oneof_for_resource(collection_config, gapic_config):
         for collection_name in oneof_config.collection_names:
             if collection_name == collection_config.entity_name:
                 if oneof:
-                    raise ValueError("A collection cannot be part of multiple oneofs")
+                    raise ValueError(
+                        "A collection cannot be part of multiple oneofs")
                 oneof = oneof_config
     return oneof
 
