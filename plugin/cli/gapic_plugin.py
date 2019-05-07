@@ -42,6 +42,7 @@ from plugin.utils import proto_utils, gapic_utils
 
 TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
 
+
 def render_new_file(renderer, response, resource):
     f = response.file.add()
     f.name = resource.filename()
@@ -97,7 +98,7 @@ def get_protos_to_generate_for(request):
     proto_files = dict((pf.name, pf) for pf in request.proto_file)
     for pf_name in request.file_to_generate:
         if pf_name in proto_files:
-          yield proto_files[pf_name]
+            yield proto_files[pf_name]
 
 
 def resolve_java_package_name(request):
@@ -105,8 +106,9 @@ def resolve_java_package_name(request):
     for pf in get_protos_to_generate_for(request):
         for opt in proto_utils.get_named_options(pf, 'java_package'):
             if java_package is not None and java_package != opt[1]:
-                raise ValueError('got conflicting java packages: ' + str(java_package)
-                               + ' and ' + str(opt[1]))
+                raise ValueError('got conflicting java packages: ' +
+                                 str(java_package) +
+                                 ' and ' + str(opt[1]))
             java_package = opt[1]
             break
     if java_package is None:
@@ -148,3 +150,7 @@ def entrypoint():
 
     # Write to stdout
     dest.write(output)
+
+
+if __name__ == '__main__':
+    entrypoint()
