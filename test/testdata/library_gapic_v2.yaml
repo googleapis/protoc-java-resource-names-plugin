@@ -1,0 +1,13 @@
+type: com.google.api.codegen.ConfigProto
+config_schema_version: 2.0.0
+collections:
+  - entity_name: book
+    language_overrides:
+      - language: java
+        entity_name: shelf_book
+  - name_pattern: _deleted-book_
+    entity_name: deleted_book
+  - entity_name: archive_book
+    language_overrides:
+    - language: java
+      entity_name: archived_book
