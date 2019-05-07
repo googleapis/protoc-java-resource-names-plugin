@@ -148,8 +148,8 @@ class ResourceNameOneof(ResourceNameBase):
             'resourcePackage': resource.package(),
         } for resource in (ResourceNameFixed(x, java_package, oneof)
                            for x in oneof.fixed_resource_list)]
-        self.resource_types = (self.single_resource_types
-                               + self.fixed_resource_types)
+        self.resource_types = (self.single_resource_types +
+                               self.fixed_resource_types)
 
         self.oneof_package_name = java_package
 
@@ -210,8 +210,8 @@ class ResourceNameFactory(ResourceNameBase):
             'resourcePackage': resource.package(),
         } for resource in (ResourceNameFixed(x, java_package, oneof)
                            for x in oneof.fixed_resource_list)]
-        self.resource_types = (self.single_resource_types
-                               + self.fixed_resource_types)
+        self.resource_types = (self.single_resource_types +
+                               self.fixed_resource_types)
 
     def className(self):
         return self.class_name

@@ -155,15 +155,15 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
     gapic_config['config_schema_version'] += '-reconstructed'
 
     # Sort existing collections in a dictionary so we can look up by
-    # entity names. (This makes it easier to avoid plowing over stuff that
+    # name patterns. (This makes it easier to avoid plowing over stuff that
     # is explicitly defined in YAML.)
-    collections = OrderedDict([(i['entity_name'], i) for i in
+    collections = OrderedDict([(i['name_pattern'], i) for i in
                                gapic_config.get('collections', ())])
     for interface in gapic_config.get('interfaces', ()):
-        collections.update([(i['entity_name'], i) for i in
+        collections.update([(i['name_pattern'], i) for i in
                             interface.get('collections', ())])
 
-    # Do the same thing for collection oneofs.
+    # Do the same thing for collection oneofs, but order by entity names.
     collection_oneofs = OrderedDict(
         [(i['oneof_name'], i) for i in gapic_config.get(
             'collection_oneofs', ())])
@@ -248,7 +248,7 @@ def update_collections(
     # Build collections for all of the patterns in the descriptor
     for pattern in res.pattern:
         collection_name = entity_names[pattern]
-        collections.setdefault(collection_name, {}).update({
+        collections.setdefault(pattern, {}).update({
             'entity_name': collection_name,
             'name_pattern': pattern,
         })
@@ -264,8 +264,6 @@ def update_collections(
 
     if res.type in types_with_child_references:
         # Derive patterns for the parent resources
-        if (isFixedPattern(res.pattern)):
-            return
 
         parent_patterns = build_parent_patterns(res.pattern)
 
@@ -283,12 +281,13 @@ def update_collections(
             })
             parent_collection_names.append(parent_entity_names[pattern])
 
-        if has_oneof:
-            # Add the resource collection to "collection_oneofs".
-            collection_oneofs.setdefault(name, {}).update({
-                'oneof_name': 'parent_oneof',
-                'collection_names': collection_names,
-            })
+        #
+        # if has_oneof:
+        #     # Add the resource collection to "collection_oneofs".
+        #     collection_oneofs.setdefault(name, {}).update({
+        #         'oneof_name': 'parent_oneof',
+        #         'collection_names': collection_names,
+        #     })
 
 
 # Build a map from patterns to entity names. We use a trie structure to resolve
@@ -350,7 +349,7 @@ def build_parent_patterns(patterns):
             last_index -= 1
         last_index += 1
         return '/'.join(segs[:last_index])
-    return [_parent_pattern(p) for p in patterns]
+    return [_parent_pattern(p) for p in patterns if not(isFixedPattern(p))]
 
 
 def _is_variable_segment(segment):
@@ -460,41 +459,39 @@ def load_collection_oneofs(config_list, existing_collections,
     return existing_oneofs
 
 
-
 def collect_resource_name_types(gapic_config, java_package):
-  resources = []
+    resources = []
 
-  for collection_config in gapic_config.collection_configs.values():
-    oneof = get_oneof_for_resource(collection_config, gapic_config)
-    resource = resource_name.ResourceName(collection_config, java_package, oneof)
-    resources.append(resource)
+    for collection_config in gapic_config.collection_configs.values():
+        oneof = get_oneof_for_resource(collection_config, gapic_config)
+        resource = resource_name.ResourceName(collection_config, java_package, oneof)
+        resources.append(resource)
 
-  for fixed_config in gapic_config.fixed_collections.values():
-    oneof = get_oneof_for_resource(fixed_config, gapic_config)
-    resource = resource_name.ResourceNameFixed(fixed_config, java_package, oneof)
-    resources.append(resource)
+    for fixed_config in gapic_config.fixed_collections.values():
+        oneof = get_oneof_for_resource(fixed_config, gapic_config)
+        resource = resource_name.ResourceNameFixed(fixed_config, java_package, oneof)
+        resources.append(resource)
 
-  for oneof_config in gapic_config.collection_oneofs.values():
-    parent_resource = resource_name.ParentResourceName(oneof_config, java_package)
-    untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
-    resource_factory = resource_name.ResourceNameFactory(oneof_config, java_package)
-    resources.append(parent_resource)
-    resources.append(untyped_resource)
-    resources.append(resource_factory)
+    for oneof_config in gapic_config.collection_oneofs.values():
+        parent_resource = resource_name.ParentResourceName(oneof_config, java_package)
+        untyped_resource = resource_name.UntypedResourceName(oneof_config, java_package)
+        resource_factory = resource_name.ResourceNameFactory(oneof_config, java_package)
+        resources.append(parent_resource)
+        resources.append(untyped_resource)
+        resources.append(resource_factory)
 
-  return resources
-
+    return resources
 
 
 def get_oneof_for_resource(collection_config, gapic_config):
-  oneof = None
-  for oneof_config in gapic_config.collection_oneofs.values():
-    for collection_name in oneof_config.collection_names:
-      if collection_name == collection_config.entity_name:
-        if oneof:
-          raise ValueError("A collection cannot be part of multiple oneofs")
-        oneof = oneof_config
-  return oneof
+    oneof = None
+    for oneof_config in gapic_config.collection_oneofs.values():
+        for collection_name in oneof_config.collection_names:
+            if collection_name == collection_config.entity_name:
+                if oneof:
+                    raise ValueError("A collection cannot be part of multiple oneofs")
+                oneof = oneof_config
+    return oneof
 
 
 def create_field_name(message_name, field):
