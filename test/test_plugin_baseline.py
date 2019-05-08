@@ -119,7 +119,8 @@ PROTOC_OUTPUT_DIR = os.path.join('com', 'google', 'example', 'library', 'v1')
 
 
 class TestProtocGapicPlugin(object):
-    DONT_GENERATE = ['project_name']  # Common resource names shouldn't be generated.
+    # Common resource names shouldn't be generated.
+    DONT_GENERATE = ['project_name']
 
     @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
     def test_resource_name_generation(self, run_protoc, resource):
@@ -169,7 +170,8 @@ class TestProtocGapicPlugin(object):
 
 class TestProtocGapicPluginV2(object):
 
-    @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE + ["project_name"])
+    @pytest.mark.parametrize('resource',
+                             RESOURCE_NAMES_TO_GENERATE + ["project_name"])
     def test_resource_name_generation(self, run_protoc_v2, resource):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
             resource)

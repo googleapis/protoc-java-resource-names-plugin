@@ -91,9 +91,10 @@ def test_build_entity_names():
     assert gapic_utils.build_entity_names([
         "projects/{project}/topics/{topic}",
         "_deleted-topic_",
-    ], "topic") == \
-           {"projects/{project}/topics/{topic}": "project_topic",
-            "_deleted-topic_": "deleted_topic"}
+    ], "topic") == {
+        "projects/{project}/topics/{topic}": "project_topic",
+        "_deleted-topic_": "deleted_topic"
+    }
 
 
 def test_update_collections():
@@ -127,7 +128,7 @@ def test_update_collections():
 def test_library_gapic_v1():
 
     request = plugin_pb2.CodeGeneratorRequest()
-    proto_files = ["test/testdata/library_simple.proto", "test/testdata/archive.proto"]
+    proto_files = ["library_simple.proto", "archive.proto"]
     request.file_to_generate.extend(proto_files)
     request.parameter = "test/testdata/library_gapic_v1.yaml"
 
@@ -135,9 +136,15 @@ def test_library_gapic_v1():
         gapic_yaml = yaml.load(f, Loader=yaml.SafeLoader)
 
     file_descriptor_set_file = "test/testdata/test_output/library.desc"
-    subprocess.check_call(['protoc', '-o', file_descriptor_set_file, '--include_imports', '--proto_path=.',
-                           '--proto_path=../googleapis'] +
-                           proto_files)
+    subprocess.check_call(
+        ['protoc',
+         '-o',
+         file_descriptor_set_file,
+         '--include_imports',
+         '--proto_path=test/testdata',
+         '--proto_path=.',
+         '--proto_path=./googleapis'] +
+        proto_files)
     with open(file_descriptor_set_file, 'rb') as f:
         file_descriptor_set = descriptor_pb2.FileDescriptorSet.FromString(
             f.read())
@@ -145,8 +152,8 @@ def test_library_gapic_v1():
     request.proto_file.extend(file_descriptor_set.file)
 
     gapic_config = gapic_utils.create_gapic_config(gapic_yaml)
-    resource_name_artifacts \
-        = gapic_utils.collect_resource_name_types(gapic_config, "com.google.example.library.v1")
+    resource_name_artifacts = gapic_utils.collect_resource_name_types(
+        gapic_config, "com.google.example.library.v1")
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ResourceName
             and r.format_string == 'archives/{archive_id}/books/{book_id=**}'
@@ -167,11 +174,11 @@ def test_library_gapic_v1():
             and r.class_name == 'BookNames']
 
 
-
 def test_library_gapic_v2():
 
     request = plugin_pb2.CodeGeneratorRequest()
-    proto_files = ["test/testdata/library_simple.proto", "test/testdata/archive.proto"]
+    proto_files = ["test/testdata/library_simple.proto",
+                   "test/testdata/archive.proto"]
     request.file_to_generate.extend(proto_files)
     request.parameter = "test/testdata/library_gapic_v2.yaml"
 
@@ -179,16 +186,22 @@ def test_library_gapic_v2():
         gapic_yaml = yaml.load(f, Loader=yaml.SafeLoader)
 
     file_descriptor_set_file = "test/testdata/test_output/library.desc"
-    subprocess.check_call(['protoc', '-o', file_descriptor_set_file, '--include_imports', '--proto_path=.',
-                           '--proto_path=../googleapis'] +
-                           proto_files)
+    subprocess.check_call(
+        ['protoc',
+         '-o',
+         file_descriptor_set_file,
+         '--include_imports',
+         '--proto_path=.',
+         '--proto_path=../googleapis'] +
+        proto_files)
     with open(file_descriptor_set_file, 'rb') as f:
         file_descriptor_set = descriptor_pb2.FileDescriptorSet.FromString(
             f.read())
 
     request.proto_file.extend(file_descriptor_set.file)
 
-    reconstructed_gapic_config = gapic_utils.reconstruct_gapic_yaml(gapic_yaml, request)
+    reconstructed_gapic_config = gapic_utils.reconstruct_gapic_yaml(
+        gapic_yaml, request)
     assert reconstructed_gapic_config['collections'] == [
         {
             'name_pattern': 'projects/{project}/shelves/{shelf}/books/{book}',
@@ -228,10 +241,12 @@ def test_library_gapic_v2():
 
     gapic_config = gapic_utils.create_gapic_config(reconstructed_gapic_config)
     resource_name_artifacts \
-        = gapic_utils.collect_resource_name_types(gapic_config, "com.google.example.library.v1")
+        = gapic_utils.collect_resource_name_types(
+            gapic_config, "com.google.example.library.v1")
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ResourceName
-            and r.format_string == 'projects/{project}/shelves/{shelf}/books/{book}'
+            and r.format_string ==
+            'projects/{project}/shelves/{shelf}/books/{book}'
             and r.format_name_lower == 'shelfBookName'
             and r.parent_interface == 'BookName']
     assert [r for r in resource_name_artifacts if
