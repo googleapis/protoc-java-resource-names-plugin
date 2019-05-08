@@ -39,7 +39,7 @@ from plugin.templates import resource_name
 GAPIC_CONFIG_ANY = '*'
 
 
-def __create_gapic_config(gapic_yaml):
+def create_gapic_config(gapic_yaml):
     """ Create a GapicConfig object from a gapic yaml.
     Args:
         gapic_yaml: Serialized GAPIC yaml.
@@ -117,7 +117,7 @@ def read_from_gapic_yaml(request):
             'config_schema_version', '1.0.0') != '1.0.0':
         gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
 
-    return __create_gapic_config(gapic_yaml)
+    return create_gapic_config(gapic_yaml)
 
 
 def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901

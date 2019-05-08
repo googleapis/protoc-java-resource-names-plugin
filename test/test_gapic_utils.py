@@ -15,6 +15,7 @@ import subprocess
 
 from plugin.pb2 import resource_pb2
 from plugin.utils import gapic_utils
+from plugin.templates import resource_name
 
 import yaml
 
@@ -143,10 +144,28 @@ def test_library_gapic_v1():
 
     request.proto_file.extend(file_descriptor_set.file)
 
-    gapic_config = gapic_utils.__create_gapic_config(gapic_yaml)
+    gapic_config = gapic_utils.create_gapic_config(gapic_yaml)
     resource_name_artifacts \
         = gapic_utils.collect_resource_name_types(gapic_config, "com.google.example.library.v1")
-    assert resource_name_artifacts
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceName
+            and r.format_string == 'archives/{archive_id}/books/{book_id=**}'
+            and r.format_name_lower == 'archivedBookName']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceName
+            and r.format_string == 'book/{book_id}'
+            and r.format_name_lower == 'shelfBookName']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceNameFixed
+            and r.fixed_value == '_deleted-book_'
+            and r.format_name_upper == 'DeletedBook']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ParentResourceName
+            and r.class_name == 'BookName']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceNameFactory
+            and r.class_name == 'BookNames']
+
 
 
 def test_library_gapic_v2():
@@ -207,7 +226,32 @@ def test_library_gapic_v2():
         }
     ]
 
-    gapic_config = gapic_utils.__create_gapic_config(reconstructed_gapic_config)
+    gapic_config = gapic_utils.create_gapic_config(reconstructed_gapic_config)
     resource_name_artifacts \
         = gapic_utils.collect_resource_name_types(gapic_config, "com.google.example.library.v1")
-    assert resource_name_artifacts
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceName
+            and r.format_string == 'projects/{project}/shelves/{shelf}/books/{book}'
+            and r.format_name_lower == 'shelfBookName'
+            and r.parent_interface == 'BookName']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceName
+            and r.format_string == 'archives/{archive}/books/{book}'
+            and r.format_name_lower == 'archivedBookName'
+            and r.parent_interface == 'BookName']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceName
+            and r.format_string == 'projects/{project}/shelves/{shelf}'
+            and r.format_name_lower == 'shelfName'
+            and r.parent_interface == 'ResourceName']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceNameFixed
+            and r.fixed_value == '_deleted-book_'
+            and r.format_name_upper == 'DeletedBook'
+            and r.parent_interface == 'BookName']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ParentResourceName
+            and r.class_name == 'BookName']
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ResourceNameFactory
+            and r.class_name == 'BookNames']
