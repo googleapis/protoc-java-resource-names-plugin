@@ -67,7 +67,9 @@ def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
 
     # Add the flag and GAPIC YAML argument for this plugin.
     args.append('--java_resource_names_out={0}'.format(output_dir))
-    args.append('--java_resource_names_opt={0}'.format(gapic_yaml))
+
+    if gapic_yaml:
+        args.append('--java_resource_names_opt={0}'.format(gapic_yaml))
     args += ['--proto_path={0}'.format(path) for path in include_dirs]
     args += proto_files
     try:
@@ -112,12 +114,12 @@ def run_protoc_v2():
 RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name',
                               'archived_book_name', 'deleted_book']
 ONEOFS_TO_GENERATE = ['book_oneof']
-DONT_GENERATE = ['project_name']
 
 PROTOC_OUTPUT_DIR = os.path.join('com', 'google', 'example', 'library', 'v1')
 
 
 class TestProtocGapicPlugin(object):
+    DONT_GENERATE = ['project_name']  # Common resource names shouldn't be generated.
 
     @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
     def test_resource_name_generation(self, run_protoc, resource):
@@ -167,20 +169,11 @@ class TestProtocGapicPlugin(object):
 
 class TestProtocGapicPluginV2(object):
 
-    @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE)
+    @pytest.mark.parametrize('resource', RESOURCE_NAMES_TO_GENERATE + ["project_name"])
     def test_resource_name_generation(self, run_protoc_v2, resource):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
             resource)
         check_output(generated_class, PROTOC_OUTPUT_DIR, 'java_' + resource)
-
-    @pytest.mark.parametrize('resource', DONT_GENERATE)
-    def test_dont_generate(self, run_protoc_v2, resource):
-        generated_class = casing_utils.lower_underscore_to_upper_camel(
-            resource)
-        file_name = os.path.join(TEST_OUTPUT_DIR,
-                                 PROTOC_OUTPUT_DIR,
-                                 generated_class + '.java')
-        assert not os.path.exists(file_name)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
     def test_parent_resource_name_generation(self, run_protoc_v2, oneof):

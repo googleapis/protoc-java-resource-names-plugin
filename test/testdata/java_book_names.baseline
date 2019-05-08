@@ -28,6 +28,9 @@ public class BookNames {
     if (ArchivedBookName.isParsableFrom(resourceNameString)) {
       return ArchivedBookName.parse(resourceNameString);
     }
+    if (DeletedBook.matches(resourceNameString)) {
+      return DeletedBook.instance();
+    }
     return UntypedBookName.parse(resourceNameString);
   }
 }

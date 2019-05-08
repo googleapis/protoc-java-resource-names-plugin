@@ -10,15 +10,16 @@ collection_oneofs:
     collection_names:
     - book
     - archive_book
+    - deleted_book
 collections:
 - name_pattern: projects/{project}
   entity_name: project
   language_overrides:
   - language: java
     common_resource_name: com.google.cloud.ProjectName
-- name_pattern: shelves/{shelf}
+- name_pattern: projects/{project}/shelves/{shelf}
   entity_name: shelf
-- name_pattern: shelves/{shelf}/books/{book}
+- name_pattern: projects/{project}/shelves/{shelf}/books/{book}
   entity_name: book
   language_overrides:
     - language: java
