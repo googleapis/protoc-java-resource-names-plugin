@@ -36,16 +36,17 @@ import pystache
 from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
 
-from plugin.templates import resource_name, insertion_points
+from plugin.templates import insertion_points
 from plugin.utils import proto_utils, gapic_utils
 
 
 TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
 
+
 def render_new_file(renderer, response, resource):
-  f = response.file.add()
-  f.name = resource.filename()
-  f.content = renderer.render(resource)
+    f = response.file.add()
+    f.name = resource.filename()
+    f.content = renderer.render(resource)
 
 
 def generate_resource_name_types(response, gapic_config, java_package):
@@ -57,71 +58,72 @@ def generate_resource_name_types(response, gapic_config, java_package):
 
 
 def get_builder_view(field):
-  if field.label == FieldDescriptorProto.LABEL_REPEATED:
-    return insertion_points.InsertBuilderList
-  else:
-    return insertion_points.InsertBuilder
+    if field.label == FieldDescriptorProto.LABEL_REPEATED:
+        return insertion_points.InsertBuilderList
+    else:
+        return insertion_points.InsertBuilder
 
 
 def get_class_view(field):
-  if field.label == FieldDescriptorProto.LABEL_REPEATED:
-    return insertion_points.InsertClassList
-  else:
-    return insertion_points.InsertClass
+    if field.label == FieldDescriptorProto.LABEL_REPEATED:
+        return insertion_points.InsertClassList
+    else:
+        return insertion_points.InsertClass
 
 
 def get_protos_to_generate_for(request):
-  proto_files = dict((pf.name, pf) for pf in request.proto_file)
-  for pf_name in request.file_to_generate:
-    if pf_name in proto_files:
-      yield proto_files[pf_name]
+    proto_files = dict((pf.name, pf) for pf in request.proto_file)
+    for pf_name in request.file_to_generate:
+        if pf_name in proto_files:
+            yield proto_files[pf_name]
 
 
 def resolve_java_package_name(request):
-  java_package = None
-  for pf in get_protos_to_generate_for(request):
-    for opt in proto_utils.get_named_options(pf, 'java_package'):
-      if java_package is not None and java_package != opt[1]:
-        raise ValueError('got conflicting java packages: ' + str(java_package)
-                         + ' and ' + str(opt[1]))
-      java_package = opt[1]
-      break
-  if java_package is None:
-    raise ValueError('java package not defined')
-  return java_package
+    java_package = None
+    for pf in get_protos_to_generate_for(request):
+        for opt in proto_utils.get_named_options(pf, 'java_package'):
+            if java_package is not None and java_package != opt[1]:
+                raise ValueError('got conflicting java packages: ' +
+                                 str(java_package) +
+                                 ' and ' + str(opt[1]))
+            java_package = opt[1]
+            break
+    if java_package is None:
+        raise ValueError('java package not defined')
+    return java_package
 
 
 def main(data):
-  # Parse request
-  request = plugin.CodeGeneratorRequest()
-  request.ParseFromString(data)
+    # Parse request
+    request = plugin.CodeGeneratorRequest()
+    request.ParseFromString(data)
 
-  java_package = resolve_java_package_name(request)
-  gapic_config = gapic_utils.read_from_gapic_yaml(request)
+    java_package = resolve_java_package_name(request)
+    gapic_config = gapic_utils.read_from_gapic_yaml(request)
 
-  # Generate output
-  response = plugin.CodeGeneratorResponse()
+    # Generate output
+    response = plugin.CodeGeneratorResponse()
 
-  generate_resource_name_types(response, gapic_config, java_package)
+    generate_resource_name_types(response, gapic_config, java_package)
 
-  # Serialise response message
-  output = response.SerializeToString()
+    # Serialise response message
+    output = response.SerializeToString()
 
-  return output
+    return output
 
 
 def entrypoint():
-  try:
-    source = sys.stdin.buffer
-    dest = sys.stdout.buffer
-  except AttributeError:
-    source = sys.stdin
-    dest = sys.stdout
+    try:
+        source = sys.stdin.buffer
+        dest = sys.stdout.buffer
+    except AttributeError:
+        source = sys.stdin
+        dest = sys.stdout
 
-  # Read request message from stdin
-  data = source.read()
+    # Read request message from stdin
+    data = source.read()
 
-  output = main(data)
+    output = main(data)
 
-  # Write to stdout
-  dest.write(output)
+    # Write to stdout
+    dest.write(output)
