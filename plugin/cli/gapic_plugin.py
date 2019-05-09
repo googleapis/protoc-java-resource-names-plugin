@@ -42,6 +42,7 @@ from plugin.utils import proto_utils, gapic_utils
 
 TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
 
+
 def render_new_file(renderer, response, resource):
   f = response.file.add()
   f.name = resource.filename()
@@ -148,3 +149,7 @@ def entrypoint():
 
   # Write to stdout
   dest.write(output)
+
+
+if __name__ == '__main__':
+    entrypoint()
