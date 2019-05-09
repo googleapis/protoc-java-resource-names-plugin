@@ -18,10 +18,32 @@ def com_google_protoc_java_resource_names_plugin_repositories(
         pypi_ply()
 
 def com_google_protobuf():
-    native.git_repository(
+    _protobuf_version = "3.7.1"
+
+    http_archive(
         name = "com_google_protobuf",
-        remote = "https://github.com/google/protobuf.git",
-        tag = "v3.6.1",
+        urls = ["https://github.com/protocolbuffers/protobuf/archive/v%s.zip" % _protobuf_version],
+        strip_prefix = "protobuf-%s" % _protobuf_version
+    )
+
+    http_archive(
+        name = "bazel_skylib",
+        sha256 = "bbccf674aa441c266df9894182d80de104cabd19be98be002f6d478aaa31574d",
+        strip_prefix = "bazel-skylib-2169ae1c374aab4a09aa90e65efe1a3aad4e279b",
+        urls = ["https://github.com/bazelbuild/bazel-skylib/archive/2169ae1c374aab4a09aa90e65efe1a3aad4e279b.tar.gz"],
+    )
+
+    http_archive(
+        name = "net_zlib",
+        build_file = "@com_google_protobuf//:third_party/zlib.BUILD",
+        sha256 = "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1",
+        strip_prefix = "zlib-1.2.11",
+        urls = ["https://zlib.net/zlib-1.2.11.tar.gz"]
+    )
+
+    native.bind(
+        name = "zlib",
+        actual = "@net_zlib//:zlib"
     )
 
 _DEFAULT_PY_BUILD_FILE = """
