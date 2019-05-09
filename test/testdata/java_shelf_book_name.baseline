@@ -27,12 +27,17 @@ import java.util.List;
 public class ShelfBookName extends BookName {
 
   private static final PathTemplate PATH_TEMPLATE =
-      PathTemplate.createWithoutUrlEncoding("shelves/{shelf}/books/{book}");
+      PathTemplate.createWithoutUrlEncoding("projects/{project}/shelves/{shelf}/books/{book}");
 
   private volatile Map<String, String> fieldValuesMap;
 
+  private final String project;
   private final String shelf;
   private final String book;
+
+  public String getProject() {
+    return project;
+  }
 
   public String getShelf() {
     return shelf;
@@ -51,19 +56,22 @@ public class ShelfBookName extends BookName {
   }
 
   private ShelfBookName(Builder builder) {
+    project = Preconditions.checkNotNull(builder.getProject());
     shelf = Preconditions.checkNotNull(builder.getShelf());
     book = Preconditions.checkNotNull(builder.getBook());
   }
 
-  public static ShelfBookName of(String shelf, String book) {
+  public static ShelfBookName of(String project, String shelf, String book) {
     return newBuilder()
+      .setProject(project)
       .setShelf(shelf)
       .setBook(book)
       .build();
   }
 
-  public static String format(String shelf, String book) {
+  public static String format(String project, String shelf, String book) {
     return newBuilder()
+      .setProject(project)
       .setShelf(shelf)
       .setBook(book)
       .build()
@@ -76,7 +84,7 @@ public class ShelfBookName extends BookName {
     }
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "ShelfBookName.parse: formattedString not in valid format");
-    return of(matchMap.get("shelf"), matchMap.get("book"));
+    return of(matchMap.get("project"), matchMap.get("shelf"), matchMap.get("book"));
   }
 
   public static List<ShelfBookName> parseList(List<String> formattedStrings) {
@@ -108,6 +116,7 @@ public class ShelfBookName extends BookName {
       synchronized (this) {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
+          fieldMapBuilder.put("project", project);
           fieldMapBuilder.put("shelf", shelf);
           fieldMapBuilder.put("book", book);
           fieldValuesMap = fieldMapBuilder.build();
@@ -123,14 +132,19 @@ public class ShelfBookName extends BookName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("shelf", shelf, "book", book);
+    return PATH_TEMPLATE.instantiate("project", project, "shelf", shelf, "book", book);
   }
 
   /** Builder for ShelfBookName. */
   public static class Builder {
 
+    private String project;
     private String shelf;
     private String book;
+
+    public String getProject() {
+      return project;
+    }
 
     public String getShelf() {
       return shelf;
@@ -138,6 +152,11 @@ public class ShelfBookName extends BookName {
 
     public String getBook() {
       return book;
+    }
+
+    public Builder setProject(String project) {
+      this.project = project;
+      return this;
     }
 
     public Builder setShelf(String shelf) {
@@ -154,6 +173,7 @@ public class ShelfBookName extends BookName {
     }
 
     private Builder(ShelfBookName shelfBookName) {
+      project = shelfBookName.project;
       shelf = shelfBookName.shelf;
       book = shelfBookName.book;
     }
@@ -170,7 +190,8 @@ public class ShelfBookName extends BookName {
     }
     if (o instanceof ShelfBookName) {
       ShelfBookName that = (ShelfBookName) o;
-      return (this.shelf.equals(that.shelf))
+      return (this.project.equals(that.project))
+          && (this.shelf.equals(that.shelf))
           && (this.book.equals(that.book));
     }
     return false;
@@ -179,6 +200,8 @@ public class ShelfBookName extends BookName {
   @Override
   public int hashCode() {
     int h = 1;
+    h *= 1000003;
+    h ^= project.hashCode();
     h *= 1000003;
     h ^= shelf.hashCode();
     h *= 1000003;

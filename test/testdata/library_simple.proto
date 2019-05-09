@@ -37,14 +37,20 @@ service LibraryService {
   rpc ListBooks(ListBooksRequest) returns (ListBooksResponse) {
     option (google.api.http) = { get: "/v1/{name=bookShelves/*}/books" };
   }
+
+  // Lists books in a shelf.
+  rpc ListShelves(ListShelvesRequest) returns (ListShelvesResponse) {
+    option (google.api.http) = { get: "/v1/{name=projects/*}/shelves" };
+  }
 }
 
 // A single book in the library.
 message Book {
   option (google.api.resource) = {
     type: "library.googleapis.com/Book",
-    pattern: "shelves/{shelf}/books/{book}",
+    pattern: "projects/{project}/shelves/{shelf}/books/{book}",
     pattern: "archives/{archive}/books/{book}",
+    pattern: "_deleted-book_",
     history: ORIGINALLY_SINGLE_PATTERN
   };
   // The resource name of the book.
@@ -61,7 +67,7 @@ message Book {
 message Shelf {
   option (google.api.resource) = {
     type: "library.googleapis.com/Shelf",
-    pattern: "shelves/{shelf}"
+    pattern: "projects/{project}/shelves/{shelf}"
   };
   // The resource name of the shelf.
   // Shelf names have the form `bookShelves/{shelf_id}`.
@@ -138,6 +144,38 @@ message ListBooksResponse {
   // Pass this value in the
   // [ListBooksRequest.page_token][google.example.library.v1.ListBooksRequest.page_token]
   // field in the subsequent call to `ListBooks` method to retrieve the next
+  // page of results.
+  string next_page_token = 2;
+}
+
+
+// Request message for LibraryService.ListBooks.
+message ListShelvesRequest {
+  // The name of the project whose shelves we'd like to list.
+  string name = 1 [
+    (google.api.resource_reference).child_type = "library.googleapis.com/Shelf"
+  ];
+
+  // Requested page size. Server may return fewer shelves than requested.
+  // If unspecified, server will pick an appropriate default.
+  int32 page_size = 2;
+
+  // A token identifying a page of results the server should return.
+  // Typically, this is the value of
+  // [ListShelvesResponse.next_page_token][google.example.library.v1.ListShelvesResponse.next_page_token].
+  // returned from the previous call to `ListShelves` method.
+  string page_token = 3;
+}
+
+// Response message for LibraryService.ListBooks.
+message ListShelvesResponse {
+  // The list of books.
+  repeated Shelf books = 1;
+
+  // A token to retrieve next page of results.
+  // Pass this value in the
+  // [ListShelvesRequest.page_token][google.example.library.v1.ListShelvesRequest.page_token]
+  // field in the subsequent call to `ListShelves` method to retrieve the next
   // page of results.
   string next_page_token = 2;
 }
