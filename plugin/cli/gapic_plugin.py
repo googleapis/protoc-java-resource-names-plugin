@@ -127,3 +127,7 @@ def entrypoint():
 
     # Write to stdout
     dest.write(output)
+
+
+if __name__ == '__main__':
+    entrypoint()
