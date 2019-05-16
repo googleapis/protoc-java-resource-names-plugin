@@ -27,14 +27,19 @@ import java.util.List;
 public class ShelfName implements ResourceName {
 
   private static final PathTemplate PATH_TEMPLATE =
-      PathTemplate.createWithoutUrlEncoding("shelves/{shelf_id}");
+      PathTemplate.createWithoutUrlEncoding("projects/{project}/shelves/{shelf}");
 
   private volatile Map<String, String> fieldValuesMap;
 
-  private final String shelfId;
+  private final String project;
+  private final String shelf;
 
-  public String getShelfId() {
-    return shelfId;
+  public String getProject() {
+    return project;
+  }
+
+  public String getShelf() {
+    return shelf;
   }
 
   public static Builder newBuilder() {
@@ -46,18 +51,21 @@ public class ShelfName implements ResourceName {
   }
 
   private ShelfName(Builder builder) {
-    shelfId = Preconditions.checkNotNull(builder.getShelfId());
+    project = Preconditions.checkNotNull(builder.getProject());
+    shelf = Preconditions.checkNotNull(builder.getShelf());
   }
 
-  public static ShelfName of(String shelfId) {
+  public static ShelfName of(String project, String shelf) {
     return newBuilder()
-      .setShelfId(shelfId)
+      .setProject(project)
+      .setShelf(shelf)
       .build();
   }
 
-  public static String format(String shelfId) {
+  public static String format(String project, String shelf) {
     return newBuilder()
-      .setShelfId(shelfId)
+      .setProject(project)
+      .setShelf(shelf)
       .build()
       .toString();
   }
@@ -68,7 +76,7 @@ public class ShelfName implements ResourceName {
     }
     Map<String, String> matchMap =
         PATH_TEMPLATE.validatedMatch(formattedString, "ShelfName.parse: formattedString not in valid format");
-    return of(matchMap.get("shelf_id"));
+    return of(matchMap.get("project"), matchMap.get("shelf"));
   }
 
   public static List<ShelfName> parseList(List<String> formattedStrings) {
@@ -100,7 +108,8 @@ public class ShelfName implements ResourceName {
       synchronized (this) {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-          fieldMapBuilder.put("shelfId", shelfId);
+          fieldMapBuilder.put("project", project);
+          fieldMapBuilder.put("shelf", shelf);
           fieldValuesMap = fieldMapBuilder.build();
         }
       }
@@ -114,20 +123,30 @@ public class ShelfName implements ResourceName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("shelf_id", shelfId);
+    return PATH_TEMPLATE.instantiate("project", project, "shelf", shelf);
   }
 
   /** Builder for ShelfName. */
   public static class Builder {
 
-    private String shelfId;
+    private String project;
+    private String shelf;
 
-    public String getShelfId() {
-      return shelfId;
+    public String getProject() {
+      return project;
     }
 
-    public Builder setShelfId(String shelfId) {
-      this.shelfId = shelfId;
+    public String getShelf() {
+      return shelf;
+    }
+
+    public Builder setProject(String project) {
+      this.project = project;
+      return this;
+    }
+
+    public Builder setShelf(String shelf) {
+      this.shelf = shelf;
       return this;
     }
 
@@ -135,7 +154,8 @@ public class ShelfName implements ResourceName {
     }
 
     private Builder(ShelfName shelfName) {
-      shelfId = shelfName.shelfId;
+      project = shelfName.project;
+      shelf = shelfName.shelf;
     }
 
     public ShelfName build() {
@@ -150,7 +170,8 @@ public class ShelfName implements ResourceName {
     }
     if (o instanceof ShelfName) {
       ShelfName that = (ShelfName) o;
-      return (this.shelfId.equals(that.shelfId));
+      return (this.project.equals(that.project))
+          && (this.shelf.equals(that.shelf));
     }
     return false;
   }
@@ -159,7 +180,9 @@ public class ShelfName implements ResourceName {
   public int hashCode() {
     int h = 1;
     h *= 1000003;
-    h ^= shelfId.hashCode();
+    h ^= project.hashCode();
+    h *= 1000003;
+    h ^= shelf.hashCode();
     return h;
   }
 }
