@@ -31,7 +31,7 @@
 
 import os
 import sys
-import pystache
+import chevron
 
 from google.protobuf.compiler import plugin_pb2 as plugin
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
@@ -40,19 +40,22 @@ from plugin.templates import insertion_points
 from plugin.utils import proto_utils, gapic_utils
 
 
-TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
-
-
 def render_new_file(renderer, response, resource):
     f = response.file.add()
     f.name = resource.filename()
-    f.content = renderer.render(resource)
+
+    templ_path = os.path.join(os.path.dirname(__file__),
+                              "..",
+                              "templates",
+                              resource.template_name())
+    with open(templ_path, 'r') as templ:
+        f.content = renderer.render(templ, resource)
 
 
 def generate_resource_name_types(response, gapic_config, java_package):
     resources = gapic_utils.collect_resource_name_types(
         gapic_config, java_package)
-    renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
+    renderer = chevron
     for resource in resources:
         render_new_file(renderer, response, resource)
 

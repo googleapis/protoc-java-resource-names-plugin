@@ -35,17 +35,17 @@ class InsertBuilder(object):
     def __init__(self, resource, field, concrete_resource):
         if concrete_resource is None:
             concrete_resource = resource
-        self.resource_class_name = resource.className()
-        self.resource_var_name = resource.varName()
-        self.resource_full_class_name = resource.fullClassName()
-        self.concrete_resource_full_name = concrete_resource.fullClassName()
+        self.resource_class_name = resource.class_name()
+        self.resource_var_name = resource.var_name()
+        self.resource_full_class_name = resource.full_class_name()
+        self.concrete_resource_full_name = concrete_resource.full_class_name()
         self.field_name_upper = casing_utils.lower_underscore_to_upper_camel(
             field.name)
 
-    def resourceTypeClassName(self):
+    def resource_type_class_name(self):
         return self.resource_class_name
 
-    def resourceTypeVarName(self):
+    def resource_type_var_name(self):
         return self.resource_var_name
 
     def resourceTypeFullClassName(self):

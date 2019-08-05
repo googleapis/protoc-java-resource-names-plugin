@@ -37,45 +37,41 @@ RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA = 'com.google.api.resourcenames'
 
 class ResourceNameBase(object):
 
-    def resourceNameGlobalPackageName(self):
-        return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
+    def __init__(self, class_name, package):
+        self.class_name = class_name
+        self.package = package
+        self.resource_name_global_package_name = \
+            RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
+        self.full_class_name = self.package + '.' + self.class_name
+        self.var_name = casing_utils.get_lower(self.class_name)
 
     def filename(self):
-        class_dir = self.package().replace('.', os.path.sep)
-        return os.path.join(class_dir, self.className() + '.java')
+        class_dir = self.package.replace('.', os.path.sep)
+        return os.path.join(class_dir, self.class_name + '.java')
 
-    def fullClassName(self):
-        return self.package() + '.' + self.className()
-
-    def className(self):
-        raise NotImplementedError('className must be implemented by child')
-
-    def varName(self):
-        return casing_utils.get_lower(self.className())
-
-    def package(self):
-        raise NotImplementedError('package must be implemented by child')
+    def template_name(self):
+        raise NotImplementedError(
+            'template_name must be implemented by a child')
 
 
 class ResourceName(ResourceNameBase):
 
     def __init__(self, collection_config, java_package, oneof):
+        super(ResourceName, self).__init__(
+            casing_utils.get_resource_type_class_name(
+                collection_config.java_entity_name), java_package)
         symbol_table = SymbolTable()
 
-        entity_name = collection_config.java_entity_name
         name_template = path_template.PathTemplate(
             collection_config.name_pattern)
         id_segments = [
             seg.literal for seg in name_template.segments
             if seg.kind == path_template._BINDING
         ]
-
-        self.format_name_upper = casing_utils.get_resource_type_class_name(
-            entity_name)
         self.format_name_lower = casing_utils.get_resource_type_var_name(
-            entity_name)
+            collection_config.java_entity_name)
         self.type_name_upper = casing_utils.get_resource_type_from_class_name(
-            self.format_name_upper)
+            self.class_name)
         if oneof:
             self.parent_interface = \
                 casing_utils.get_parent_resource_name_class_name(
@@ -102,170 +98,78 @@ class ResourceName(ResourceNameBase):
                     f['parameter_name']),
         } for f in self.parameter_list]
         self.format_string = collection_config.name_pattern
-        self.package_name = java_package
 
-    def className(self):
-        return self.format_name_upper
-
-    def extensionKeyword(self):
-        return self.extension_keyword
-
-    def parentInterface(self):
-        return self.parent_interface
-
-    def typeNameUpper(self):
-        return self.type_name_upper
-
-    def formatFields(self):
-        return self.format_fields
-
-    def parameterList(self):
-        return self.parameter_list
-
-    def formatString(self):
-        return self.format_string
-
-    def package(self):
-        return self.package_name
-
-
-class ResourceNameOneof(ResourceNameBase):
-
-    def __init__(self, oneof, java_package):
-        entity_name = oneof.oneof_name
-        self.oneof_class_name = casing_utils.get_oneof_class_name(entity_name)
-        self.parent_class_name = \
-            casing_utils.get_parent_resource_name_class_name(entity_name)
-        self.single_resource_types = [{
-            'resourceTypeClassName': resource.className(),
-            'resourceTypeVarName': resource.varName(),
-            'resourcePackage': resource.package(),
-        } for resource in (ResourceName(x, java_package, oneof)
-                           for x in oneof.resource_list)]
-        self.fixed_resource_types = [{
-            'resourceTypeClassName': resource.className(),
-            'resourceTypeVarName': resource.varName(),
-            'resourcePackage': resource.package(),
-        } for resource in (ResourceNameFixed(x, java_package, oneof)
-                           for x in oneof.fixed_resource_list)]
-        self.resource_types = (self.single_resource_types
-                               + self.fixed_resource_types)
-
-        self.oneof_package_name = java_package
-
-    def className(self):
-        return self.oneof_class_name
-
-    def parentClassName(self):
-        return self.parent_class_name
-
-    def resourceTypes(self):
-        return self.resource_types
-
-    def singleResourceTypes(self):
-        return self.single_resource_types
-
-    def fixedResourceTypes(self):
-        return self.fixed_resource_types
-
-    def package(self):
-        return self.oneof_package_name
+    def template_name(self):
+        return "resource_name.mustache"
 
 
 class ParentResourceName(ResourceNameBase):
 
     def __init__(self, oneof, java_package):
-        entity_name = oneof.oneof_name
-        self.class_name = \
-            casing_utils.get_parent_resource_name_class_name(entity_name)
-        self.package_name = java_package
+        super(ParentResourceName, self).__init__(
+            casing_utils.get_parent_resource_name_class_name(
+                oneof.oneof_name),
+            java_package)
 
-    def className(self):
-        return self.class_name
-
-    def package(self):
-        return self.package_name
+    def template_name(self):
+        return "parent_resource_name.mustache"
 
 
 class ResourceNameFactory(ResourceNameBase):
 
     def __init__(self, oneof, java_package):
-        entity_name = oneof.oneof_name
-        self.class_name = \
-            casing_utils.get_resource_name_factory_class_name(entity_name)
-        self.package_name = java_package
+        super(ResourceNameFactory, self).__init__(
+            casing_utils.get_resource_name_factory_class_name(
+                oneof.oneof_name),
+            java_package)
+
         self.resource_class_name = \
-            casing_utils.get_parent_resource_name_class_name(entity_name)
+            casing_utils.get_parent_resource_name_class_name(oneof.oneof_name)
         self.untyped_class_name = \
-            casing_utils.get_untyped_resource_name_class_name(entity_name)
+            casing_utils.get_untyped_resource_name_class_name(oneof.oneof_name)
         self.single_resource_types = [{
-            'resourceTypeClassName': resource.className(),
-            'resourceTypeVarName': resource.varName(),
-            'resourcePackage': resource.package(),
+            'resource_type_class_name': resource.class_name,
+            'resource_type_var_name': resource.var_name,
+            'resource_package': resource.package,
         } for resource in (ResourceName(x, java_package, oneof)
                            for x in oneof.resource_list)]
         self.fixed_resource_types = [{
-            'resourceTypeClassName': resource.className(),
-            'resourceTypeVarName': resource.varName(),
-            'resourcePackage': resource.package(),
+            'resource_type_class_name': resource.class_name,
+            'resource_type_var_name': resource.var_name,
+            'resource_package': resource.package,
         } for resource in (ResourceNameFixed(x, java_package, oneof)
                            for x in oneof.fixed_resource_list)]
         self.resource_types = (self.single_resource_types
                                + self.fixed_resource_types)
 
-    def className(self):
-        return self.class_name
-
-    def resourceClassName(self):
-        return self.resource_class_name
-
-    def untypedResourceClassName(self):
-        return self.untyped_class_name
-
-    def resourceTypes(self):
-        return self.resource_types
-
-    def singleResourceTypes(self):
-        return self.single_resource_types
-
-    def fixedResourceTypes(self):
-        return self.fixed_resource_types
-
-    def package(self):
-        return self.package_name
+    def template_name(self):
+        return "resource_name_factory.mustache"
 
 
 class UntypedResourceName(ResourceNameBase):
 
     def __init__(self, oneof, java_package):
-        entity_name = oneof.oneof_name
-        self.untyped_class_name = \
-            casing_utils.get_untyped_resource_name_class_name(entity_name)
+        super(UntypedResourceName, self).__init__(
+            casing_utils.get_untyped_resource_name_class_name(
+                oneof.oneof_name),
+            java_package)
+
         self.parent_interface = \
             casing_utils.get_parent_resource_name_class_name(oneof.oneof_name)
-        self.untyped_package_name = java_package
+        self.extension_keyword = 'extends'
 
-    def className(self):
-        return self.untyped_class_name
-
-    def parentInterface(self):
-        return self.parent_interface
-
-    def extensionKeyword(self):
-        return 'extends'
-
-    def package(self):
-        return self.untyped_package_name
+    def template_name(self):
+        return "untyped_resource_name.mustache"
 
 
 class ResourceNameFixed(ResourceNameBase):
 
     def __init__(self, fixed_config, java_package, oneof):
-        self.format_name_upper = \
+        super(ResourceNameFixed, self).__init__(
             casing_utils.get_fixed_resource_type_class_name(
-                fixed_config.java_entity_name)
+                fixed_config.java_entity_name), java_package)
+
         self.fixed_value = fixed_config.fixed_value
-        self.package_name = java_package
         if oneof:
             self.parent_interface = \
                 casing_utils.get_parent_resource_name_class_name(
@@ -275,26 +179,5 @@ class ResourceNameFixed(ResourceNameBase):
             self.parent_interface = 'ResourceName'
             self.extension_keyword = 'implements'
 
-    def className(self):
-        return self.format_name_upper
-
-    def fixedValue(self):
-        return self.fixed_value
-
-    def extensionKeyword(self):
-        return self.extension_keyword
-
-    def parentInterface(self):
-        return self.parent_interface
-
-    def package(self):
-        return self.package_name
-
-
-class ResourceNameUntyped(ResourceNameBase):
-
-    def className(self):
-        return 'UntypedResourceName'
-
-    def package(self):
-        return RESOURCE_NAMES_GLOBAL_PACKAGE_JAVA
+    def template_name(self):
+        return "resource_name_fixed.mustache"

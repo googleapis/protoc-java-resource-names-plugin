@@ -40,8 +40,8 @@ if sys.argv[-1] == 'publish':
 version = '0.0.15'
 
 install_requires = [
-    'pystache >= 0.5.4',
-    'protobuf >= 3.6',
+    'chevron >= 0.13.1',
+    'protobuf >= 3.7.1',
     'google-gax >= 0.12.3',
     'pyyaml >= 3.12',
 ]
@@ -53,7 +53,7 @@ setup(
     long_description=open('README.rst').read(),
     author='Google API Authors',
     author_email='googleapis-packages@google.com',
-    url='https://github.com/googleapis/proto-compiler-plugin',
+    url='https://github.com/googleapis/protoc-java-resource-names-plugin',
     packages=find_packages(),
     scripts=['plugin/cli/gapic_plugin.py'],
     entry_points="""[console_scripts]
