@@ -17,30 +17,30 @@ package {{package}};
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.api.pathtemplate.PathTemplate;
-import {{resourceNameGlobalPackageName}}.ResourceName;
+import {{resource_name_global_package_name}}.ResourceName;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{className}} {{extensionKeyword}} {{parentInterface}} {
+public class {{class_name}} {{extension_keyword}} {{parent_interface}} {
 
   private static final PathTemplate PATH_TEMPLATE =
-      PathTemplate.createWithoutUrlEncoding("{{formatString}}");
+      PathTemplate.createWithoutUrlEncoding("{{format_string}}");
 
   private volatile Map<String, String> fieldValuesMap;
 
-  {{#formatFields}}
+  {{#format_fields}}
   private final String {{lower}};
-  {{/formatFields}}
+  {{/format_fields}}
 
-  {{#formatFields}}
+  {{#format_fields}}
   public String get{{upper}}() {
     return {{lower}};
   }
 
-  {{/formatFields}}
+  {{/format_fields}}
   public static Builder newBuilder() {
     return new Builder();
   }
@@ -49,45 +49,45 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
     return new Builder(this);
   }
 
-  private {{className}}(Builder builder) {
-    {{#formatFields}}
+  private {{class_name}}(Builder builder) {
+    {{#format_fields}}
     {{lower}} = Preconditions.checkNotNull(builder.get{{upper}}());
-    {{/formatFields}}
+    {{/format_fields}}
   }
 
-  public static {{className}} of({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
-    return newBuilder(){{#formatFields}}
-      .set{{upper}}({{lower}}){{/formatFields}}
+  public static {{class_name}} of({{#parameter_list}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameter_list}}) {
+    return newBuilder(){{#format_fields}}
+      .set{{upper}}({{lower}}){{/format_fields}}
       .build();
   }
 
-  public static String format({{#parameterList}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}}) {
-    return newBuilder(){{#formatFields}}
-      .set{{upper}}({{lower}}){{/formatFields}}
+  public static String format({{#parameter_list}}String {{parameter}}{{#not_last}}, {{/not_last}}{{/parameter_list}}) {
+    return newBuilder(){{#format_fields}}
+      .set{{upper}}({{lower}}){{/format_fields}}
       .build()
       .toString();
   }
 
-  public static {{className}} parse(String formattedString) {
+  public static {{class_name}} parse(String formattedString) {
     if (formattedString.isEmpty()) {
       return null;
     }
     Map<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(formattedString, "{{className}}.parse: formattedString not in valid format");
-    return of({{#parameterList}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameterList}});
+        PATH_TEMPLATE.validatedMatch(formattedString, "{{class_name}}.parse: formattedString not in valid format");
+    return of({{#parameter_list}}matchMap.get("{{parameter_name}}"){{#not_last}}, {{/not_last}}{{/parameter_list}});
   }
 
-  public static List<{{className}}> parseList(List<String> formattedStrings) {
-    List<{{className}}> list = new ArrayList<{{resourceTypeFullClassName}}>(formattedStrings.size());
+  public static List<{{class_name}}> parseList(List<String> formattedStrings) {
+    List<{{class_name}}> list = new ArrayList<{{resourceTypeFullClassName}}>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
     }
     return list;
   }
 
-  public static List<String> toStringList(List<{{className}}> values) {
+  public static List<String> toStringList(List<{{class_name}}> values) {
     List<String> list = new ArrayList<String>(values.size());
-    for ({{className}} value : values) {
+    for ({{class_name}} value : values) {
       if (value == null) {
         list.add("");
       } else {
@@ -106,9 +106,9 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
       synchronized (this) {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-          {{#formatFields}}
+          {{#format_fields}}
           fieldMapBuilder.put("{{parameter_name_in_map}}", {{lower}});
-          {{/formatFields}}
+          {{/format_fields}}
           fieldValuesMap = fieldMapBuilder.build();
         }
       }
@@ -122,40 +122,40 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate({{#parameterList}}"{{parameter_name}}", {{parameter}}{{#not_last}}, {{/not_last}}{{/parameterList}});
+    return PATH_TEMPLATE.instantiate({{#parameter_list}}"{{parameter_name}}", {{parameter}}{{#not_last}}, {{/not_last}}{{/parameter_list}});
   }
 
-  /** Builder for {{className}}. */
+  /** Builder for {{class_name}}. */
   public static class Builder {
 
-    {{#formatFields}}
+    {{#format_fields}}
     private String {{lower}};
-    {{/formatFields}}
+    {{/format_fields}}
 
-    {{#formatFields}}
+    {{#format_fields}}
     public String get{{upper}}() {
       return {{lower}};
     }
 
-    {{/formatFields}}
-    {{#formatFields}}
+    {{/format_fields}}
+    {{#format_fields}}
     public Builder set{{upper}}(String {{lower}}) {
       this.{{lower}} = {{lower}};
       return this;
     }
 
-    {{/formatFields}}
+    {{/format_fields}}
     private Builder() {
     }
 
-    private Builder({{className}} {{varName}}) {
-      {{#formatFields}}
-      {{lower}} = {{varName}}.{{lower}};
-      {{/formatFields}}
+    private Builder({{class_name}} {{var_name}}) {
+      {{#format_fields}}
+      {{lower}} = {{var_name}}.{{lower}};
+      {{/format_fields}}
     }
 
-    public {{className}} build() {
-      return new {{className}}(this);
+    public {{class_name}} build() {
+      return new {{class_name}}(this);
     }
   }
 
@@ -164,10 +164,10 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
     if (o == this) {
       return true;
     }
-    if (o instanceof {{className}}) {
-      {{className}} that = ({{className}}) o;
-      return {{#parameterList}}{{#not_first}}
-          && {{/not_first}}(this.{{parameter}}.equals(that.{{parameter}})){{/parameterList}};
+    if (o instanceof {{class_name}}) {
+      {{class_name}} that = ({{class_name}}) o;
+      return {{#parameter_list}}{{#not_first}}
+          && {{/not_first}}(this.{{parameter}}.equals(that.{{parameter}})){{/parameter_list}};
     }
     return false;
   }
@@ -175,10 +175,10 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
   @Override
   public int hashCode() {
     int h = 1;
-    {{#parameterList}}
+    {{#parameter_list}}
     h *= 1000003;
     h ^= {{parameter}}.hashCode();
-    {{/parameterList}}
+    {{/parameter_list}}
     return h;
   }
 }

@@ -15,7 +15,7 @@
 package {{package}};
 
 import com.google.common.base.Preconditions;
-import {{resourceNameGlobalPackageName}}.ResourceName;
+import {{resource_name_global_package_name}}.ResourceName;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,35 +23,35 @@ import java.util.Map;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{className}} {{extensionKeyword}} {{parentInterface}} {
+public class {{class_name}} {{extension_keyword}} {{parent_interface}} {
 
   private final String rawValue;
   private Map<String, String> valueMap;
 
-  private {{className}}(String rawValue) {
+  private {{class_name}}(String rawValue) {
     this.rawValue = Preconditions.checkNotNull(rawValue);
     this.valueMap = ImmutableMap.of("", rawValue);
   }
 
-  public static {{className}} from(ResourceName resourceName) {
-    return new {{className}}(resourceName.toString());
+  public static {{class_name}} from(ResourceName resourceName) {
+    return new {{class_name}}(resourceName.toString());
   }
 
-  public static {{className}} parse(String formattedString) {
-    return new {{className}}(formattedString);
+  public static {{class_name}} parse(String formattedString) {
+    return new {{class_name}}(formattedString);
   }
 
-  public static List<{{className}}> parseList(List<String> formattedStrings) {
-    List<{{className}}> list = new ArrayList<{{resourceTypeFullClassName}}>(formattedStrings.size());
+  public static List<{{class_name}}> parseList(List<String> formattedStrings) {
+    List<{{class_name}}> list = new ArrayList<{{resourceTypeFullClassName}}>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
     }
     return list;
   }
 
-  public static List<String> toStringList(List<{{className}}> values) {
+  public static List<String> toStringList(List<{{class_name}}> values) {
     List<String> list = new ArrayList<String>(values.size());
-    for ({{className}} value : values) {
+    for ({{class_name}} value : values) {
       if (value == null) {
         list.add("");
       } else {
@@ -89,8 +89,8 @@ public class {{className}} {{extensionKeyword}} {{parentInterface}} {
     if (o == this) {
       return true;
     }
-    if (o instanceof {{className}}) {
-      {{className}} that = ({{className}}) o;
+    if (o instanceof {{class_name}}) {
+      {{class_name}} that = ({{class_name}}) o;
       return this.rawValue.equals(that.rawValue);
     }
     return false;

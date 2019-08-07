@@ -31,44 +31,30 @@
 
 import os
 import sys
-import pystache
+import chevron
 
 from google.protobuf.compiler import plugin_pb2 as plugin
-from google.protobuf.descriptor_pb2 import FieldDescriptorProto
 
-from plugin.templates import insertion_points
 from plugin.utils import proto_utils, gapic_utils
 
 
-TEMPLATE_LOCATION = os.path.join('plugin', 'templates')
-
-
-def render_new_file(renderer, response, resource):
+def render_new_file(response, resource):
     f = response.file.add()
     f.name = resource.filename()
-    f.content = renderer.render(resource)
+
+    templ_path = os.path.join(os.path.dirname(__file__),
+                              "..",
+                              "templates",
+                              resource.template_name())
+    with open(templ_path, 'r') as templ:
+        f.content = chevron.render(templ, resource)
 
 
 def generate_resource_name_types(response, gapic_config, java_package):
     resources = gapic_utils.collect_resource_name_types(
         gapic_config, java_package)
-    renderer = pystache.Renderer(search_dirs=TEMPLATE_LOCATION)
     for resource in resources:
-        render_new_file(renderer, response, resource)
-
-
-def get_builder_view(field):
-    if field.label == FieldDescriptorProto.LABEL_REPEATED:
-        return insertion_points.InsertBuilderList
-    else:
-        return insertion_points.InsertBuilder
-
-
-def get_class_view(field):
-    if field.label == FieldDescriptorProto.LABEL_REPEATED:
-        return insertion_points.InsertClassList
-    else:
-        return insertion_points.InsertClass
+        render_new_file(response, resource)
 
 
 def get_protos_to_generate_for(request):

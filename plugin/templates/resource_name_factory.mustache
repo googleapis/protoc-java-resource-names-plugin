@@ -14,24 +14,24 @@
 
 package {{package}};
 
-import {{resourceNameGlobalPackageName}}.ResourceName;
+import {{resource_name_global_package_name}}.ResourceName;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
-public class {{className}} {
-  private {{className}}() {}
+public class {{class_name}} {
+  private {{class_name}}() {}
 
-  public static {{resourceClassName}} parse(String resourceNameString) {
-    {{#singleResourceTypes}}
-    if ({{resourceTypeClassName}}.isParsableFrom(resourceNameString)) {
-      return {{resourceTypeClassName}}.parse(resourceNameString);
+  public static {{resource_class_name}} parse(String resourceNameString) {
+    {{#single_resource_types}}
+    if ({{resource_type_class_name}}.isParsableFrom(resourceNameString)) {
+      return {{resource_type_class_name}}.parse(resourceNameString);
     }
-    {{/singleResourceTypes}}
-    {{#fixedResourceTypes}}
-    if ({{resourceTypeClassName}}.matches(resourceNameString)) {
-      return {{resourceTypeClassName}}.instance();
+    {{/single_resource_types}}
+    {{#fixed_resource_types}}
+    if ({{resource_type_class_name}}.matches(resourceNameString)) {
+      return {{resource_type_class_name}}.instance();
     }
-    {{/fixedResourceTypes}}
-    return {{untypedResourceClassName}}.parse(resourceNameString);
+    {{/fixed_resource_types}}
+    return {{untyped_class_name}}.parse(resourceNameString);
   }
 }
