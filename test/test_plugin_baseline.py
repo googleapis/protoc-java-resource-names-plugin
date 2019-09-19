@@ -93,8 +93,7 @@ def run_protoc():
     run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
                             gapic_yaml,
                             include_dirs,
-                            [os.path.join(TEST_DIR, x) for x in proto_files],
-                            'java')
+                            [os.path.join(TEST_DIR, x) for x in proto_files])
 
 
 @pytest.fixture(scope='class')
@@ -103,16 +102,20 @@ def run_protoc_v2():
     gapic_yaml = os.path.join(TEST_DIR, 'library_gapic_v2.yaml')
     # TODO: make this path configurable
     include_dirs = ['.', './googleapis']
-    proto_files = ['library_simple.proto', 'archive.proto']
+    proto_files = [
+        'common_resources.proto',
+        'library_simple.proto',
+        'archive.proto'
+    ]
     run_protoc_gapic_plugin(TEST_OUTPUT_DIR,
                             gapic_yaml,
                             include_dirs,
-                            [os.path.join(TEST_DIR, x) for x in proto_files],
-                            'java')
+                            [os.path.join(TEST_DIR, x) for x in proto_files])
 
 
 RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name',
-                              'archived_book_name', 'deleted_book']
+                              'archived_book_name', 'deleted_book',
+                              'folder_name', 'location_name']
 ONEOFS_TO_GENERATE = ['book_oneof']
 
 PROTOC_OUTPUT_DIR = os.path.join('com', 'google', 'example', 'library', 'v1')

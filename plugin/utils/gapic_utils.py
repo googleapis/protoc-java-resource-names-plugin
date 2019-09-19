@@ -146,10 +146,10 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
     # Sort existing collections in a dictionary so we can look up by
     # name patterns. (This makes it easier to avoid plowing over stuff that
     # is explicitly defined in YAML.)
-    collections = OrderedDict([(i['name_pattern'], i) for i in
+    collections = OrderedDict([(i['entity_name'], i) for i in
                                gapic_config.get('collections', ())])
     for interface in gapic_config.get('interfaces', ()):
-        collections.update([(i['name_pattern'], i) for i in
+        collections.update([(i['entity_name'], i) for i in
                             interface.get('collections', ())])
 
     # Do the same thing for collection oneofs, but order by entity names.
@@ -164,6 +164,7 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
     # resources, we need to generate collection configs for their parents
     # patterns.
     types_with_child_references = set()
+    types_with_ref = set()
     for proto_file in request.proto_file:
         # We only want to do stuff with files we were explicitly asked to
         # generate. Ignore the rest.
@@ -175,6 +176,8 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                 # Get the resource reference for this field, if any.
                 ref_annotation = resource_pb2.resource_reference
                 ref = field.options.Extensions[ref_annotation]
+                if ref.type:
+                    types_with_ref.add(ref.type)
                 if ref.child_type:
                     types_with_child_references.add(ref.child_type)
 
@@ -191,7 +194,9 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
         for message in proto_file.message_type:
             # If this is not a resource, move on.
             res = message.options.Extensions[resource_pb2.resource]
-            if not res.pattern:
+            if not res.pattern or \
+                    res.type not in types_with_ref and \
+                    res.type not in types_with_child_references:
                 continue
 
             update_collections(res, types_with_child_references,
@@ -236,9 +241,9 @@ def update_collections(
     collection_names = []
     # Build collections for all of the patterns in the descriptor
     for pattern in res.pattern:
-        collection_name = entity_names[pattern]
-        collections.setdefault(pattern, {}).update({
-            'entity_name': collection_name,
+        entity_name = entity_names[pattern]
+        collections.setdefault(entity_name, {}).update({
+            'entity_name': entity_name,
             'name_pattern': pattern,
         })
         collection_names.append(entity_names[pattern])
@@ -261,9 +266,10 @@ def update_collections(
 
         parent_collection_names = []
         for pattern in parent_patterns:
+            entity_name = parent_entity_names[pattern]
             collections.update({
-                parent_entity_names[pattern]: {
-                    'entity_name': parent_entity_names[pattern],
+                entity_name: {
+                    'entity_name': entity_name,
                     'name_pattern': pattern,
                 }
             })
