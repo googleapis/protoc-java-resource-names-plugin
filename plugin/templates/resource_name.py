@@ -53,6 +53,9 @@ class ResourceNameBase(object):
         raise NotImplementedError(
             'template_name must be implemented by a child')
 
+    def template_path(self):
+        return os.path.join(os.path.dirname(__file__), self.template_name())
+
 
 class ResourceName(ResourceNameBase):
 
