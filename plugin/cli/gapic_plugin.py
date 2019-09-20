@@ -41,11 +41,7 @@ from plugin.utils import proto_utils, gapic_utils
 def render_new_file(response, resource):
     f = response.file.add()
     f.name = resource.filename()
-
-    templ_path = os.path.join(os.path.dirname(__file__),
-                              "..",
-                              "templates",
-                              resource.template_name())
+    templ_path = resource.template_path()
     with open(templ_path, 'r') as templ:
         f.content = chevron.render(templ, resource)
 
