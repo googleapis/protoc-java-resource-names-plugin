@@ -60,19 +60,16 @@ def get_protos_to_generate_for(request):
             yield proto_files[pf_name]
 
 
-def resolve_java_package_name(request):
-    java_package = None
+def resolve_java_package_names(request):
+    java_packages = set()
     for pf in get_protos_to_generate_for(request):
         for opt in proto_utils.get_named_options(pf, 'java_package'):
-            if java_package is not None and java_package != opt[1]:
-                raise ValueError('got conflicting java packages: ' +
-                                 str(java_package) +
-                                 ' and ' + str(opt[1]))
-            java_package = opt[1]
-            break
-    if java_package is None:
+            if opt[1]:
+                java_packages.add(opt[1])
+                break
+    if not java_packages:
         raise ValueError('java package not defined')
-    return java_package
+    return java_packages
 
 
 def main(data):
@@ -80,13 +77,14 @@ def main(data):
     request = plugin.CodeGeneratorRequest()
     request.ParseFromString(data)
 
-    java_package = resolve_java_package_name(request)
+    java_packages = resolve_java_package_names(request)
     gapic_config = gapic_utils.read_from_gapic_yaml(request)
 
     # Generate output
     response = plugin.CodeGeneratorResponse()
 
-    generate_resource_name_types(response, gapic_config, java_package)
+    for java_package in java_packages:
+        generate_resource_name_types(response, gapic_config, java_package)
 
     # Serialise response message
     output = response.SerializeToString()
