@@ -190,6 +190,16 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
         if proto_file.name not in request.file_to_generate:
             continue
 
+        # Iterate over all file-level annotations in the file.
+        for res in proto_file.options.Extensions[resource_pb2.resource_definition]:
+            if not res.pattern or \
+                    res.type not in types_with_ref and \
+                    res.type not in types_with_child_references:
+                continue
+
+            update_collections(res, types_with_child_references,
+                               collections, collection_oneofs)
+
         # Iterate over all of the messages in the file.
         for message in proto_file.message_type:
             # If this is not a resource, move on.

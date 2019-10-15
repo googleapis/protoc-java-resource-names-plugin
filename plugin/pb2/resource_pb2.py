@@ -21,23 +21,31 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='google.api',
   syntax='proto3',
   serialized_options=_b('\n\016com.google.apiB\rResourceProtoP\001ZAgoogle.golang.org/genproto/googleapis/api/annotations;annotations\370\001\001\242\002\004GAPI'),
-  serialized_pb=_b('\n\x19google/api/resource.proto\x12\ngoogle.api\x1a google/protobuf/descriptor.proto\"\xdd\x01\n\x12ResourceDescriptor\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0f\n\x07pattern\x18\x02 \x03(\t\x12\x12\n\nname_field\x18\x03 \x01(\t\x12\x37\n\x07history\x18\x04 \x01(\x0e\x32&.google.api.ResourceDescriptor.History\"[\n\x07History\x12\x17\n\x13HISTORY_UNSPECIFIED\x10\x00\x12\x1d\n\x19ORIGINALLY_SINGLE_PATTERN\x10\x01\x12\x18\n\x14\x46UTURE_MULTI_PATTERN\x10\x02\"5\n\x11ResourceReference\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x12\n\nchild_type\x18\x02 \x01(\t:R\n\x08resource\x12\x1f.google.protobuf.MessageOptions\x18\x9d\x08 \x01(\x0b\x32\x1e.google.api.ResourceDescriptor:Y\n\x12resource_reference\x12\x1d.google.protobuf.FieldOptions\x18\x9f\x08 \x01(\x0b\x32\x1d.google.api.ResourceReferenceBn\n\x0e\x63om.google.apiB\rResourceProtoP\x01ZAgoogle.golang.org/genproto/googleapis/api/annotations;annotations\xf8\x01\x01\xa2\x02\x04GAPIb\x06proto3')
+  serialized_pb=_b('\n\x19google/api/resource.proto\x12\ngoogle.api\x1a google/protobuf/descriptor.proto\"\xff\x01\n\x12ResourceDescriptor\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0f\n\x07pattern\x18\x02 \x03(\t\x12\x12\n\nname_field\x18\x03 \x01(\t\x12\x37\n\x07history\x18\x04 \x01(\x0e\x32&.google.api.ResourceDescriptor.History\x12\x0e\n\x06plural\x18\x05 \x01(\t\x12\x10\n\x08singular\x18\x06 \x01(\t\"[\n\x07History\x12\x17\n\x13HISTORY_UNSPECIFIED\x10\x00\x12\x1d\n\x19ORIGINALLY_SINGLE_PATTERN\x10\x01\x12\x18\n\x14\x46UTURE_MULTI_PATTERN\x10\x02\"5\n\x11ResourceReference\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x12\n\nchild_type\x18\x02 \x01(\t:Y\n\x12resource_reference\x12\x1d.google.protobuf.FieldOptions\x18\x9f\x08 \x01(\x0b\x32\x1d.google.api.ResourceReference:Z\n\x13resource_definition\x12\x1c.google.protobuf.FileOptions\x18\x9d\x08 \x03(\x0b\x32\x1e.google.api.ResourceDescriptor:R\n\x08resource\x12\x1f.google.protobuf.MessageOptions\x18\x9d\x08 \x01(\x0b\x32\x1e.google.api.ResourceDescriptorBn\n\x0e\x63om.google.apiB\rResourceProtoP\x01ZAgoogle.golang.org/genproto/googleapis/api/annotations;annotations\xf8\x01\x01\xa2\x02\x04GAPIb\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_descriptor__pb2.DESCRIPTOR,])
 
 
-RESOURCE_FIELD_NUMBER = 1053
-resource = _descriptor.FieldDescriptor(
-  name='resource', full_name='google.api.resource', index=0,
-  number=1053, type=11, cpp_type=10, label=1,
+RESOURCE_REFERENCE_FIELD_NUMBER = 1055
+resource_reference = _descriptor.FieldDescriptor(
+  name='resource_reference', full_name='google.api.resource_reference', index=0,
+  number=1055, type=11, cpp_type=10, label=1,
   has_default_value=False, default_value=None,
   message_type=None, enum_type=None, containing_type=None,
   is_extension=True, extension_scope=None,
   serialized_options=None, file=DESCRIPTOR)
-RESOURCE_REFERENCE_FIELD_NUMBER = 1055
-resource_reference = _descriptor.FieldDescriptor(
-  name='resource_reference', full_name='google.api.resource_reference', index=1,
-  number=1055, type=11, cpp_type=10, label=1,
+RESOURCE_DEFINITION_FIELD_NUMBER = 1053
+resource_definition = _descriptor.FieldDescriptor(
+  name='resource_definition', full_name='google.api.resource_definition', index=1,
+  number=1053, type=11, cpp_type=10, label=3,
+  has_default_value=False, default_value=[],
+  message_type=None, enum_type=None, containing_type=None,
+  is_extension=True, extension_scope=None,
+  serialized_options=None, file=DESCRIPTOR)
+RESOURCE_FIELD_NUMBER = 1053
+resource = _descriptor.FieldDescriptor(
+  name='resource', full_name='google.api.resource', index=2,
+  number=1053, type=11, cpp_type=10, label=1,
   has_default_value=False, default_value=None,
   message_type=None, enum_type=None, containing_type=None,
   is_extension=True, extension_scope=None,
@@ -64,8 +72,8 @@ _RESOURCEDESCRIPTOR_HISTORY = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=206,
-  serialized_end=297,
+  serialized_start=240,
+  serialized_end=331,
 )
 _sym_db.RegisterEnumDescriptor(_RESOURCEDESCRIPTOR_HISTORY)
 
@@ -105,6 +113,20 @@ _RESOURCEDESCRIPTOR = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='plural', full_name='google.api.ResourceDescriptor.plural', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='singular', full_name='google.api.ResourceDescriptor.singular', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -119,7 +141,7 @@ _RESOURCEDESCRIPTOR = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=76,
-  serialized_end=297,
+  serialized_end=331,
 )
 
 
@@ -156,16 +178,17 @@ _RESOURCEREFERENCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=299,
-  serialized_end=352,
+  serialized_start=333,
+  serialized_end=386,
 )
 
 _RESOURCEDESCRIPTOR.fields_by_name['history'].enum_type = _RESOURCEDESCRIPTOR_HISTORY
 _RESOURCEDESCRIPTOR_HISTORY.containing_type = _RESOURCEDESCRIPTOR
 DESCRIPTOR.message_types_by_name['ResourceDescriptor'] = _RESOURCEDESCRIPTOR
 DESCRIPTOR.message_types_by_name['ResourceReference'] = _RESOURCEREFERENCE
-DESCRIPTOR.extensions_by_name['resource'] = resource
 DESCRIPTOR.extensions_by_name['resource_reference'] = resource_reference
+DESCRIPTOR.extensions_by_name['resource_definition'] = resource_definition
+DESCRIPTOR.extensions_by_name['resource'] = resource
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ResourceDescriptor = _reflection.GeneratedProtocolMessageType('ResourceDescriptor', (_message.Message,), dict(
@@ -182,10 +205,12 @@ ResourceReference = _reflection.GeneratedProtocolMessageType('ResourceReference'
   ))
 _sym_db.RegisterMessage(ResourceReference)
 
-resource.message_type = _RESOURCEDESCRIPTOR
-google_dot_protobuf_dot_descriptor__pb2.MessageOptions.RegisterExtension(resource)
 resource_reference.message_type = _RESOURCEREFERENCE
 google_dot_protobuf_dot_descriptor__pb2.FieldOptions.RegisterExtension(resource_reference)
+resource_definition.message_type = _RESOURCEDESCRIPTOR
+google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(resource_definition)
+resource.message_type = _RESOURCEDESCRIPTOR
+google_dot_protobuf_dot_descriptor__pb2.MessageOptions.RegisterExtension(resource)
 
 DESCRIPTOR._options = None
 # @@protoc_insertion_point(module_scope)
