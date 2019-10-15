@@ -231,6 +231,10 @@ def test_library_gapic_v2():
             'name_pattern': 'projects/{project}',
             'entity_name': 'project',
         },
+        {
+            'name_pattern': 'projects/{project}/locations/{location}/publishers/{publisher}',
+            'entity_name': 'publisher',
+        },
     ]
     assert reconstructed_gapic_config['collection_oneofs'] == [
         {

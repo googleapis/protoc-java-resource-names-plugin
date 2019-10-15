@@ -58,7 +58,6 @@ service LibraryService {
         body: "*"
       }
     };
-    option (google.api.method_signature) = "shelf,books,edition,series_uuid,publisher";
   }
 }
 
@@ -210,12 +209,10 @@ message ListShelvesResponse {
 // Request message for LibraryService.PublishSeries.
 message PublishSeriesRequest {
   // The shelf in which the series is created.
-  Shelf shelf = 1 [
-    (google.api.field_behavior) = REQUIRED];
+  Shelf shelf = 1;
 
   // The books to publish in the series.
-  repeated Book books = 2 [
-    (google.api.field_behavior) = REQUIRED];
+  repeated Book books = 2;
 
   oneof versioning {
     // The edition of the series
@@ -226,8 +223,7 @@ message PublishSeriesRequest {
   }
 
   // Uniquely identifies the series to the publishing house.
-  SeriesUuid series_uuid = 5 [
-    (google.api.field_behavior) = REQUIRED];
+  SeriesUuid series_uuid = 5;
 
   // The publisher of the series.
   string publisher = 6 [
@@ -237,8 +233,7 @@ message PublishSeriesRequest {
 // Response message for LibraryService.PublishSeries.
 message PublishSeriesResponse {
   // The names of the books in the series that were published
-  repeated string book_names = 1 [
-    (google.api.field_behavior) = REQUIRED];
+  repeated string book_names = 1;
 
   repeated Book books = 2;
 
