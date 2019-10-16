@@ -233,7 +233,7 @@ def test_library_gapic_v2():
         },
         {
             'name_pattern':
-                'projects/{project}/locations/{location}/' \
+                'projects/{project}/locations/{location}/'
                 'publishers/{publisher}',
             'entity_name': 'publisher',
         },

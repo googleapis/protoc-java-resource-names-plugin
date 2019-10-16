@@ -15,3 +15,6 @@ bazel-out
 bazel-genfiles
 bazel-protoc-java-resource-names-plugin
 bazel-testlogs
+
+# Test
+googleapis
