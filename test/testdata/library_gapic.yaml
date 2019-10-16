@@ -35,6 +35,8 @@ collections:
   entity_name: folder
 - name_pattern: projects/{project}/locations/{location}
   entity_name: location
+- name_pattern: projects/{project}/locations/{location}/publishers/{publisher}
+  entity_name: publisher
 interfaces:
 - name: google.example.library.v1.LibraryService
 
