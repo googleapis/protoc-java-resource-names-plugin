@@ -115,7 +115,8 @@ def run_protoc_v2():
 
 RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name',
                               'archived_book_name', 'deleted_book',
-                              'folder_name', 'location_name']
+                              'folder_name', 'location_name',
+                              'publisher_name']
 ONEOFS_TO_GENERATE = ['book_oneof']
 
 PROTOC_OUTPUT_DIR = os.path.join('com', 'google', 'example', 'library', 'v1')

@@ -11,6 +11,11 @@ option java_multiple_files = true;
 option java_outer_classname = "LibraryProto";
 option java_package = "com.google.example.library.v1";
 
+option (google.api.resource_definition) = {
+  type: "library.googleapis.com/Publisher",
+  pattern: "projects/{project}/locations/{location}/publishers/{publisher}"
+};
+
 service LibraryService {
 
   // Creates a shelf, and returns the new Shelf.
@@ -41,6 +46,18 @@ service LibraryService {
   // Lists books in a shelf.
   rpc ListShelves(ListShelvesRequest) returns (ListShelvesResponse) {
     option (google.api.http) = { get: "/v1/{name=projects/*}/shelves" };
+  }
+
+    // Creates a series of books.
+  rpc PublishSeries(PublishSeriesRequest) returns (PublishSeriesResponse) {
+    option (google.api.http) = {
+      post: "/v1:publish"
+      body: "*"
+      additional_bindings: {
+        post: "/v1/{shelf.name=shelves/*}:publish"
+        body: "*"
+      }
+    };
   }
 }
 
@@ -187,4 +204,46 @@ message ListShelvesResponse {
   // field in the subsequent call to `ListShelves` method to retrieve the next
   // page of results.
   string next_page_token = 2;
+}
+
+// Request message for LibraryService.PublishSeries.
+message PublishSeriesRequest {
+  // The shelf in which the series is created.
+  Shelf shelf = 1;
+
+  // The books to publish in the series.
+  repeated Book books = 2;
+
+  oneof versioning {
+    // The edition of the series
+    uint32 edition = 3;
+
+    // If the book is in a pre-publish state
+    bool review_copy = 4;
+  }
+
+  // Uniquely identifies the series to the publishing house.
+  SeriesUuid series_uuid = 5;
+
+  // The publisher of the series.
+  string publisher = 6 [
+    (google.api.resource_reference).type = "library.googleapis.com/Publisher"];
+}
+
+// Response message for LibraryService.PublishSeries.
+message PublishSeriesResponse {
+  // The names of the books in the series that were published
+  repeated string book_names = 1;
+
+  repeated Book books = 2;
+
+  // Uniquely identifies the series published
+  SeriesUuid series_uuid = 3;
+}
+
+message SeriesUuid {
+  oneof source {
+    bytes series_bytes = 1;
+    string series_string = 2;
+  }
 }
