@@ -458,20 +458,59 @@ def load_collection_oneofs(config_list, existing_collections,
 
 def collect_resource_name_types(gapic_config, java_package):
     resources = []
+    deprecated_resource_entity_names = set()
+    resource_entity_names = set()
+
+    for deprecated_collection_config in gapic_config.collection_configs.values():
+        java_entity_name = deprecated_collection_config.java_entity_name
+        # Disallow multiple deprecated resources with the same entity name
+        if java_entity_name in deprecated_resource_entity_names:
+            raise ValueError("same entity used twice: " + java_entity_name)
+        oneof = get_oneof_for_resource(deprecated_collection_config, gapic_config)
+        resource = resource_name.ResourceName(
+            deprecated_collection_config, java_package, oneof, True)
+        resources.append(resource)
+        deprecated_resource_entity_names.add(java_entity_name)
 
     for collection_config in gapic_config.collection_configs.values():
+        java_entity_name = collection_config.java_entity_name
+        # Deprecated resource names take precedence over non-deprecated ones
+        if java_entity_name in deprecated_resource_entity_names:
+            continue
+        # Disallow multiple resources with the same entity name
+        if java_entity_name in resource_entity_names:
+            raise ValueError("same entity used twice: " + java_entity_name)
         oneof = get_oneof_for_resource(collection_config, gapic_config)
         resource = resource_name.ResourceName(
-            collection_config, java_package, oneof)
+            collection_config, java_package, oneof, False)
         resources.append(resource)
+        resource_entity_names.add(java_entity_name)
 
     for fixed_config in gapic_config.fixed_collections.values():
+        java_entity_name = fixed_config.java_entity_name
+        # Deprecated resource names take precedence over non-deprecated ones
+        if java_entity_name in deprecated_resource_entity_names:
+            continue
+        # Disallow multiple resources with the same entity name
+        if java_entity_name in resource_entity_names:
+            raise ValueError("same entity used twice: " + java_entity_name)
         oneof = get_oneof_for_resource(fixed_config, gapic_config)
         resource = resource_name.ResourceNameFixed(
             fixed_config, java_package, oneof)
         resources.append(resource)
+        resource_entity_names.append(java_entity_name)
 
     for oneof_config in gapic_config.collection_oneofs.values():
+        java_entity_name = oneof_config.java_entity_name
+        # We have to generate all oneof resource names because
+        # they are exposed in the surface of gapic libraries
+        if java_entity_name in deprecated_resource_entity_names:
+            raise ValueError("same entity used as both a deprecated" +
+                             "single resource and a oneof resource: " + 
+                             java_entity_name)
+        # Disallow multiple resources with the same entity name
+        if java_entity_name in resource_entity_names:
+            raise ValueError("same entity used twice: " + java_entity_name)
         parent_resource = resource_name.ParentResourceName(
             oneof_config, java_package)
         untyped_resource = resource_name.UntypedResourceName(
@@ -481,6 +520,7 @@ def collect_resource_name_types(gapic_config, java_package):
         resources.append(parent_resource)
         resources.append(untyped_resource)
         resources.append(resource_factory)
+        resource_entity_names.append(java_entity_name)
 
     return resources
 

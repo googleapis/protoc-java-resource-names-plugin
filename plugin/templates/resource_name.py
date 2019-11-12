@@ -59,7 +59,7 @@ class ResourceNameBase(object):
 
 class ResourceName(ResourceNameBase):
 
-    def __init__(self, collection_config, java_package, oneof):
+    def __init__(self, collection_config, java_package, oneof, is_deprecated):
         super(ResourceName, self).__init__(
             casing_utils.get_resource_type_class_name(
                 collection_config.java_entity_name), java_package)
@@ -83,6 +83,11 @@ class ResourceName(ResourceNameBase):
         else:
             self.parent_interface = 'ResourceName'
             self.extension_keyword = 'implements'
+        if is_deprecated:
+            self.deprecation_message = \
+                '@Deprecated this resource name class will be removed in the next major version.'
+        else:
+            self.deprecation_message = ''
         self.parameter_list = [{
             'parameter': symbol_table.getNewSymbol(
                 casing_utils.lower_underscore_to_lower_camel(lit)),
