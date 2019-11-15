@@ -56,6 +56,7 @@ def test_update_collections_multi_pattern():
         }
     }
 
+
 def test_update_collections_single_pattern():
     res = resource_pb2.ResourceDescriptor()
     res.type = 'test/Book'
@@ -71,6 +72,7 @@ def test_update_collections_single_pattern():
         }
     }
     assert collection_oneofs == {}
+
 
 def test_library_gapic_v1():
 
