@@ -59,7 +59,7 @@ class ResourceNameBase(object):
 
 class ResourceName(ResourceNameBase):
 
-    def __init__(self, collection_config, java_package, oneof, is_deprecated):
+    def __init__(self, collection_config, java_package, oneof):
         super(ResourceName, self).__init__(
             casing_utils.get_resource_type_class_name(
                 collection_config.java_entity_name), java_package)
@@ -80,14 +80,11 @@ class ResourceName(ResourceNameBase):
                 casing_utils.get_parent_resource_name_class_name(
                     oneof.oneof_name)
             self.extension_keyword = 'extends'
+            self.deprecated = True
         else:
             self.parent_interface = 'ResourceName'
             self.extension_keyword = 'implements'
-        if is_deprecated:
-            self.deprecation_message = \
-                '@Deprecated this resource name class will be removed in the next major version.'
-        else:
-            self.deprecation_message = ''
+            self.deprecated = False
         self.parameter_list = [{
             'parameter': symbol_table.getNewSymbol(
                 casing_utils.lower_underscore_to_lower_camel(lit)),
@@ -140,13 +137,13 @@ class ResourceNameFactory(ResourceNameBase):
             'resource_type_var_name': resource.var_name,
             'resource_package': resource.package,
         } for resource in (ResourceName(x, java_package, oneof)
-                           for x in oneof.resource_list)]
+                           for x in oneof.legacy_resource_list)]
         self.fixed_resource_types = [{
             'resource_type_class_name': resource.class_name,
             'resource_type_var_name': resource.var_name,
             'resource_package': resource.package,
         } for resource in (ResourceNameFixed(x, java_package, oneof)
-                           for x in oneof.fixed_resource_list)]
+                           for x in oneof.legacy_fixed_resource_list)]
         self.resource_types = (self.single_resource_types
                                + self.fixed_resource_types)
 
@@ -183,9 +180,11 @@ class ResourceNameFixed(ResourceNameBase):
                 casing_utils.get_parent_resource_name_class_name(
                     oneof.oneof_name)
             self.extension_keyword = 'extends'
+            self.deprecated = True
         else:
             self.parent_interface = 'ResourceName'
             self.extension_keyword = 'implements'
+            self.deprecated = False
 
     def template_name(self):
         return "resource_name_fixed.mustache"

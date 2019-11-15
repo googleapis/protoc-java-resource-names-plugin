@@ -20,6 +20,7 @@ import java.util.Map;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
+@Deprecated This resource name class will be removed in the next major version.
 public class DeletedBook extends BookName {
 
   private static final String FIXED_VALUE = "_deleted-book_";

@@ -23,6 +23,7 @@ import java.util.Map;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 @javax.annotation.Generated("by GAPIC protoc plugin")
+@Deprecated This resource name class will be removed in the next major version.
 public class UntypedBookName extends BookName {
 
   private final String rawValue;
