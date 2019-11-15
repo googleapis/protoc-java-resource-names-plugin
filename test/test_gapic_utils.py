@@ -74,6 +74,127 @@ def test_update_collections_single_pattern():
     assert collection_oneofs == {}
 
 
+def test_get_parent_resources_single_pattern():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+
+    shelf = resource_pb2.ResourceDescriptor()
+    shelf.type = 'test/Shelf'
+    shelf.pattern.append("shelves/{shelf}")
+
+    pattern_map = {
+        "shelves/{shelf}/books/{book}": book,
+        "shelves/{shelf}": shelf
+    }
+    assert shelf == gapic_utils.get_parent_resource(book, pattern_map)
+
+
+def test_get_parent_resources_multi_pattern():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+    book.pattern.append("projects/{project}/books/{book}")
+
+    parent = resource_pb2.ResourceDescriptor()
+    parent.type = 'test/Parent'
+    parent.pattern.append("shelves/{shelf}")
+    parent.pattern.append("projects/{project}")
+
+    pattern_map = {
+        "shelves/{shelf}/books/{book}": book,
+        "projects/{project}/books/{book}": book,
+        "shelves/{shelf}": parent,
+        "projects/{project}": parent
+    }
+    assert parent == gapic_utils.get_parent_resource(book, pattern_map)
+
+
+def test_get_parent_resources_multi_pattern_fail():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+    book.pattern.append("projects/{project}/books/{book}")
+
+    parent = resource_pb2.ResourceDescriptor()
+    parent.type = 'test/Parent'
+    parent.pattern.append("shelves/{shelf}")
+
+    book_parent = resource_pb2.ResourceDescriptor()
+    book_parent.type = 'test/BookParent'
+    book_parent.pattern.append("shelves/{shelf}")
+    book_parent.pattern.append("projects/{project}")
+    book_parent.pattern.append("projects/{project}/locations/{location}")
+
+    pattern_map = {
+        "shelves/{shelf}/books/{book}": book,
+        "projects/{project}/books/{book}": book,
+        "shelves/{shelf}": parent,
+    }
+    assert gapic_utils.get_parent_resource(book, pattern_map) is None
+
+
+def test_update_collections_with_deprecated_collections():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+    book.pattern.append("archives/{archive}/books/{book}")
+
+    gapic_v2 = {
+        'interfaces': [{
+            'deprecated_collections': [
+                {
+                    'entity_name': 'some_archive_book',
+                    'name_pattern': "archives/{archive}/books/{book}"
+                },
+                {
+                    'entity_name': 'my_shelf_book',
+                    'name_pattern': "shelves/{shelf}/books/{book}",
+                    'language_overrides': [
+                        {'language': 'java',
+                         'entity_name': 'shelf_book'}]
+                }
+            ]}
+        ]
+    }
+
+    collection_oneofs = {
+        'book_oneof': {
+            'oneof_name': 'book_oneof',
+            'collection_names': []
+        }
+    }
+    collections = {}
+    pattern_map = {
+        "archives/{archive}/books/{book}": book,
+        "shelves/{shelf}/books/{book}": book
+    }
+
+    gapic_utils.update_collections_with_deprecated_resources(
+        gapic_v2, pattern_map, collections, collection_oneofs)
+
+    assert collection_oneofs == {
+        'book_oneof': {
+            'oneof_name': 'book_oneof',
+            'collection_names': [
+                'some_archive_book', 'my_shelf_book']
+        }
+    }
+    assert collections == {
+        'some_archive_book': {
+            'entity_name': 'some_archive_book',
+            'name_pattern': "archives/{archive}/books/{book}"
+        },
+        'my_shelf_book': {
+            'entity_name': 'my_shelf_book',
+            'name_pattern': "shelves/{shelf}/books/{book}",
+            'language_overrides': [
+                {'language': 'java',
+                 'entity_name': 'shelf_book'}]
+        }
+    }
+
+
 def test_library_gapic_v1():
 
     request = plugin_pb2.CodeGeneratorRequest()
