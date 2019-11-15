@@ -38,6 +38,7 @@ from plugin.templates import resource_name
 
 GAPIC_CONFIG_ANY = '*'
 
+
 def create_gapic_config(gapic_yaml):
     """ Create a GapicConfig object from a gapic yaml.
     Args:
@@ -160,17 +161,17 @@ def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
                                   interface.get('collection_oneofs', ())])
 
 
-    # Load all resources and resource references to make it easier to look up
+    # Load all resources and resource references to make it easier to look up.
     types_with_ref, types_with_child_references = get_all_resource_references(request)
     type_resource_map, pattern_resource_map = get_all_resources(request)
     
-    # Put all single-pattern resources defined in protos to collections.
-    # Put all multi-pattern resources defined in protos to collection_oneofs.
+    # Put all single-pattern resources defined in protos to collections and
+    # all multi-pattern resources defined in protos to collection_oneofs.
     #
-    # Note we no longer populate collection_names for any collection_oneof from
-    # resource patterns. We no longer need them in new resource name classes.
-    # However, we will continue to load these collection_names from deprecated_collections
-    # in gapic v2 for backward-compatibility.
+    # Note we no longer need to derive entity names from patterns with the
+    # new design of multi-pattern resourc names. However, we load them from
+    # deprecated_collections in gapic v2 to continue to generate existing
+    # resource name classes for backward-compatibility.
     for typ, res in type_resource_map.items():
         if typ in types_with_ref: 
             update_collections(res, collections, collection_oneofs)
@@ -180,8 +181,7 @@ def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
             if parent_res is not None:
                 update_collections(parent_res, collections, collection_oneofs)
     
-    # Put deprecated_collections in gapic v2 back to collections; so we can continue to
-    # generate them and not break existing clients.
+    # Load deprecated_collections.
     update_collections_with_deprecated_resources(gapic_v2, pattern_resource_map,
                                                  collections, collection_oneofs)
 
@@ -193,11 +193,14 @@ def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
     # Done; Return the modified GAPIC YAML.
     return gapic_v2
 
-# Iterate over the files to be generated looking for google.api.resource 
-# and google.api.resource_definition annotations that define resources. 
-# Put the pattern-to-resource and type-to-resource relations in two maps
-# to make lookup easier.
+
 def get_all_resources(request):
+    """ 
+    Iterate over the files to be generated looking for google.api.resource 
+    and google.api.resource_definition annotations that define resources. 
+    Put the pattern-to-resource and type-to-resource relations in two maps
+    to make lookup easier.
+    """
     pattern_resource_map = {}
     type_resource_map = {}
 
@@ -207,12 +210,14 @@ def get_all_resources(request):
         if not res.pattern:
             return
         if res.type in type_resource_map:
-            raise ValueError('same resource defined multiple times: {}'.format(res.type))
+            raise ValueError('same resource defined multiple times: {}' \
+                .format(res.type))
         type_resource_map[res.type] = res
         for ptn in res.pattern:
             if ptn in pattern_resource_map:
-                # TODO: assumed this is not possible, double check
-                raise ValueError('same pattern defined in multiple resources: {}'.format(ptn))
+                # TODO: support this if there is such a need
+                raise ValueError('same pattern defined in multiple resources: {}' \
+                    .format(ptn))
             pattern_resource_map[ptn] = res
 
     for proto_file in request.proto_file:
@@ -255,13 +260,21 @@ def get_all_resource_references(request):
     return types_with_ref, types_with_child_references
 
 def get_parent_resource(res, pattern_map):
+    """ Return the parent resource of res.
+    We consider resource Foo to be resource Bar's parent iff Foo and Bar have
+    the same number of patterns, and for each pattern 'B'' in Bar, there is
+    a pattern 'F' in Foo , such that 'F' is the parent 'B'.
+    Returns None if we can't find the parent of res.
+    """
     parent_resource = None
     parent_patterns = build_parent_patterns(res.pattern)
     for parent_pattern in parent_patterns:
         if parent_pattern not in pattern_map: 
             return None
         new_parent_resource = pattern_map[parent_pattern]
-        if new_parent_resource != parent_resource and parent_resource is not None:
+        if parent_resource == None:
+            parent_resource = new_parent_resource
+        if new_parent_resource != parent_resource:
             return None
         parent_resource = new_parent_resource
     return parent_resource
@@ -301,25 +314,31 @@ def update_collections_with_deprecated_resources(
             continue
         for deprecated_collection in interface['deprecated_collections']:
             if 'entity_name' not in deprecated_collection:
-                raise ValueError('entity_name is required in a deprecated_collection.')
+                raise ValueError('entity_name is required '
+                                 'in a deprecated_collection.')
             if 'name_pattern' not in deprecated_collection:
-                raise ValueError('name_pattern is required in a deprecated_collection.')
+                raise ValueError('name_pattern is required '
+                                 'in a deprecated_collection.')
             
             entity_name = deprecated_collection['entity_name']
             name_pattern = deprecated_collection['name_pattern']
 
             if entity_name in collections:
-                raise ValueError('deprecating a single-pattern resource is not allowed: {}'.format(entity_name))
+                raise ValueError('deprecating a single-pattern '
+                                 'resource is not allowed: {}'.format(entity_name))
             if name_pattern not in pattern_resource_map:
-                raise ValueError('deprecated collection has an unknown name pattern: {}'.format(name_pattern))
+                raise ValueError('deprecated collection has '
+                                 'an unknown name pattern: {}'.format(name_pattern))
             collections[entity_name] = deprecated_collection
             res = pattern_resource_map[name_pattern]
             if len(res.pattern) <= 1:
-                raise ValueError('deprecated collection point to a single-pattern resource: {}'.format(res.type))
+                raise ValueError('deprecated collection point to a '
+                                 'single-pattern resource: {}'.format(res.type))
             oneof_name = to_snake(res.type.split('/')[-1]) + '_oneof'
 
             if oneof_name not in collection_oneofs:
-                raise ValueError('internal: multi-pattern resource not added to collection_oneofs: {}'.format(oneof_name))
+                raise ValueError('internal: multi-pattern resource not added to '
+                                 'collection_oneofs: {}'.format(oneof_name))
             collection_oneofs[oneof_name]['collection_names'].append(entity_name)
 
 def calculate_pattern_entity_name(ptn):
@@ -374,7 +393,17 @@ def load_collection_configs(config_list, existing_configs):
     for config in config_list:
         entity_name = config['entity_name']
         name_pattern = config['name_pattern']
-        java_entity_name = get_java_entity_name(config)
+        java_entity_name = entity_name
+        overrides = config.get('language_overrides', [])
+        overrides = [ov for ov in overrides if ov['language'] == 'java']
+        if len(overrides) > 1:
+            raise ValueError('expected only one java override')
+        if len(overrides) == 1:
+            override = overrides[0]
+            if 'common_resource_name' in override:
+                continue
+            if 'entity_name' in override:
+                java_entity_name = override['entity_name']
         if not java_entity_name:
             continue
         if entity_name in existing_configs:
@@ -445,19 +474,6 @@ def load_collection_oneofs(config_list, existing_collections,
             root_type_name, resources, fixed_resources, collection_names)
     return existing_oneofs
 
-def get_java_entity_name(collection):
-    java_entity_name = collection['entity_name']
-    overrides = collection.get('language_overrides', [])
-    overrides = [ov for ov in overrides if ov['language'] == 'java']
-    if len(overrides) > 1:
-        raise ValueError('expected only one java override')
-    if len(overrides) == 1:
-        override = overrides[0]
-        if 'common_resource_name' in override:
-            java_entity_name = None
-        if 'entity_name' in override:
-            java_entity_name = override['entity_name']
-    return java_entity_name
 
 def collect_resource_name_types(gapic_config, java_package):
     resources = []
