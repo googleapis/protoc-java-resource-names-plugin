@@ -57,16 +57,21 @@ def create_gapic_config(gapic_yaml):
 
     collections = load_collection_configs(single_resource_names, collections)
     fixed_collections = {}
+
     # TODO(andrealin): Remove the fixed_resource_name_values
     # parsing once they no longer exist in GAPIC configs.
     if 'fixed_resource_name_values' in gapic_yaml:
         fixed_collections = load_fixed_configs(
-            gapic_yaml['fixed_resource_name_values'], fixed_collections,
-            collections, "fixed_value")
+            gapic_yaml['fixed_resource_name_values'],
+            fixed_collections,
+            collections,
+            "fixed_value")
     # Add the fixed resource names that are defined in the collections.
-    fixed_collections = load_fixed_configs(fixed_resource_names,
-                                           fixed_collections, collections,
-                                           "name_pattern")
+    fixed_collections = load_fixed_configs(
+        fixed_resource_names,
+        fixed_collections,
+        collections,
+        "name_pattern")
 
     oneofs = {}
     if 'collection_oneofs' in gapic_yaml:
@@ -108,8 +113,8 @@ def read_from_gapic_yaml(request):
     # away from it here is because this tool is supposed to have a short
     # shelf life, and it is safer to be backwards-looking than
     # forward-looking in this case.
-    if not gapic_yaml or gapic_yaml.get('config_schema_version',
-                                        '1.0.0') != '1.0.0':
+    if not gapic_yaml or gapic_yaml.get(
+            'config_schema_version', '1.0.0') != '1.0.0':
         gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
 
     return create_gapic_config(gapic_yaml)
@@ -179,10 +184,11 @@ def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
                 update_collections(parent_res, collections, collection_oneofs)
 
     # Load deprecated_collections.
-    update_collections_with_deprecated_resources(gapic_v2,
-                                                 pattern_resource_map,
-                                                 collections,
-                                                 collection_oneofs)
+    update_collections_with_deprecated_resources(
+        gapic_v2,
+        pattern_resource_map,
+        collections,
+        collection_oneofs)
 
     # Take the collections and collection_oneofs, convert them back to lists,
     # and drop them on the GAPIC YAML.
@@ -464,8 +470,8 @@ def load_collection_oneofs(config_list, existing_collections,
         resources = []
         fixed_resources = []
         for collection in collection_names:
-            if (collection not in existing_collections
-                    and collection not in fixed_collections):
+            if (collection not in existing_collections and
+                    collection not in fixed_collections):
                 raise ValueError('Collection specified in collection '
                                  'oneof, but no matching collection '
                                  'was found. Oneof: ' + root_type_name +
@@ -475,9 +481,9 @@ def load_collection_oneofs(config_list, existing_collections,
             else:
                 fixed_resources.append(fixed_collections[collection])
 
-        if (root_type_name in existing_oneofs
-                or root_type_name in existing_collections
-                or root_type_name in fixed_collections):
+        if (root_type_name in existing_oneofs or
+                root_type_name in existing_collections or
+                root_type_name in fixed_collections):
             raise ValueError('Found two collection oneofs with same name: ' +
                              root_type_name)
         existing_oneofs[root_type_name] = CollectionOneof(
@@ -490,14 +496,14 @@ def collect_resource_name_types(gapic_config, java_package):
 
     for collection_config in gapic_config.collection_configs.values():
         oneof = get_oneof_for_resource(collection_config, gapic_config)
-        resource = resource_name.ResourceName(collection_config, java_package,
-                                              oneof)
+        resource = resource_name.ResourceName(
+            collection_config, java_package, oneof)
         resources.append(resource)
 
     for fixed_config in gapic_config.fixed_collections.values():
         oneof = get_oneof_for_resource(fixed_config, gapic_config)
-        resource = resource_name.ResourceNameFixed(fixed_config, java_package,
-                                                   oneof)
+        resource = resource_name.ResourceNameFixed(
+            fixed_config, java_package, oneof)
         resources.append(resource)
 
     for oneof_config in gapic_config.collection_oneofs.values():
