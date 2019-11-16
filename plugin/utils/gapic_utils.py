@@ -56,8 +56,8 @@ def create_gapic_config(gapic_yaml):
         find_single_and_fixed_entities(all_entities)
 
     collections = load_collection_configs(single_resource_names, collections)
-    fixed_collections = {}
 
+    fixed_collections = {}
     # TODO(andrealin): Remove the fixed_resource_name_values
     # parsing once they no longer exist in GAPIC configs.
     if 'fixed_resource_name_values' in gapic_yaml:
@@ -383,7 +383,6 @@ def build_parent_patterns(patterns):
             last_index -= 1
         last_index += 1
         return '/'.join(segs[:last_index])
-
     return [_parent_pattern(p) for p in patterns if not (isFixedPattern(p))]
 
 
@@ -472,17 +471,18 @@ def load_collection_oneofs(config_list, existing_collections,
         for collection in collection_names:
             if (collection not in existing_collections and
                     collection not in fixed_collections):
-                raise ValueError('Collection specified in collection '
-                                 'oneof, but no matching collection '
-                                 'was found. Oneof: ' + root_type_name +
-                                 ', Collection: ' + collection)
+                raise ValueError(
+                    'Collection specified in collection '
+                    'oneof, but no matching collection '
+                    'was found. Oneof: ' + root_type_name +
+                    ', Collection: ' + collection)
             if collection in existing_collections:
                 resources.append(existing_collections[collection])
             else:
                 fixed_resources.append(fixed_collections[collection])
 
         if (root_type_name in existing_oneofs or
-                root_type_name in existing_collections or
+            root_type_name in existing_collections or
                 root_type_name in fixed_collections):
             raise ValueError('Found two collection oneofs with same name: ' +
                              root_type_name)
@@ -568,9 +568,7 @@ class GapicConfig(object):
                  collection_configs={},
                  fixed_collections={},
                  collection_oneofs={},
-                 deprecated_collections={},
                  **kwargs):
         self.collection_configs = collection_configs
         self.fixed_collections = fixed_collections
         self.collection_oneofs = collection_oneofs
-        self.deprecated_collections = deprecated_collections
