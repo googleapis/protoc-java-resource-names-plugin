@@ -421,10 +421,7 @@ def load_collection_configs(config_list, existing_configs):
             override = overrides[0]
             if 'common_resource_name' in override:
                 continue
-            if 'entity_name' in override:
-                java_entity_name = override['entity_name']
-        if not java_entity_name:
-            continue
+            java_entity_name = override['entity_name']
         if entity_name in existing_configs:
             existing_name_pattern = existing_configs[entity_name].name_pattern
             if existing_name_pattern != name_pattern:
@@ -432,12 +429,15 @@ def load_collection_configs(config_list, existing_configs):
                     'Found collection configs with same entity name '
                     'but different patterns. Name: ' + entity_name)
         else:
-            existing_configs[entity_name] = CollectionConfig(
-                entity_name, name_pattern, java_entity_name)
+            existing_configs[entity_name] = CollectionConfig(entity_name,
+                                                             name_pattern,
+                                                             java_entity_name)
     return existing_configs
 
 
-def load_fixed_configs(config_list, existing_configs, existing_collections,
+def load_fixed_configs(config_list,
+                       existing_configs,
+                       existing_collections,
                        pattern_key_name):
     for config in config_list:
         entity_name = config['entity_name']
@@ -537,6 +537,7 @@ def create_field_name(message_name, field):
 
 
 class CollectionConfig(object):
+
     def __init__(self, entity_name, name_pattern, java_entity_name):
         self.entity_name = entity_name
         self.name_pattern = name_pattern
@@ -544,6 +545,7 @@ class CollectionConfig(object):
 
 
 class FixedCollectionConfig(object):
+
     def __init__(self, entity_name, fixed_value, java_entity_name):
         self.entity_name = entity_name
         self.fixed_value = fixed_value
@@ -551,6 +553,7 @@ class FixedCollectionConfig(object):
 
 
 class CollectionOneof(object):
+
     def __init__(self, oneof_name, legacy_resources, legacy_fixed_resources,
                  legacy_collection_names):
         self.oneof_name = oneof_name
@@ -560,15 +563,14 @@ class CollectionOneof(object):
 
 
 class GapicConfig(object):
+
     def __init__(self,
                  collection_configs={},
                  fixed_collections={},
                  collection_oneofs={},
                  deprecated_collections={},
-                 gapic_version=1,
                  **kwargs):
         self.collection_configs = collection_configs
         self.fixed_collections = fixed_collections
         self.collection_oneofs = collection_oneofs
         self.deprecated_collections = deprecated_collections
-        self.gapic_version = gapic_version
