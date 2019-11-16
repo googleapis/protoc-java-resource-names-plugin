@@ -383,7 +383,7 @@ def build_parent_patterns(patterns):
             last_index -= 1
         last_index += 1
         return '/'.join(segs[:last_index])
-    return [_parent_pattern(p) for p in patterns if not (isFixedPattern(p))]
+    return [_parent_pattern(p) for p in patterns if not(isFixedPattern(p))]
 
 
 def _is_variable_segment(segment):
@@ -404,7 +404,7 @@ def find_single_and_fixed_entities(all_resource_names):
 
 
 def isFixedPattern(pattern):
-    return not ('{' in pattern or '*' in pattern)
+    return not('{' in pattern or '*' in pattern)
 
 
 def load_collection_configs(config_list, existing_configs):
@@ -421,6 +421,7 @@ def load_collection_configs(config_list, existing_configs):
             if 'common_resource_name' in override:
                 continue
             java_entity_name = override['entity_name']
+
         if entity_name in existing_configs:
             existing_name_pattern = existing_configs[entity_name].name_pattern
             if existing_name_pattern != name_pattern:
@@ -474,8 +475,8 @@ def load_collection_oneofs(config_list, existing_collections,
                 raise ValueError(
                     'Collection specified in collection '
                     'oneof, but no matching collection '
-                    'was found. Oneof: ' + root_type_name +
-                    ', Collection: ' + collection)
+                    'was found. Oneof: ' +
+                    root_type_name + ', Collection: ' + collection)
             if collection in existing_collections:
                 resources.append(existing_collections[collection])
             else:
