@@ -42,7 +42,6 @@ version = '0.0.18'
 install_requires = [
     'chevron >= 0.13.1',
     'protobuf >= 3.7.1',
-    # 'google-gax >= 0.12.3',
     'pyyaml >= 3.12',
 ]
 
