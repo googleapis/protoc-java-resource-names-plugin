@@ -220,7 +220,7 @@ def get_all_resources(request):  # noqa: C901
         type_resource_map[res.type] = res
         # It is very likely that we will have multiple resources that
         # supports a same pattern in the future (for example, Firestore),
-        # so let's put the resources in a list preemptively. 
+        # so let's put the resources in a list preemptively.
         for ptn in res.pattern:
             pattern_resource_map.setdefault(ptn, [])
             pattern_resource_map[ptn].append(res)
@@ -281,7 +281,7 @@ def get_parent_resource(res, pattern_map):
         if not parent_candidates:
             parent_candidates = pattern_map[parent_pattern]
         else:
-            parent_candidates = [r for r in parent_candidates 
+            parent_candidates = [r for r in parent_candidates
                                  if r in pattern_map[parent_pattern]]
 
     if not parent_candidates:
@@ -359,7 +359,7 @@ def update_collections_with_deprecated_resources(  # noqa: C901
             if len(resources) > 1:
                 raise ValueError('Not supported: pattern of a deprecated '
                                  'collections belongs to multiple resources: '
-                                     '{}'.format(name_pattern))
+                                 '{}'.format(name_pattern))
             res = resources[0]
             if len(res.pattern) <= 1:
                 raise ValueError('deprecated collection point to a '
