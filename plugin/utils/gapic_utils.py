@@ -171,7 +171,7 @@ def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
     # all multi-pattern resources defined in protos to collection_oneofs.
     #
     # Note we no longer need to derive entity names from patterns with the
-    # new design of multi-pattern resourc names. However, we load them from
+    # new design of multi-pattern resourcs names. However, we load them from
     # deprecated_collections in gapic v2 to continue to generate existing
     # resource name classes for backward-compatibility.
     for typ, res in type_resource_map.items():
@@ -269,7 +269,7 @@ def get_all_resource_references(request):
 def get_parent_resource(res, pattern_map):
     """ Return the parent resource of res.
     We consider resource Foo to be resource Bar's parent iff Foo and Bar have
-    the same number of patterns, and for each pattern 'B'' in Bar, there is
+    the same number of patterns, and for each pattern 'B' in Bar, there is
     a pattern 'F' in Foo , such that 'F' is the parent 'B'.
     Returns None if we can't find the parent of res.
     """
