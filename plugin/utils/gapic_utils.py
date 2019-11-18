@@ -218,12 +218,12 @@ def get_all_resources(request):  # noqa: C901
             raise ValueError('same resource defined multiple times: {}'
                              .format(res.type))
         type_resource_map[res.type] = res
+        # It is very likely that we will have multiple resources that
+        # supports a same pattern in the future (for example, Firestore),
+        # so let's put the resources in a list preemptively. 
         for ptn in res.pattern:
-            if ptn in pattern_resource_map:
-                # TODO: support this if there is such a need
-                raise ValueError('same pattern defined in multiple '
-                                 'resources: {}'.format(ptn))
-            pattern_resource_map[ptn] = res
+            pattern_resource_map.setdefault(ptn, [])
+            pattern_resource_map[ptn].append(res)
 
     for proto_file in request.proto_file:
         # We only want to collect resources from files we were
@@ -273,18 +273,23 @@ def get_parent_resource(res, pattern_map):
     a pattern 'F' in Foo , such that 'F' is the parent 'B'.
     Returns None if we can't find the parent of res.
     """
-    parent_resource = None
+    parent_candidates = []
     parent_patterns = build_parent_patterns(res.pattern)
     for parent_pattern in parent_patterns:
         if parent_pattern not in pattern_map:
             return None
-        new_parent_resource = pattern_map[parent_pattern]
-        if parent_resource is None:
-            parent_resource = new_parent_resource
-        if new_parent_resource != parent_resource:
-            return None
-        parent_resource = new_parent_resource
-    return parent_resource
+        if not parent_candidates:
+            parent_candidates = pattern_map[parent_pattern]
+        else:
+            parent_candidates = [r for r in parent_candidates 
+                                 if r in pattern_map[parent_pattern]]
+
+    if not parent_candidates:
+        return None
+    if len(parent_candidates) == 1:
+        return parent_candidates[0]
+    raise ValueError('Found multiple parent '
+                     'resources: {}'.format(parent_candidates))
 
 
 def update_collections(res, collections, collection_oneofs):
@@ -344,7 +349,18 @@ def update_collections_with_deprecated_resources(  # noqa: C901
                     'deprecated collection has '
                     'an unknown name pattern: {}'.format(name_pattern))
             collections[entity_name] = deprecated_collection
-            res = pattern_resource_map[name_pattern]
+            resources = pattern_resource_map[name_pattern]
+
+            # A deprecated collection pattern belonging to multiple resources
+            # is very unlikely and cannot be nicely handled by resource
+            # name design in GAPIC v1(as the parent resource class is an
+            # abstract class rather than an interface, and Java does not
+            # have multiple inheritence).
+            if len(resources) > 1:
+                raise ValueError('Not supported: pattern of a deprecated '
+                                 'collections belongs to multiple resources: '
+                                     '{}'.format(name_pattern))
+            res = resources[0]
             if len(res.pattern) <= 1:
                 raise ValueError('deprecated collection point to a '
                                  'single-pattern resource: {}'.format(

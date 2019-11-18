@@ -84,8 +84,8 @@ def test_get_parent_resources_single_pattern():
     shelf.pattern.append("shelves/{shelf}")
 
     pattern_map = {
-        "shelves/{shelf}/books/{book}": book,
-        "shelves/{shelf}": shelf
+        "shelves/{shelf}/books/{book}": [book],
+        "shelves/{shelf}": [shelf]
     }
     assert shelf == gapic_utils.get_parent_resource(book, pattern_map)
 
@@ -96,16 +96,20 @@ def test_get_parent_resources_multi_pattern():
     book.pattern.append("shelves/{shelf}/books/{book}")
     book.pattern.append("projects/{project}/books/{book}")
 
+    shelf = resource_pb2.ResourceDescriptor()
+    shelf.type = 'test/Shelf'
+    shelf.pattern.append("shelves/{shelf}/books/{book}")
+
     parent = resource_pb2.ResourceDescriptor()
     parent.type = 'test/Parent'
     parent.pattern.append("shelves/{shelf}")
     parent.pattern.append("projects/{project}")
 
     pattern_map = {
-        "shelves/{shelf}/books/{book}": book,
-        "projects/{project}/books/{book}": book,
-        "shelves/{shelf}": parent,
-        "projects/{project}": parent
+        "shelves/{shelf}/books/{book}": [book],
+        "projects/{project}/books/{book}": [book],
+        "shelves/{shelf}": [parent],
+        "projects/{project}": [parent]
     }
     assert parent == gapic_utils.get_parent_resource(book, pattern_map)
 
@@ -127,9 +131,9 @@ def test_get_parent_resources_multi_pattern_fail():
     book_parent.pattern.append("projects/{project}/locations/{location}")
 
     pattern_map = {
-        "shelves/{shelf}/books/{book}": book,
-        "projects/{project}/books/{book}": book,
-        "shelves/{shelf}": parent,
+        "shelves/{shelf}/books/{book}": [book],
+        "projects/{project}/books/{book}": [book],
+        "shelves/{shelf}": [parent],
     }
     assert gapic_utils.get_parent_resource(book, pattern_map) is None
 
@@ -166,8 +170,8 @@ def test_update_collections_with_deprecated_collections():
     }
     collections = {}
     pattern_map = {
-        "archives/{archive}/books/{book}": book,
-        "shelves/{shelf}/books/{book}": book
+        "archives/{archive}/books/{book}": [book],
+        "shelves/{shelf}/books/{book}": [book]
     }
 
     gapic_utils.update_collections_with_deprecated_resources(
