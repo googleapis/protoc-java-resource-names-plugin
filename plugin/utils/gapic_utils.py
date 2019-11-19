@@ -174,11 +174,11 @@ def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
     # new design of multi-pattern resourcs names. However, we load them from
     # deprecated_collections in gapic v2 to continue to generate existing
     # resource name classes for backward-compatibility.
-    for typ, res in type_resource_map.items():
-        if typ in types_with_ref:
+    for type, res in type_resource_map.items():
+        if type in types_with_ref:
             update_collections(res, collections, collection_oneofs)
 
-        if typ in types_with_child_references:
+        if type in types_with_child_references:
             parent_res = get_parent_resource(res, pattern_resource_map)
             if parent_res is not None:
                 update_collections(parent_res, collections, collection_oneofs)
@@ -199,7 +199,24 @@ def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
     return gapic_v2
 
 
-def get_all_resources(request):  # noqa: C901
+# Populate pattern_resource_map and type_resource_map with this resource.
+# Error if a pattern or a type already exist.
+def _collect_resource(res, type_resource_map, pattern_resource_map):
+    if not res.pattern:
+        return
+    if res.type in type_resource_map:
+        raise ValueError('same resource defined multiple times: {}'
+                         .format(res.type))
+    type_resource_map[res.type] = res
+    # It is very likely that we will have multiple resources that
+    # supports a same pattern in the future (for example, Firestore),
+    # so let's put the resources in a list preemptively.
+    for ptn in res.pattern:
+        pattern_resource_map.setdefault(ptn, [])
+        pattern_resource_map[ptn].append(res)
+
+
+def get_all_resources(request):
     """ Returns all resources defined in proto annotions.
     Iterate over the files to be generated looking for google.api.resource
     and google.api.resource_definition annotations that define resources.
@@ -209,22 +226,6 @@ def get_all_resources(request):  # noqa: C901
     pattern_resource_map = {}
     type_resource_map = {}
 
-    # Populate pattern_resource_map and type_resource_map with this resource.
-    # Error if a pattern or a type already exist.
-    def _collect_resource(resource):
-        if not res.pattern:
-            return
-        if res.type in type_resource_map:
-            raise ValueError('same resource defined multiple times: {}'
-                             .format(res.type))
-        type_resource_map[res.type] = res
-        # It is very likely that we will have multiple resources that
-        # supports a same pattern in the future (for example, Firestore),
-        # so let's put the resources in a list preemptively.
-        for ptn in res.pattern:
-            pattern_resource_map.setdefault(ptn, [])
-            pattern_resource_map[ptn].append(res)
-
     for proto_file in request.proto_file:
         # We only want to collect resources from files we were
         # explicitly asked to generate. Ignore the rest.
@@ -233,12 +234,12 @@ def get_all_resources(request):  # noqa: C901
 
         extensions = proto_file.options.Extensions
         for res in extensions[resource_pb2.resource_definition]:
-            _collect_resource(res)
+            _collect_resource(res, type_resource_map, pattern_resource_map)
 
         # Iterate over all of the messages in the file.
         for message in proto_file.message_type:
             res = message.options.Extensions[resource_pb2.resource]
-            _collect_resource(res)
+            _collect_resource(res, type_resource_map, pattern_resource_map)
 
     return type_resource_map, pattern_resource_map
 
@@ -321,11 +322,33 @@ def update_collections(res, collections, collection_oneofs):
     # pylint: enable=no-member
 
 
-def update_collections_with_deprecated_resources(  # noqa: C901
-    gapic_v2,
-    pattern_resource_map,
-    collections,
-    collection_oneofs):
+def _get_resource_for_deprecate_pattern(
+        deprecated_collection_pattern,
+        pattern_resource_map):
+    resources = pattern_resource_map[deprecated_collection_pattern]
+
+    # A deprecated collection pattern belonging to multiple resources
+    # is very unlikely and cannot be nicely handled by resource
+    # name design in GAPIC v1(as the parent resource class is an
+    # abstract class rather than an interface, and Java does not
+    # have multiple inheritence).
+    if len(resources) > 1:
+        raise ValueError('Not supported: pattern of a deprecated '
+                         'collections belongs to multiple resources: '
+                         '{}'.format(deprecated_collection_pattern))
+    resource = resources[0]
+    if len(resource.pattern) <= 1:
+        raise ValueError('deprecated collection point to a '
+                         'single-pattern resource: {}'.format(
+                             resource.type))
+    return resource
+
+
+def update_collections_with_deprecated_resources(
+        gapic_v2,
+        pattern_resource_map,
+        collections,
+        collection_oneofs):
     for interface in gapic_v2.get('interfaces', ()):
         if 'deprecated_collections' not in interface:
             continue
@@ -349,24 +372,9 @@ def update_collections_with_deprecated_resources(  # noqa: C901
                     'deprecated collection has '
                     'an unknown name pattern: {}'.format(name_pattern))
             collections[entity_name] = deprecated_collection
-            resources = pattern_resource_map[name_pattern]
-
-            # A deprecated collection pattern belonging to multiple resources
-            # is very unlikely and cannot be nicely handled by resource
-            # name design in GAPIC v1(as the parent resource class is an
-            # abstract class rather than an interface, and Java does not
-            # have multiple inheritence).
-            if len(resources) > 1:
-                raise ValueError('Not supported: pattern of a deprecated '
-                                 'collections belongs to multiple resources: '
-                                 '{}'.format(name_pattern))
-            res = resources[0]
-            if len(res.pattern) <= 1:
-                raise ValueError('deprecated collection point to a '
-                                 'single-pattern resource: {}'.format(
-                                     res.type))
-            oneof_name = to_snake(res.type.split('/')[-1]) + '_oneof'
-
+            resource = _get_resource_for_deprecate_pattern(
+                name_pattern, pattern_resource_map)
+            oneof_name = to_snake(resource.type.split('/')[-1]) + '_oneof'
             if oneof_name not in collection_oneofs:
                 raise ValueError(
                     'internal: multi-pattern resource not added to '
