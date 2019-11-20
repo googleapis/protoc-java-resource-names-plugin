@@ -326,6 +326,7 @@ def _get_resource_for_deprecate_pattern(
         deprecated_collection_pattern,
         pattern_resource_map):
     resources = pattern_resource_map[deprecated_collection_pattern]
+    resources = [r for r in resources if len(r.pattern) > 1]
 
     # A deprecated collection pattern belonging to multiple resources
     # is very unlikely and cannot be nicely handled by resource
@@ -336,6 +337,9 @@ def _get_resource_for_deprecate_pattern(
         raise ValueError('Not supported: pattern of a deprecated '
                          'collections belongs to multiple resources: '
                          '{}'.format(deprecated_collection_pattern))
+    if not resources:
+        raise ValueError('Not supported: deprecating a single-pattern'
+                         'resource name.')
     resource = resources[0]
     if len(resource.pattern) <= 1:
         raise ValueError('deprecated collection point to a '
@@ -363,15 +367,12 @@ def update_collections_with_deprecated_resources(
             entity_name = deprecated_collection['entity_name']
             name_pattern = deprecated_collection['name_pattern']
 
-            if entity_name in collections:
-                raise ValueError(
-                    'deprecating a single-pattern '
-                    'resource is not allowed: {}'.format(entity_name))
+            if entity_name not in collections:
+                collections[entity_name] = deprecated_collection
             if name_pattern not in pattern_resource_map:
                 raise ValueError(
                     'deprecated collection has '
                     'an unknown name pattern: {}'.format(name_pattern))
-            collections[entity_name] = deprecated_collection
             resource = _get_resource_for_deprecate_pattern(
                 name_pattern, pattern_resource_map)
             oneof_name = to_snake(resource.type.split('/')[-1]) + '_oneof'

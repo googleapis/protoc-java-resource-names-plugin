@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
-// AUTO-GENERATED DOCUMENTATION AND CLASS
+/**
+ * AUTO-GENERATED DOCUMENTATION AND CLASS
+ */
 @javax.annotation.Generated("by GAPIC protoc plugin")
 public class LocationName implements ResourceName {
 
