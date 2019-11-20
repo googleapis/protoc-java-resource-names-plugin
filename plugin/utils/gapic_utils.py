@@ -120,7 +120,7 @@ def read_from_gapic_yaml(request):
     return create_gapic_config(gapic_yaml)
 
 
-def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
+def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
     """Reconstruct a full GAPIC v1 config based on proto annotations.
 
     Args:
@@ -137,32 +137,116 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
     """
     # Make a shallow copy of the GAPIC config, so that we are not
     # modifying the passed dictionary in-place.
-    gapic_config = copy.copy(gapic_config)
+    gapic_v2 = copy.copy(gapic_v2)
 
     # For debugability, set the schema version to something new and exciting.
-    gapic_config.setdefault('config_schema_version', 'unspecified')
-    gapic_config['config_schema_version'] += '-reconstructed'
+    gapic_v2.setdefault('config_schema_version', 'unspecified')
+    gapic_v2['config_schema_version'] += '-reconstructed'
 
     # Sort existing collections in a dictionary so we can look up by
     # name patterns. (This makes it easier to avoid plowing over stuff that
     # is explicitly defined in YAML.)
-    collections = OrderedDict([(i['entity_name'], i) for i in
-                               gapic_config.get('collections', ())])
-    for interface in gapic_config.get('interfaces', ()):
-        collections.update([(i['entity_name'], i) for i in
-                            interface.get('collections', ())])
+    collections = OrderedDict([(i['entity_name'], i)
+                               for i in gapic_v2.get('collections', ())])
+    for interface in gapic_v2.get('interfaces', ()):
+        collections.update([(i['entity_name'], i)
+                            for i in interface.get('collections', ())])
 
     # Do the same thing for collection oneofs, but order by entity names.
-    collection_oneofs = OrderedDict(
-        [(i['oneof_name'], i) for i in gapic_config.get(
-            'collection_oneofs', ())])
-    for interface in gapic_config.get('interfaces', ()):
-        collection_oneofs.update([(i['oneof_name'], i) for i in
-                                  interface.get('collection_oneofs', ())])
+    collection_oneofs = OrderedDict([
+        (i['oneof_name'], i) for i in gapic_v2.get('collection_oneofs', ())
+    ])
+    for interface in gapic_v2.get('interfaces', ()):
+        collection_oneofs.update([
+            (i['oneof_name'], i)
+            for i in interface.get('collection_oneofs', ())
+        ])
 
-    # Find all unified resource types that have child references. For these
-    # resources, we need to generate collection configs for their parents
-    # patterns.
+    # Load all resources and resource references to make it easier to look up.
+    types_with_ref, types_with_child_references = get_all_resource_references(
+        request)
+    type_resource_map, pattern_resource_map = get_all_resources(request)
+
+    # Put all single-pattern resources defined in protos to collections and
+    # all multi-pattern resources defined in protos to collection_oneofs.
+    #
+    # Note we no longer need to derive entity names from patterns with the
+    # new design of multi-pattern resourcs names. However, we load them from
+    # deprecated_collections in gapic v2 to continue to generate existing
+    # resource name classes for backward-compatibility.
+    for type, res in type_resource_map.items():
+        if type in types_with_ref:
+            update_collections(res, collections, collection_oneofs)
+
+        if type in types_with_child_references:
+            parent_res = get_parent_resource(res, pattern_resource_map)
+            if parent_res is not None:
+                update_collections(parent_res, collections, collection_oneofs)
+
+    # Load deprecated_collections.
+    update_collections_with_deprecated_resources(
+        gapic_v2,
+        pattern_resource_map,
+        collections,
+        collection_oneofs)
+
+    # Take the collections and collection_oneofs, convert them back to lists,
+    # and drop them on the GAPIC YAML.
+    gapic_v2['collections'] = list(collections.values())
+    gapic_v2['collection_oneofs'] = list(collection_oneofs.values())
+
+    # Done; Return the modified GAPIC YAML.
+    return gapic_v2
+
+
+# Populate pattern_resource_map and type_resource_map with this resource.
+# Error if a pattern or a type already exist.
+def _collect_resource(res, type_resource_map, pattern_resource_map):
+    if not res.pattern:
+        return
+    if res.type in type_resource_map:
+        raise ValueError('same resource defined multiple times: {}'
+                         .format(res.type))
+    type_resource_map[res.type] = res
+    # It is very likely that we will have multiple resources that
+    # supports a same pattern in the future (for example, Firestore),
+    # so let's put the resources in a list preemptively.
+    for ptn in res.pattern:
+        pattern_resource_map.setdefault(ptn, [])
+        pattern_resource_map[ptn].append(res)
+
+
+def get_all_resources(request):
+    """ Returns all resources defined in proto annotions.
+    Iterate over the files to be generated looking for google.api.resource
+    and google.api.resource_definition annotations that define resources.
+    Put the pattern-to-resource and type-to-resource relations in two maps
+    to make lookup easier.
+    """
+    pattern_resource_map = {}
+    type_resource_map = {}
+
+    for proto_file in request.proto_file:
+        # We only want to collect resources from files we were
+        # explicitly asked to generate. Ignore the rest.
+        if proto_file.name not in request.file_to_generate:
+            continue
+
+        extensions = proto_file.options.Extensions
+        for res in extensions[resource_pb2.resource_definition]:
+            _collect_resource(res, type_resource_map, pattern_resource_map)
+
+        # Iterate over all of the messages in the file.
+        for message in proto_file.message_type:
+            res = message.options.Extensions[resource_pb2.resource]
+            _collect_resource(res, type_resource_map, pattern_resource_map)
+
+    return type_resource_map, pattern_resource_map
+
+
+def get_all_resource_references(request):
+    # Find all unified resource types that have references or child references.
+    # We only generate resource names classes for those referenced.
     types_with_child_references = set()
     types_with_ref = set()
     for proto_file in request.proto_file:
@@ -180,162 +264,140 @@ def reconstruct_gapic_yaml(gapic_config, request):  # noqa: C901
                     types_with_ref.add(ref.type)
                 if ref.child_type:
                     types_with_child_references.add(ref.child_type)
-
-    # Iterate over the files to be generated looking for messages that have
-    # a google.api.resource annotation.
-    # This annotation corresponds to a collection in the GAPIC v1 config.
-    for proto_file in request.proto_file:
-        # We only want to do stuff with files we were explicitly asked to
-        # generate. Ignore the rest.
-        if proto_file.name not in request.file_to_generate:
-            continue
-
-        # Iterate over all file-level annotations in the file.
-        extensions = proto_file.options.Extensions
-        for res in extensions[resource_pb2.resource_definition]:
-            if not res.pattern or \
-                    res.type not in types_with_ref and \
-                    res.type not in types_with_child_references:
-                continue
-
-            update_collections(res, types_with_child_references,
-                               collections, collection_oneofs)
-
-        # Iterate over all of the messages in the file.
-        for message in proto_file.message_type:
-            # If this is not a resource, move on.
-            res = message.options.Extensions[resource_pb2.resource]
-            if not res.pattern or \
-                    res.type not in types_with_ref and \
-                    res.type not in types_with_child_references:
-                continue
-
-            update_collections(res, types_with_child_references,
-                               collections, collection_oneofs)
-
-    # Take the collections and collection_oneofs, convert them back to lists,
-    # and drop them on the GAPIC YAML.
-    gapic_config['collections'] = list(collections.values())
-    gapic_config['collection_oneofs'] = list(collection_oneofs.values())
-
-    # Done; Return the modified GAPIC YAML.
-    return gapic_config
+    return types_with_ref, types_with_child_references
 
 
-def update_collections(
-        res, types_with_child_references, collections, collection_oneofs):
+def get_parent_resource(res, pattern_map):
+    """ Return the parent resource of res.
+    We consider resource Foo to be resource Bar's parent iff Foo and Bar have
+    the same number of patterns, and for each pattern 'B' in Bar, there is
+    a pattern 'F' in Foo , such that 'F' is the parent 'B'.
+    Returns None if we can't find the parent of res.
+    """
+    parent_candidates = []
+    parent_patterns = build_parent_patterns(res.pattern)
+    for parent_pattern in parent_patterns:
+        if parent_pattern not in pattern_map:
+            return None
+        if not parent_candidates:
+            parent_candidates = pattern_map[parent_pattern]
+        else:
+            parent_candidates = [r for r in parent_candidates
+                                 if r in pattern_map[parent_pattern]]
+
+    if not parent_candidates:
+        return None
+    if len(parent_candidates) == 1:
+        return parent_candidates[0]
+    raise ValueError('Found multiple parent '
+                     'resources: {}'.format(parent_candidates))
+
+
+def update_collections(res, collections, collection_oneofs):
     # Determine the name.
     name = to_snake(res.type.split('/')[-1])
 
     # pylint: disable=no-member
-    has_oneof = len(res.pattern) > 1 or res.history == \
-        resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
-
-    # If ORIGINALLY_SINGLE_PATTERN is set or there is only one pattern
-    # and FUTURE_MULTI_PATTERN is NOT set, then we need special naming
-    # for that pattern.
-    single_pattern_naming = \
-        res.history == \
-        resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN or (
-            len(res.pattern) == 1 and res.history !=
-            resource_pb2.ResourceDescriptor.FUTURE_MULTI_PATTERN
-        )
-    # pylint: enable=no-member
-
-    # Build a map from patterns to names. These need to be built
-    # together to resolve conflicts
-    entity_names = build_entity_names(res.pattern, name)
-
-    if single_pattern_naming:
-        entity_names[res.pattern[0]] = name
-
-    collection_names = []
-    # Build collections for all of the patterns in the descriptor
-    for pattern in res.pattern:
-        entity_name = entity_names[pattern]
-        collections.setdefault(entity_name, {}).update({
-            'entity_name': entity_name,
-            'name_pattern': pattern,
+    if len(res.pattern) == 0:
+        raise ValueError('patterns not found for resource {}'.format(res.type))
+    elif len(res.pattern) == 1:
+        # for a single-pattern resource name, the unqualified
+        # name of the resource is the collection entity name in gapic v1
+        collections.setdefault(name, {}).update({
+            'entity_name': name,
+            'name_pattern': res.pattern[0]
         })
-        collection_names.append(entity_names[pattern])
-
-    if has_oneof:
-        # Add the resource collection to "collection_oneofs".
+    else:
+        # for a multi-pattern resource name, the unqualified name of
+        # the resource is the oneof name of a collection_oneof in gapic v1
+        #
+        # TODO: pass the patterns to templates to generate the new
+        # multi-pattern resource names
         oneof_name = name + '_oneof'
         collection_oneofs.setdefault(oneof_name, {}).update({
-            'oneof_name': oneof_name,
-            'collection_names': collection_names,
+            'oneof_name':
+            oneof_name,
+            'collection_names': [],
         })
-
-    if res.type in types_with_child_references:
-        # Derive patterns for the parent resources
-        parent_patterns = build_parent_patterns(res.pattern)
-
-        # Build a map from patterns to names. These need to be built
-        # together to resolve conflicts
-        parent_entity_names = build_entity_names(parent_patterns, '')
-
-        parent_collection_names = []
-        for pattern in parent_patterns:
-            entity_name = parent_entity_names[pattern]
-            collections.update({
-                entity_name: {
-                    'entity_name': entity_name,
-                    'name_pattern': pattern,
-                }
-            })
-            parent_collection_names.append(parent_entity_names[pattern])
+    # pylint: enable=no-member
 
 
-# Build a map from patterns to entity names. We use a trie structure to resolve
-# the entity name in a unique fashion, by looking to see which keys in the
-# trie have multiple entries, meaning that that entry distinguishes a pattern
-# from another pattern (i.e. the trie branches at that node).
-def build_entity_names(patterns, suffix):
-    segments_list = [reversed_variable_segments(p) for p in patterns]
-    trie = build_trie_from_segments_list(segments_list)
-    name_map = {}
-    for pattern, segments in zip(patterns, segments_list):
-        node = trie
-        name_components = []
-        if suffix:
-            name_components.append(suffix)
-        for segment in segments:
-            if len(node) > 1:
-                name_components.append(segment)
-            node = node[segment]
-        if not name_components:
-            # This can occur for a single pattern and empty suffix
-            if segments:
-                name_components.append(segments[0])
-        name_map[pattern] = '_'.join(name_components[::-1])
-    return name_map
+def _get_resource_for_deprecate_pattern(
+        deprecated_collection_pattern,
+        pattern_resource_map):
+    resources = pattern_resource_map[deprecated_collection_pattern]
+    resources = [r for r in resources if len(r.pattern) > 1]
+
+    # A deprecated collection pattern belonging to multiple resources
+    # is very unlikely and cannot be nicely handled by resource
+    # name design in GAPIC v1(as the parent resource class is an
+    # abstract class rather than an interface, and Java does not
+    # have multiple inheritence).
+    if len(resources) > 1:
+        raise ValueError('Not supported: pattern of a deprecated '
+                         'collections belongs to multiple resources: '
+                         '{}'.format(deprecated_collection_pattern))
+    if not resources:
+        raise ValueError('Not supported: deprecating a single-pattern'
+                         'resource name.')
+    resource = resources[0]
+    if len(resource.pattern) <= 1:
+        raise ValueError('deprecated collection point to a '
+                         'single-pattern resource: {}'.format(
+                             resource.type))
+    return resource
 
 
-def build_trie_from_segments_list(segments_list):
-    trie = {}
-    for segments in segments_list:
-        node = trie
-        for segment in segments:
-            node.setdefault(segment, {})
-            node = node[segment]
-    return trie
+def update_collections_with_deprecated_resources(
+        gapic_v2,
+        pattern_resource_map,
+        collections,
+        collection_oneofs):
+    for interface in gapic_v2.get('interfaces', ()):
+        if 'deprecated_collections' not in interface:
+            continue
+        for deprecated_collection in interface['deprecated_collections']:
+            if 'entity_name' not in deprecated_collection:
+                raise ValueError('entity_name is required '
+                                 'in a deprecated_collection.')
+            if 'name_pattern' not in deprecated_collection:
+                raise ValueError('name_pattern is required '
+                                 'in a deprecated_collection.')
+
+            entity_name = deprecated_collection['entity_name']
+            name_pattern = deprecated_collection['name_pattern']
+
+            if entity_name not in collections:
+                collections[entity_name] = deprecated_collection
+            if name_pattern not in pattern_resource_map:
+                raise ValueError(
+                    'deprecated collection has '
+                    'an unknown name pattern: {}'.format(name_pattern))
+            resource = _get_resource_for_deprecate_pattern(
+                name_pattern, pattern_resource_map)
+            oneof_name = to_snake(resource.type.split('/')[-1]) + '_oneof'
+            if oneof_name not in collection_oneofs:
+                raise ValueError(
+                    'internal: multi-pattern resource not added to '
+                    'collection_oneofs: {}'.format(oneof_name))
+            collection_oneofs[oneof_name]['collection_names'].append(
+                entity_name)
 
 
-def reversed_variable_segments(ptn):
+def calculate_pattern_entity_name(ptn):
+
     if isFixedPattern(ptn):
         start_index = next(i for (i, c) in enumerate(list(ptn)) if c.isalpha())
         end_index = len(ptn) - next(
             i for (i, c) in enumerate(list(ptn)[::-1]) if c.isalpha())
         name_parts = re.split(r'[^a-zA-Z]', ptn[start_index:end_index])
-        name_parts.reverse()
-        return name_parts
+        return '_'.join(name_parts)
     else:
         segs = []
-        for seg in ptn.split('/')[::-1]:
+        for seg in ptn.split('/'):
             if _is_variable_segment(seg):
-                segs.append(seg[1:-1])
-        return segs
+                segs.append(to_snake(seg[1:-1]))
+        return '_'.join(segs)
 
 
 def build_parent_patterns(patterns):
@@ -375,7 +437,6 @@ def load_collection_configs(config_list, existing_configs):
         entity_name = config['entity_name']
         name_pattern = config['name_pattern']
         java_entity_name = entity_name
-
         overrides = config.get('language_overrides', [])
         overrides = [ov for ov in overrides if ov['language'] == 'java']
         if len(overrides) > 1:
@@ -488,7 +549,7 @@ def collect_resource_name_types(gapic_config, java_package):
 def get_oneof_for_resource(collection_config, gapic_config):
     oneof = None
     for oneof_config in gapic_config.collection_oneofs.values():
-        for collection_name in oneof_config.collection_names:
+        for collection_name in oneof_config.legacy_collection_names:
             if collection_name == collection_config.entity_name:
                 if oneof:
                     raise ValueError(
@@ -519,12 +580,12 @@ class FixedCollectionConfig(object):
 
 class CollectionOneof(object):
 
-    def __init__(self, oneof_name, resources, fixed_resources,
-                 collection_names):
+    def __init__(self, oneof_name, legacy_resources, legacy_fixed_resources,
+                 legacy_collection_names):
         self.oneof_name = oneof_name
-        self.resource_list = resources
-        self.fixed_resource_list = fixed_resources
-        self.collection_names = collection_names
+        self.legacy_resource_list = legacy_resources
+        self.legacy_fixed_resource_list = legacy_fixed_resources
+        self.legacy_collection_names = legacy_collection_names
 
 
 class GapicConfig(object):

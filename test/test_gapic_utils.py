@@ -39,88 +39,162 @@ def test_build_parent_patterns():
     assert gapic_utils.build_parent_patterns(patterns) == expected_parents
 
 
-def test_reversed_variable_segments():
-    assert gapic_utils.reversed_variable_segments(
-        "foos/{foo}/bars/{bar}") == ["bar", "foo"]
-    assert gapic_utils.reversed_variable_segments(
-        "foos/{foo}/busy/bars/{bar}") == ["bar", "foo"]
-    assert gapic_utils.reversed_variable_segments(
-        "_deleted-topic_") == ["topic", "deleted"]
-
-
-def test_build_trie_from_segments_list():
-    segments_list = [
-        ["bar", "foo"],
-        ["bar", "baz", "foo"]
-    ]
-    expected_trie = {
-        "bar": {
-            "foo": {},
-            "baz": {"foo": {}}
-        }
-    }
-    assert gapic_utils.build_trie_from_segments_list(
-        segments_list) == expected_trie
-
-
-def test_build_entity_names():
-    assert gapic_utils.build_entity_names([
-        "foos/{foo}/bars/{bar}"], "") == \
-        {"foos/{foo}/bars/{bar}": "bar"}
-    assert gapic_utils.build_entity_names([
-        "foos/{foo}/bars/{bar}"], "fuzz") == \
-        {"foos/{foo}/bars/{bar}": "fuzz"}
-    assert gapic_utils.build_entity_names([
-        "foos/{foo}/bars/{bar}",
-        "foos/{foo}/bazs/{baz}/bars/{bar}"], "") == \
-        {"foos/{foo}/bars/{bar}": "foo",
-         "foos/{foo}/bazs/{baz}/bars/{bar}": "baz"}
-    assert gapic_utils.build_entity_names([
-        "foos/{foo}/bars/{bar}",
-        "foos/{foo}/bazs/{baz}/bars/{bar}"], "bar") == \
-        {"foos/{foo}/bars/{bar}": "foo_bar",
-         "foos/{foo}/bazs/{baz}/bars/{bar}": "baz_bar"}
-    assert gapic_utils.build_entity_names([
-        "foos/{foo}/bars/{bar}",
-        "foos/{foo}/bazs/{baz}/bars/{bar}",
-        "foos/{foo}/wizzs/{wizz}/bazs/{baz}/bars/{bar}"
-    ], "bar") == \
-        {"foos/{foo}/bars/{bar}": "foo_bar",
-         "foos/{foo}/bazs/{baz}/bars/{bar}": "foo_baz_bar",
-            "foos/{foo}/wizzs/{wizz}/bazs/{baz}/bars/{bar}": "wizz_baz_bar"}
-    assert gapic_utils.build_entity_names([
-        "projects/{project}/topics/{topic}",
-        "_deleted-topic_",
-    ], "topic") == {
-        "projects/{project}/topics/{topic}": "project_topic",
-        "_deleted-topic_": "deleted_topic"
-    }
-
-
-def test_update_collections():
+def test_update_collections_multi_pattern():
     res = resource_pb2.ResourceDescriptor()
     res.type = 'test/Book'
     res.pattern.append("shelves/{shelf}/books/{book}")
     res.pattern.append("archives/{archive}/books/{book}")
-    res.history = resource_pb2.ResourceDescriptor.ORIGINALLY_SINGLE_PATTERN
 
     collections = {}
     collection_oneofs = {}
-    gapic_utils.update_collections(res, {}, collections, collection_oneofs)
-    assert collections == {
-        'shelves/{shelf}/books/{book}': {
-            'entity_name': 'book',
-            'name_pattern': 'shelves/{shelf}/books/{book}'
-        },
-        'archives/{archive}/books/{book}': {
-            'entity_name': 'archive_book',
-            'name_pattern': 'archives/{archive}/books/{book}'
-        }
-    }
+    gapic_utils.update_collections(res, collections, collection_oneofs)
+    assert collections == {}
     assert collection_oneofs == {
         'book_oneof': {
-            'collection_names': ['book', 'archive_book'],
+            'collection_names': [],
             'oneof_name': 'book_oneof'
+        }
+    }
+
+
+def test_update_collections_single_pattern():
+    res = resource_pb2.ResourceDescriptor()
+    res.type = 'test/Book'
+    res.pattern.append("shelves/{shelf}/books/{book}")
+
+    collections = {}
+    collection_oneofs = {}
+    gapic_utils.update_collections(res, collections, collection_oneofs)
+    assert collections == {
+        'book': {
+            'entity_name': 'book',
+            'name_pattern': 'shelves/{shelf}/books/{book}'
+        }
+    }
+    assert collection_oneofs == {}
+
+
+def test_get_parent_resources_single_pattern():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+
+    shelf = resource_pb2.ResourceDescriptor()
+    shelf.type = 'test/Shelf'
+    shelf.pattern.append("shelves/{shelf}")
+
+    pattern_map = {
+        "shelves/{shelf}/books/{book}": [book],
+        "shelves/{shelf}": [shelf]
+    }
+    assert shelf == gapic_utils.get_parent_resource(book, pattern_map)
+
+
+def test_get_parent_resources_multi_pattern():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+    book.pattern.append("projects/{project}/books/{book}")
+
+    shelf = resource_pb2.ResourceDescriptor()
+    shelf.type = 'test/Shelf'
+    shelf.pattern.append("shelves/{shelf}/books/{book}")
+
+    parent = resource_pb2.ResourceDescriptor()
+    parent.type = 'test/Parent'
+    parent.pattern.append("shelves/{shelf}")
+    parent.pattern.append("projects/{project}")
+
+    pattern_map = {
+        "shelves/{shelf}/books/{book}": [book],
+        "projects/{project}/books/{book}": [book],
+        "shelves/{shelf}": [parent],
+        "projects/{project}": [parent]
+    }
+    assert parent == gapic_utils.get_parent_resource(book, pattern_map)
+
+
+def test_get_parent_resources_multi_pattern_fail():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+    book.pattern.append("projects/{project}/books/{book}")
+
+    parent = resource_pb2.ResourceDescriptor()
+    parent.type = 'test/Parent'
+    parent.pattern.append("shelves/{shelf}")
+
+    book_parent = resource_pb2.ResourceDescriptor()
+    book_parent.type = 'test/BookParent'
+    book_parent.pattern.append("shelves/{shelf}")
+    book_parent.pattern.append("projects/{project}")
+    book_parent.pattern.append("projects/{project}/locations/{location}")
+
+    pattern_map = {
+        "shelves/{shelf}/books/{book}": [book],
+        "projects/{project}/books/{book}": [book],
+        "shelves/{shelf}": [parent],
+    }
+    assert gapic_utils.get_parent_resource(book, pattern_map) is None
+
+
+def test_update_collections_with_deprecated_collections():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+    book.pattern.append("archives/{archive}/books/{book}")
+
+    gapic_v2 = {
+        'interfaces': [{
+            'deprecated_collections': [
+                {
+                    'entity_name': 'some_archive_book',
+                    'name_pattern': "archives/{archive}/books/{book}"
+                },
+                {
+                    'entity_name': 'my_shelf_book',
+                    'name_pattern': "shelves/{shelf}/books/{book}",
+                    'language_overrides': [
+                        {'language': 'java',
+                         'entity_name': 'shelf_book'}]
+                }
+            ]}
+        ]
+    }
+
+    collection_oneofs = {
+        'book_oneof': {
+            'oneof_name': 'book_oneof',
+            'collection_names': []
+        }
+    }
+    collections = {}
+    pattern_map = {
+        "archives/{archive}/books/{book}": [book],
+        "shelves/{shelf}/books/{book}": [book]
+    }
+
+    gapic_utils.update_collections_with_deprecated_resources(
+        gapic_v2, pattern_map, collections, collection_oneofs)
+
+    assert collection_oneofs == {
+        'book_oneof': {
+            'oneof_name': 'book_oneof',
+            'collection_names': [
+                'some_archive_book', 'my_shelf_book']
+        }
+    }
+    assert collections == {
+        'some_archive_book': {
+            'entity_name': 'some_archive_book',
+            'name_pattern': "archives/{archive}/books/{book}"
+        },
+        'my_shelf_book': {
+            'entity_name': 'my_shelf_book',
+            'name_pattern': "shelves/{shelf}/books/{book}",
+            'language_overrides': [
+                {'language': 'java',
+                 'entity_name': 'shelf_book'}]
         }
     }
 
@@ -165,7 +239,7 @@ def test_library_gapic_v1():
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ResourceNameFixed
             and r.fixed_value == '_deleted-book_'
-            and r.format_name_upper == 'DeletedBook']
+            and r.class_name == 'DeletedBook']
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
             and r.class_name == 'BookName']
@@ -178,7 +252,8 @@ def test_library_gapic_v2():
 
     request = plugin_pb2.CodeGeneratorRequest()
     proto_files = ["test/testdata/library_simple.proto",
-                   "test/testdata/archive.proto"]
+                   "test/testdata/archive.proto",
+                   "test/testdata/common_resources.proto"]
     request.file_to_generate.extend(proto_files)
     request.parameter = "test/testdata/library_gapic_v2.yaml"
 
@@ -202,7 +277,7 @@ def test_library_gapic_v2():
 
     reconstructed_gapic_config = gapic_utils.reconstruct_gapic_yaml(
         gapic_yaml, request)
-    assert reconstructed_gapic_config['collections'] == [
+    assert [c for c in [
         {
             'name_pattern': 'projects/{project}/shelves/{shelf}/books/{book}',
             'language_overrides': [
@@ -237,7 +312,15 @@ def test_library_gapic_v2():
                 'publishers/{publisher}',
             'entity_name': 'publisher',
         },
-    ]
+        {
+            'entity_name': 'location',
+            'name_pattern': 'projects/{project}/locations/{location}'
+        },
+        {
+            'entity_name': 'folder',
+            'name_pattern': 'folders/{folder}'
+        },
+    ] if c in reconstructed_gapic_config['collections']]
     assert reconstructed_gapic_config['collection_oneofs'] == [
         {
             'collection_names': ['book', 'archive_book', 'deleted_book'],
@@ -268,7 +351,7 @@ def test_library_gapic_v2():
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ResourceNameFixed
             and r.fixed_value == '_deleted-book_'
-            and r.format_name_upper == 'DeletedBook'
+            and r.class_name == 'DeletedBook'
             and r.parent_interface == 'BookName']
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
