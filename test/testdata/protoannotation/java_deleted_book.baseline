@@ -1,6 +1,4 @@
-
-
-./*
+/*
  * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -14,33 +12,29 @@
  * the License.
  */
 
-package {{package}};
+package com.google.example.library.v1;
 
-import {{resource_name_global_package_name}}.ResourceName;
+import com.google.api.resourcenames.ResourceName;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
 /**
  * AUTO-GENERATED DOCUMENTATION AND CLASS
- {{#deprecated}}
  *
  * @deprecated This resource name class will be removed in the next major version.
- {{/deprecated}}
  */
 @javax.annotation.Generated("by GAPIC protoc plugin")
-{{#deprecated}}
 @Deprecated
-{{/deprecated}}
-public class {{class_name}} {{extension_keyword}} {{parent_interface}} {
+public class DeletedBook extends BookName {
 
-  private static final String FIXED_VALUE = "{{fixed_value}}";
+  private static final String FIXED_VALUE = "_deleted-book_";
   private static final Map<String, String> valueMap = ImmutableMap.of("", FIXED_VALUE);
 
-  private static final {{class_name}} instance = new {{class_name}}();
+  private static final DeletedBook instance = new DeletedBook();
 
-  private {{class_name}}() {}
+  private DeletedBook() {}
 
-  public static {{class_name}} instance() {
+  public static DeletedBook instance() {
     return instance;
   }
 

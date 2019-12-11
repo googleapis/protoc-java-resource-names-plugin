@@ -59,6 +59,7 @@ public class {{class_name}} {{extension_keyword}} {{parent_interface}} {
   }
 
   private {{class_name}}(Builder builder) {
+    super(PATH_TEMPLATE);
     {{#format_fields}}
     {{lower}} = Preconditions.checkNotNull(builder.get{{upper}}());
     {{/format_fields}}

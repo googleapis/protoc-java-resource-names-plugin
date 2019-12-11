@@ -80,7 +80,6 @@ def create_gapic_config(gapic_yaml):
 
     return GapicConfig(collections, fixed_collections, oneofs)
 
-
 def read_from_gapic_yaml(request):
     """Read the GAPIC YAML from disk and process it.
 
@@ -99,29 +98,18 @@ def read_from_gapic_yaml(request):
     else:
         gapic_yaml = {}
 
-    # It is possible we got a "GAPIC v2", or no GAPIC YAML at all.
-    # GAPIC v2 is a stripped down GAPIC config that moves most of the relevant
-    # configuration, including resource names, over to annotations.
-    # No GAPIC YAML at all means all config is in annotations.
-    #
-    # If either of these situations apply, "build back" what the GAPIC v1
-    # would have looked like, allowing the rest of the logic to stay the
-    # same.
-    #
-    # Prop 65 Warning: The GAPIC config is known to the state of California
-    # to cause cancer and reproductive harm. The reason we do not refactor
-    # away from it here is because this tool is supposed to have a short
-    # shelf life, and it is safer to be backwards-looking than
-    # forward-looking in this case.
+    # Resource name configurations between gapic yaml v1 and gapic yaml v2 +
+    # proto annotations have diverged. If we got a "GAPIC v2" or no GAPIC
+    # YAML at all, we build a gapic_config from both GAPIC YAML and annotations.
     if not gapic_yaml or gapic_yaml.get(
             'config_schema_version', '1.0.0') != '1.0.0':
-        gapic_yaml = reconstruct_gapic_yaml(gapic_yaml, request)
+        return create_gapic_config_v2(gapic_yaml, request)
 
     return create_gapic_config(gapic_yaml)
 
 
-def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
-    """Reconstruct a full GAPIC v1 config based on proto annotations.
+def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
+    """Create a GAPIC config from GAPIC YAML V2 and proto annotations.
 
     Args:
         gapic_config (dict): A dictionary representing the GAPIC config
@@ -190,13 +178,37 @@ def reconstruct_gapic_yaml(gapic_v2, request):  # noqa: C901
         collections,
         collection_oneofs)
 
-    # Take the collections and collection_oneofs, convert them back to lists,
-    # and drop them on the GAPIC YAML.
-    gapic_v2['collections'] = list(collections.values())
-    gapic_v2['collection_oneofs'] = list(collection_oneofs.values())
+    single_resource_names, fixed_resource_names = \
+            find_single_and_fixed_entities(collections.values())
 
-    # Done; Return the modified GAPIC YAML.
-    return gapic_v2
+    # Construct single-pattern resource (a.k.a single collection) configs
+    collections_configs = load_collection_configs(single_resource_names, {})
+
+    # Construct fix-pattern resource (a.k.a fix collection) configs
+    # TODO(andrealin): Remove the fixed_resource_name_values
+    # parsing once they no longer exist in GAPIC configs.
+    fixed_collection_configs = {}
+    if 'fixed_resource_name_values' in gapic_v2:
+        fixed_collections = load_fixed_configs(
+            gapic_yaml['fixed_resource_name_values'],
+            fixed_collection_configs,
+            collections.values(),
+            "fixed_value")
+    # Add the fixed resource names that are defined in the collections.
+    fixed_collection_configs = load_fixed_configs(
+        fixed_resource_names,
+        fixed_collection_configs,
+        collections.values(),
+        "name_pattern")
+
+    # Construct multi-pattern resource (a.k.a collection oneof) configs
+    one_configs = load_collection_oneofs(collection_oneofs.values(),
+                                    collections_configs,
+                                    fixed_collection_configs)
+
+    return GapicConfig(collections_configs,
+                       fixed_collection_configs,
+                       one_configs)
 
 
 # Populate pattern_resource_map and type_resource_map with this resource.
@@ -310,14 +322,16 @@ def update_collections(res, collections, collection_oneofs):
     else:
         # for a multi-pattern resource name, the unqualified name of
         # the resource is the oneof name of a collection_oneof in gapic v1
-        #
-        # TODO: pass the patterns to templates to generate the new
-        # multi-pattern resource names
         oneof_name = name + '_oneof'
+
+        # Note Gapic config does not actually have the `pattern_strings` field.
+        # This field is here to generate the self-sustained multi-pattern
+        # Java resource class.
         collection_oneofs.setdefault(oneof_name, {}).update({
             'oneof_name':
             oneof_name,
             'collection_names': [],
+            'pattern_strings': res.pattern
         })
     # pylint: enable=no-member
 
@@ -488,6 +502,9 @@ def load_fixed_configs(config_list,
 
 def load_collection_oneofs(config_list, existing_collections,
                            fixed_collections):
+    import sys
+    print >>sys.stderr, existing_collections
+    print >>sys.stderr, fixed_collections
     existing_oneofs = {}
     for config in config_list:
         root_type_name = config['oneof_name']
@@ -513,7 +530,8 @@ def load_collection_oneofs(config_list, existing_collections,
             raise ValueError('Found two collection oneofs with same name: ' +
                              root_type_name)
         existing_oneofs[root_type_name] = CollectionOneof(
-            root_type_name, resources, fixed_resources, collection_names)
+            root_type_name, resources, fixed_resources, collection_names,
+            config.get('pattern_strings'))
     return existing_oneofs
 
 
@@ -534,7 +552,7 @@ def collect_resource_name_types(gapic_config, java_package):
 
     for oneof_config in gapic_config.collection_oneofs.values():
         parent_resource = resource_name.ParentResourceName(
-            oneof_config, java_package)
+            oneof_config, java_package, oneof_config.pattern_strings)
         untyped_resource = resource_name.UntypedResourceName(
             oneof_config, java_package)
         resource_factory = resource_name.ResourceNameFactory(
@@ -581,11 +599,12 @@ class FixedCollectionConfig(object):
 class CollectionOneof(object):
 
     def __init__(self, oneof_name, legacy_resources, legacy_fixed_resources,
-                 legacy_collection_names):
+                 legacy_collection_names, pattern_strings):
         self.oneof_name = oneof_name
         self.legacy_resource_list = legacy_resources
         self.legacy_fixed_resource_list = legacy_fixed_resources
         self.legacy_collection_names = legacy_collection_names
+        self.pattern_strings = pattern_strings
 
 
 class GapicConfig(object):

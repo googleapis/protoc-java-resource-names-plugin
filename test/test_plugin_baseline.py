@@ -23,11 +23,13 @@ from plugin.utils import casing_utils
 
 
 TEST_DIR = os.path.join('test', 'testdata')
+TEST_DIR_GAPIC_V1 = os.path.join(TEST_DIR, 'gapic')
+TEST_DIR_GAPIC_V2 = os.path.join(TEST_DIR, 'protoannotation')
 TEST_OUTPUT_DIR = os.path.join(TEST_DIR, 'test_output')
 
 
-def check_output(output_class, output_path, baseline):
-    baseline_file = os.path.join(TEST_DIR, baseline + '.baseline')
+def check_output(output_class, output_path, baseline_root_dir, baseline):
+    baseline_file = os.path.join(baseline_root_dir, baseline + '.baseline')
     with open(baseline_file) as f:
         expected_output = f.readlines()
 
@@ -130,7 +132,8 @@ class TestProtocGapicPlugin(object):
     def test_resource_name_generation(self, run_protoc, resource):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
             resource)
-        check_output(generated_class, PROTOC_OUTPUT_DIR, 'java_' + resource)
+        check_output(generated_class, PROTOC_OUTPUT_DIR,
+                     TEST_DIR_GAPIC_V1, 'java_' + resource)
 
     @pytest.mark.parametrize('resource', DONT_GENERATE)
     def test_dont_generate(self, run_protoc, resource):
@@ -149,6 +152,7 @@ class TestProtocGapicPlugin(object):
             casing_utils.get_parent_resource_name_lower_underscore(oneof)
         check_output(generated_parent,
                      PROTOC_OUTPUT_DIR,
+                     TEST_DIR_GAPIC_V1,
                      'java_' + parent_filename_fragment)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
@@ -159,6 +163,7 @@ class TestProtocGapicPlugin(object):
             casing_utils.get_untyped_resource_name_lower_underscore(oneof)
         check_output(generated_untyped,
                      PROTOC_OUTPUT_DIR,
+                     TEST_DIR_GAPIC_V1,
                      'java_' + untyped_filename_fragment)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
@@ -169,6 +174,7 @@ class TestProtocGapicPlugin(object):
             casing_utils.get_resource_name_factory_lower_underscore(oneof)
         check_output(generated_parent,
                      PROTOC_OUTPUT_DIR,
+                     TEST_DIR_GAPIC_V1,
                      'java_' + parent_filename_fragment)
 
 
@@ -189,6 +195,7 @@ class TestProtocGapicPluginV2(object):
             casing_utils.get_parent_resource_name_lower_underscore(oneof)
         check_output(generated_parent,
                      PROTOC_OUTPUT_DIR,
+                     TEST_DIR_GAPIC_V2,
                      'java_' + parent_filename_fragment)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
@@ -199,6 +206,7 @@ class TestProtocGapicPluginV2(object):
             casing_utils.get_untyped_resource_name_lower_underscore(oneof)
         check_output(generated_untyped,
                      PROTOC_OUTPUT_DIR,
+                     TEST_DIR_GAPIC_V2,
                      'java_' + untyped_filename_fragment)
 
     @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
@@ -209,4 +217,5 @@ class TestProtocGapicPluginV2(object):
             casing_utils.get_resource_name_factory_lower_underscore(oneof)
         check_output(generated_parent,
                      PROTOC_OUTPUT_DIR,
+                     TEST_DIR_GAPIC_V2,
                      'java_' + parent_filename_fragment)
