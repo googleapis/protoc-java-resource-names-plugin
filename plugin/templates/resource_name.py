@@ -117,12 +117,13 @@ class ParentResourceName(ResourceNameBase):
                 oneof.oneof_name),
             java_package)
         symbol_table = SymbolTable()
-        
+
         pattern_to_id_segments = {
             p: get_id_segments(p)
-        for p in pattern_strings if not is_fixed_pattern(p)}
+            for p in pattern_strings if not is_fixed_pattern(p)}
 
-        self.has_fixed_patterns = len(pattern_to_id_segments) < len(pattern_strings)
+        self.has_fixed_patterns = \
+            len(pattern_to_id_segments) < len(pattern_strings)
         self.has_formattable_patterns = len(pattern_to_id_segments) > 0
 
         segment_to_segment_symbols = {}
@@ -158,8 +159,10 @@ class ParentResourceName(ResourceNameBase):
                 casing_utils.lower_underscore_to_upper_underscore(
                     pattern_name_lower_underscore)
 
-            pattern_format_fields = get_format_fields_for_pattern(p,
-                pattern_to_id_segments, segment_to_segment_symbols)
+            pattern_format_fields = \
+                get_format_fields_for_pattern(p,
+                                              pattern_to_id_segments,
+                                              segment_to_segment_symbols)
 
             self.patterns.append(
                 ResourceNamePattern(
@@ -286,6 +289,7 @@ class ResourceNameFixed(ResourceNameBase):
     def template_name(self):
         return "resource_name_fixed.mustache"
 
+
 def get_id_segments(pattern):
     name_template = path_template.PathTemplate(pattern)
     return [
@@ -293,16 +297,22 @@ def get_id_segments(pattern):
         if seg.kind == path_template._BINDING
     ]
 
+
 def get_format_field(lower_underscore, symbol):
     return {
         'lower_underscore': lower_underscore,
-        'lower_camel': casing_utils.lower_underscore_to_lower_camel(lower_underscore),
+        'lower_camel': \
+            casing_utils.lower_underscore_to_lower_camel(lower_underscore),
         'lower_camel_symbol': symbol,
-        'upper_underscore': casing_utils.lower_underscore_to_upper_underscore(lower_underscore),
-        'upper_camel': casing_utils.lower_underscore_to_upper_camel(lower_underscore),
+        'upper_underscore': \
+            casing_utils \
+                .lower_underscore_to_upper_underscore(lower_underscore),
+        'upper_camel': \
+            casing_utils.lower_underscore_to_upper_camel(lower_underscore),
         'not_first': True,
         'not_last': True
     }
+
 
 def get_format_fields_for_pattern(pattern,
                                   pattern_to_id_segments,
@@ -310,17 +320,20 @@ def get_format_fields_for_pattern(pattern,
     if pattern not in pattern_to_id_segments:
         return []
     format_fields = [get_format_field(seg, segment_to_segment_symbols[seg])
-            for seg in pattern_to_id_segments[pattern]]
+                     for seg in pattern_to_id_segments[pattern]]
     format_fields[0]['not_first'] = False
     format_fields[-1]['not_last'] = False
     return format_fields
 
+
 def is_fixed_pattern(pattern):
     return not('{' in pattern or '*' in pattern)
 
+
 def get_pattern_name(pattern):
     if is_fixed_pattern(pattern):
-        start_index = next(i for (i, c) in enumerate(list(pattern)) if c.isalpha())
+        start_index = \
+            next(i for (i, c) in enumerate(list(pattern)) if c.isalpha())
         end_index = len(pattern) - next(
             i for (i, c) in enumerate(list(pattern)[::-1]) if c.isalpha())
         name_parts = re.split(r'[^a-zA-Z]', pattern[start_index:end_index])

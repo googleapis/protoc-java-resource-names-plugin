@@ -53,7 +53,8 @@ def test_update_collections_multi_pattern():
         'book_oneof': {
             'collection_names': [],
             'oneof_name': 'book_oneof',
-            'pattern_strings': ['shelves/{shelf}/books/{book}', 'archives/{archive}/books/{book}']
+            'pattern_strings': ['shelves/{shelf}/books/{book}', 
+                                'archives/{archive}/books/{book}']
         }
     }
 
@@ -306,8 +307,8 @@ def test_library_gapic_v2():
 
     for r in resource_name_artifacts:
         if type(r) is resource_name.ParentResourceName:
-            assert r.has_fixed_patterns == True \
-                and r.has_formattable_patterns == True
+            assert r.has_fixed_patterns is True \
+                and r.has_formattable_patterns is True
 
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName

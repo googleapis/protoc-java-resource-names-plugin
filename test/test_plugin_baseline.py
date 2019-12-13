@@ -29,6 +29,7 @@ TEST_OUTPUT_DIR = os.path.join(TEST_DIR, 'test_output')
 TEST_OUTPUT_DIR_V1 = os.path.join(TEST_DIR, 'test_output', 'gapic')
 TEST_OUTPUT_DIR_V2 = os.path.join(TEST_DIR, 'test_output', 'protoannotation')
 
+
 def check_output(output_class, test_output_root_dir,
                  output_path, baseline_root_dir, baseline):
     baseline_file = os.path.join(baseline_root_dir, baseline + '.baseline')
@@ -179,7 +180,7 @@ class TestProtocGapicPlugin(object):
         parent_filename_fragment = \
             casing_utils.get_resource_name_factory_lower_underscore(oneof)
         check_output(generated_parent,
-                     TEST_OUTPUT_DIR_V1, 
+                     TEST_OUTPUT_DIR_V1,
                      PROTOC_OUTPUT_DIR,
                      TEST_DIR_GAPIC_V1,
                      'java_' + parent_filename_fragment)

@@ -80,6 +80,7 @@ def create_gapic_config(gapic_yaml):
 
     return GapicConfig(collections, fixed_collections, oneofs)
 
+
 def read_from_gapic_yaml(request):
     """Read the GAPIC YAML from disk and process it.
 
@@ -100,7 +101,8 @@ def read_from_gapic_yaml(request):
 
     # Resource name configurations between gapic yaml v1 and gapic yaml v2 +
     # proto annotations have diverged. If we got a "GAPIC v2" or no GAPIC
-    # YAML at all, we build a gapic_config from both GAPIC YAML and annotations.
+    # YAML at all, we build a gapic_config from both GAPIC YAML and
+    # annotations.
     if not gapic_yaml or gapic_yaml.get(
             'config_schema_version', '1.0.0') != '1.0.0':
         return create_gapic_config_v2(gapic_yaml, request)
@@ -179,7 +181,7 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
         collection_oneofs)
 
     single_resource_names, fixed_resource_names = \
-            find_single_and_fixed_entities(collections.values())
+        find_single_and_fixed_entities(collections.values())
 
     # Construct single-pattern resource (a.k.a single collection) configs
     collections_configs = load_collection_configs(single_resource_names, {})
@@ -189,8 +191,8 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
     # parsing once they no longer exist in GAPIC configs.
     fixed_collection_configs = {}
     if 'fixed_resource_name_values' in gapic_v2:
-        fixed_collections = load_fixed_configs(
-            gapic_yaml['fixed_resource_name_values'],
+        fixed_collection_configs = load_fixed_configs(
+            gapic_v2['fixed_resource_name_values'],
             fixed_collection_configs,
             collections.values(),
             "fixed_value")
@@ -203,8 +205,8 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
 
     # Construct multi-pattern resource (a.k.a collection oneof) configs
     one_configs = load_collection_oneofs(collection_oneofs.values(),
-                                    collections_configs,
-                                    fixed_collection_configs)
+                                         collections_configs,
+                                         fixed_collection_configs)
 
     return GapicConfig(collections_configs,
                        fixed_collection_configs,

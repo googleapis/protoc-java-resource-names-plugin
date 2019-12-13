@@ -73,6 +73,7 @@ def lower_underscore_to_upper_camel(snake_str):
     components = snake_str.split('_')
     return ''.join(x.title() for x in components)
 
+
 def lower_underscore_to_upper_underscore(snake_str):
     components = snake_str.split('_')
     return '_'.join(x.upper() for x in components)
