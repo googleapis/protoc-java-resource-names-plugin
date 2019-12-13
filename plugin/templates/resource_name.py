@@ -301,14 +301,13 @@ def get_id_segments(pattern):
 def get_format_field(lower_underscore, symbol):
     return {
         'lower_underscore': lower_underscore,
-        'lower_camel': \
-            casing_utils.lower_underscore_to_lower_camel(lower_underscore),
+        'lower_camel': casing_utils.lower_underscore_to_lower_camel(
+                       lower_underscore),
         'lower_camel_symbol': symbol,
-        'upper_underscore': \
-            casing_utils \
-                .lower_underscore_to_upper_underscore(lower_underscore),
-        'upper_camel': \
-            casing_utils.lower_underscore_to_upper_camel(lower_underscore),
+        'upper_underscore': casing_utils.lower_underscore_to_upper_underscore(
+                            lower_underscore),
+        'upper_camel': casing_utils.lower_underscore_to_upper_camel(
+                       lower_underscore),
         'not_first': True,
         'not_last': True
     }
