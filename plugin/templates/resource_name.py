@@ -29,6 +29,7 @@
 
 import os
 import re
+from collections import OrderedDict
 from plugin.utils import path_template
 from plugin.utils import casing_utils
 from plugin.utils.symbol_table import SymbolTable
@@ -118,9 +119,9 @@ class ParentResourceName(ResourceNameBase):
             java_package)
         symbol_table = SymbolTable()
 
-        pattern_to_id_segments = {
-            p: get_id_segments(p)
-            for p in pattern_strings if not is_fixed_pattern(p)}
+        pattern_to_id_segments = OrderedDict([
+            (p, get_id_segments(p))
+            for p in pattern_strings if not is_fixed_pattern(p)])
 
         self.has_fixed_patterns = \
             len(pattern_to_id_segments) < len(pattern_strings)
