@@ -53,7 +53,7 @@ def test_update_collections_multi_pattern():
         'book_oneof': {
             'collection_names': [],
             'oneof_name': 'book_oneof',
-            'pattern_strings': ['shelves/{shelf}/books/{book}', 
+            'pattern_strings': ['shelves/{shelf}/books/{book}',
                                 'archives/{archive}/books/{book}']
         }
     }
