@@ -141,7 +141,7 @@ public class ShelfBookName extends BookName {
   }
 
   /** Builder for ShelfBookName. */
-  public static class Builder {
+  public static class Builder extends BookName.Builder {
 
     private String project;
     private String shelf;

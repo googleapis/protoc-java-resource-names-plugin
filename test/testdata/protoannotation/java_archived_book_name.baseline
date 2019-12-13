@@ -132,7 +132,7 @@ public class ArchivedBookName extends BookName {
   }
 
   /** Builder for ArchivedBookName. */
-  public static class Builder {
+  public static class Builder extends BookName.Builder {
 
     private String archive;
     private String book;

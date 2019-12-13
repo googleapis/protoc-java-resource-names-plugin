@@ -52,7 +52,8 @@ def test_update_collections_multi_pattern():
     assert collection_oneofs == {
         'book_oneof': {
             'collection_names': [],
-            'oneof_name': 'book_oneof'
+            'oneof_name': 'book_oneof',
+            'pattern_strings': ['shelves/{shelf}/books/{book}', 'archives/{archive}/books/{book}']
         }
     }
 
@@ -275,60 +276,9 @@ def test_library_gapic_v2():
 
     request.proto_file.extend(file_descriptor_set.file)
 
-    reconstructed_gapic_config = gapic_utils.reconstruct_gapic_yaml(
+    gapic_config = gapic_utils.create_gapic_config_v2(
         gapic_yaml, request)
-    assert [c for c in [
-        {
-            'name_pattern': 'projects/{project}/shelves/{shelf}/books/{book}',
-            'language_overrides': [
-                {'language': 'java',
-                 'entity_name': 'shelf_book'}
-            ],
-            'entity_name': 'book',
-        },
-        {
-            'entity_name': 'deleted_book',
-            'name_pattern': '_deleted-book_'
-        },
-        {
-            'entity_name': 'archive_book',
-            'name_pattern': 'archives/{archive}/books/{book}',
-            'language_overrides': [{
-                'language': 'java',
-                'entity_name': 'archived_book'
-            }]
-        },
-        {
-            'name_pattern': 'projects/{project}/shelves/{shelf}',
-            'entity_name': 'shelf',
-        },
-        {
-            'name_pattern': 'projects/{project}',
-            'entity_name': 'project',
-        },
-        {
-            'name_pattern':
-                'projects/{project}/locations/{location}/'
-                'publishers/{publisher}',
-            'entity_name': 'publisher',
-        },
-        {
-            'entity_name': 'location',
-            'name_pattern': 'projects/{project}/locations/{location}'
-        },
-        {
-            'entity_name': 'folder',
-            'name_pattern': 'folders/{folder}'
-        },
-    ] if c in reconstructed_gapic_config['collections']]
-    assert reconstructed_gapic_config['collection_oneofs'] == [
-        {
-            'collection_names': ['book', 'archive_book', 'deleted_book'],
-            'oneof_name': 'book_oneof'
-        }
-    ]
 
-    gapic_config = gapic_utils.create_gapic_config(reconstructed_gapic_config)
     resource_name_artifacts \
         = gapic_utils.collect_resource_name_types(
             gapic_config, "com.google.example.library.v1")
@@ -353,6 +303,12 @@ def test_library_gapic_v2():
             and r.fixed_value == '_deleted-book_'
             and r.class_name == 'DeletedBook'
             and r.parent_interface == 'BookName']
+
+    for r in resource_name_artifacts:
+        if type(r) is resource_name.ParentResourceName:
+            assert r.has_fixed_patterns == True \
+                and r.has_formattable_patterns == True
+
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
             and r.class_name == 'BookName']

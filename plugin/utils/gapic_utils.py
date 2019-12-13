@@ -502,9 +502,6 @@ def load_fixed_configs(config_list,
 
 def load_collection_oneofs(config_list, existing_collections,
                            fixed_collections):
-    import sys
-    print >>sys.stderr, existing_collections
-    print >>sys.stderr, fixed_collections
     existing_oneofs = {}
     for config in config_list:
         root_type_name = config['oneof_name']
@@ -529,9 +526,12 @@ def load_collection_oneofs(config_list, existing_collections,
                 root_type_name in fixed_collections):
             raise ValueError('Found two collection oneofs with same name: ' +
                              root_type_name)
+        pattern_strings = []
+        if 'pattern_strings' in config:
+            pattern_strings = config['pattern_strings']
         existing_oneofs[root_type_name] = CollectionOneof(
             root_type_name, resources, fixed_resources, collection_names,
-            config.get('pattern_strings'))
+            pattern_strings)
     return existing_oneofs
 
 
@@ -560,6 +560,9 @@ def collect_resource_name_types(gapic_config, java_package):
         resources.append(parent_resource)
         resources.append(untyped_resource)
         resources.append(resource_factory)
+
+    f = open('/tmp/debug.txt', 'w+')
+    f.write('{}'.format(resources))
 
     return resources
 

@@ -71,12 +71,15 @@ class ResourceName(ResourceNameBase):
             collection_config.java_entity_name)
         self.type_name_upper = casing_utils.get_resource_type_from_class_name(
             self.class_name)
+        self.builder_parent_class = ""
         if oneof:
             self.parent_interface = \
                 casing_utils.get_parent_resource_name_class_name(
                     oneof.oneof_name)
             self.extension_keyword = 'extends'
             self.deprecated = True
+            if oneof.pattern_strings:
+                self.builder_parent_class = self.parent_interface
         else:
             self.parent_interface = 'ResourceName'
             self.extension_keyword = 'implements'
@@ -157,15 +160,16 @@ class ParentResourceName(ResourceNameBase):
             self.patterns.append(
                 ResourceNamePattern(
                     p,
-                    pattern_strings[0],
                     pattern_name_lower_camel,
                     pattern_name_upper_camel,
                     pattern_name_upper_underscore,
                     pattern_format_fields))
 
-        self.first_pattern = self.patterns[0]
-        self.patterns[0].set_first()
-        self.patterns[-1].set_last()
+        if len(self.patterns) > 0:
+            self.first_pattern = self.patterns[0]
+            self.patterns[0].set_first()
+            self.patterns[0].set_short_builder_name()
+            self.patterns[-1].set_last()
 
     def template_name(self):
         return "multi_pattern_resource_name.mustache" if self.patterns \
@@ -174,7 +178,7 @@ class ParentResourceName(ResourceNameBase):
 
 class ResourceNamePattern:
 
-    def __init__(self, pattern_string, first_pattern_string,
+    def __init__(self, pattern_string,
                  pattern_name_lower_camel,
                  pattern_name_upper_camel,
                  pattern_name_upper_underscore,
@@ -186,13 +190,15 @@ class ResourceNamePattern:
         self.lower_camel = pattern_name_lower_camel
         self.upper_underscore = pattern_name_upper_underscore
         self.format_fields = format_fields
+        self.builder_name = self.upper_camel + 'Builder'
         if format_fields:
             self.format_fields[0]['not_first'] = False
             self.format_fields[-1]['not_last'] = False
+        for format_field in self.format_fields:
+            format_field['pattern_builder_name'] = self.builder_name
         self.not_first = True
         self.is_first = False
         self.not_last = True
-        self.first_pattern_string = first_pattern_string
 
     def set_first(self):
         self.not_first = False
@@ -200,6 +206,12 @@ class ResourceNamePattern:
 
     def set_last(self):
         self.not_last = False
+
+    def set_short_builder_name(self):
+        self.builder_name = 'Builder'
+        for format_field in self.format_fields:
+            format_field['pattern_builder_name'] = self.builder_name
+
 
 class ResourceNameFactory(ResourceNameBase):
 
