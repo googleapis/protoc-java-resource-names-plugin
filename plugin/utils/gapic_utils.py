@@ -561,9 +561,6 @@ def collect_resource_name_types(gapic_config, java_package):
         resources.append(untyped_resource)
         resources.append(resource_factory)
 
-    f = open('/tmp/debug.txt', 'w+')
-    f.write('{}'.format(resources))
-
     return resources
 
 

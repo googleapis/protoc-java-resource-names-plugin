@@ -79,8 +79,6 @@ def main(data):
 
     java_packages = resolve_java_package_names(request)
     gapic_config = gapic_utils.read_from_gapic_yaml(request)
-    f = open("/tmp/debug.txt", 'w')
-    f.write("hahaha")
     # Generate output
     response = plugin.CodeGeneratorResponse()
 

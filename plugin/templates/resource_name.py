@@ -78,6 +78,8 @@ class ResourceName(ResourceNameBase):
                     oneof.oneof_name)
             self.extension_keyword = 'extends'
             self.deprecated = True
+            # TODO: Remove builder_parent_class after we delete the deprecated
+            # per-pattern resource name subclasses
             if oneof.pattern_strings:
                 self.builder_parent_class = self.parent_interface
         else:
@@ -124,12 +126,14 @@ class ParentResourceName(ResourceNameBase):
         self.has_formattable_patterns = len(pattern_to_id_segments) > 0
 
         segment_to_segment_symbols = {}
+        # Keep segment IDs to symbols in a map, so that we
+        # do not re-create a new symbol every time.
         for segments in pattern_to_id_segments.values():
             for seg in segments:
                 if seg in segment_to_segment_symbols:
                     continue
                 symbol = symbol_table.getNewSymbol(
-                casing_utils.lower_underscore_to_lower_camel(seg))
+                    casing_utils.lower_underscore_to_lower_camel(seg))
                 segment_to_segment_symbols[seg] = symbol
 
         self.format_fields = [
@@ -154,7 +158,7 @@ class ParentResourceName(ResourceNameBase):
                 casing_utils.lower_underscore_to_upper_underscore(
                     pattern_name_lower_underscore)
 
-            pattern_format_fields = get_format_fields(p,
+            pattern_format_fields = get_format_fields_for_pattern(p,
                 pattern_to_id_segments, segment_to_segment_symbols)
 
             self.patterns.append(
@@ -300,7 +304,9 @@ def get_format_field(lower_underscore, symbol):
         'not_last': True
     }
 
-def get_format_fields(pattern, pattern_to_id_segments, segment_to_segment_symbols):
+def get_format_fields_for_pattern(pattern,
+                                  pattern_to_id_segments,
+                                  segment_to_segment_symbols):
     if pattern not in pattern_to_id_segments:
         return []
     format_fields = [get_format_field(seg, segment_to_segment_symbols[seg])
