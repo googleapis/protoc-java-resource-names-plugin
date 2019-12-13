@@ -119,15 +119,15 @@ class ParentResourceName(ResourceNameBase):
             java_package)
         symbol_table = SymbolTable()
 
-        pattern_to_id_segments = OrderedDict([
-            (p, get_id_segments(p))
-            for p in pattern_strings if not is_fixed_pattern(p)])
+        pattern_to_id_segments = {
+            p: get_id_segments(p)
+            for p in pattern_strings if not is_fixed_pattern(p)}
 
         self.has_fixed_patterns = \
             len(pattern_to_id_segments) < len(pattern_strings)
         self.has_formattable_patterns = len(pattern_to_id_segments) > 0
 
-        segment_to_segment_symbols = {}
+        segment_to_segment_symbols = OrderedDict()
         # Keep segment IDs to symbols in a map, so that we
         # do not re-create a new symbol every time.
         for segments in pattern_to_id_segments.values():
