@@ -47,18 +47,10 @@ public class BookName implements ResourceName {
   private PathTemplate pathTemplate;
   private String fixedValue;
 
-  private String archive;
-  private String book;
   private String project;
   private String shelf;
-
-  public String getArchive() {
-    return archive;
-  }
-
-  public String getBook() {
-    return book;
-  }
+  private String book;
+  private String archive;
 
   public String getProject() {
     return project;
@@ -66,6 +58,14 @@ public class BookName implements ResourceName {
 
   public String getShelf() {
     return shelf;
+  }
+
+  public String getBook() {
+    return book;
+  }
+
+  public String getArchive() {
+    return archive;
   }
 
 
@@ -215,17 +215,17 @@ public class BookName implements ResourceName {
       synchronized (this) {
         if (fieldValuesMap == null) {
         	ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-        	if (archive != null) {
-        		fieldMapBuilder.put("archive", archive);
-        	}
-        	if (book != null) {
-        		fieldMapBuilder.put("book", book);
-        	}
         	if (project != null) {
         		fieldMapBuilder.put("project", project);
         	}
         	if (shelf != null) {
         		fieldMapBuilder.put("shelf", shelf);
+        	}
+        	if (book != null) {
+        		fieldMapBuilder.put("book", book);
+        	}
+        	if (archive != null) {
+        		fieldMapBuilder.put("archive", archive);
         	}
         	fieldValuesMap = fieldMapBuilder.build();
         }
@@ -332,10 +332,10 @@ public class BookName implements ResourceName {
     }
     if (o instanceof BookName) {
       BookName that = (BookName) o;
-      return (Objects.equals(this.archive, that.archive))
+      return (Objects.equals(this.project, that.project))
+          && (Objects.equals(this.shelf, that.shelf))
           && (Objects.equals(this.book, that.book))
-          && (Objects.equals(this.project, that.project))
-          && (Objects.equals(this.shelf, that.shelf));
+          && (Objects.equals(this.archive, that.archive));
     }
     return false;
   }
@@ -346,13 +346,13 @@ public class BookName implements ResourceName {
     h *= 1000003;
     h ^= Objects.hashCode(fixedValue);
     h *= 1000003;
-    h ^= Objects.hashCode(archive);
-    h *= 1000003;
-    h ^= Objects.hashCode(book);
-    h *= 1000003;
     h ^= Objects.hashCode(project);
     h *= 1000003;
     h ^= Objects.hashCode(shelf);
+    h *= 1000003;
+    h ^= Objects.hashCode(book);
+    h *= 1000003;
+    h ^= Objects.hashCode(archive);
     return h;
   }
 }
