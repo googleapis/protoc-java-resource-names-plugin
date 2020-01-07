@@ -146,16 +146,13 @@ class ParentResourceName(ResourceNameBase):
             self.format_fields[0]['not_first'] = False
             self.format_fields[-1]['not_last'] = False
 
-        self.patterns = []
-        for p in pattern_strings:
-            pattern_name_lower_underscore = get_pattern_name(p)
-            pattern_format_fields = \
-                get_format_fields_for_pattern(p,
-                                              pattern_to_id_segments,
-                                              segment_to_segment_symbols)
-
-            self.patterns.append(
-                ResourceNamePattern(p, pattern_format_fields))
+        self.patterns = [
+            ResourceNamePattern(pattern, 
+                                get_format_fields_for_pattern(
+                                    pattern, 
+                                    pattern_to_id_segments, 
+                                    segment_to_segment_symbols)) 
+            for pattern in pattern_strings]
 
         if len(self.patterns) > 0:
             self.first_pattern = self.patterns[0]
