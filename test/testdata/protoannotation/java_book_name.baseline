@@ -39,9 +39,9 @@ public class BookName implements ResourceName {
   private static final PathTemplate ARCHIVE_BOOK_PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("archives/{archive}/books/{book}");
   private static final String DELETED_BOOK_FIXED_VALUE =
-  		"_deleted-book_";
+      "_deleted-book_";
   private static final BookName DELETED_BOOK_INSTANCE =
-  		new BookName("_deleted-book_");
+      new BookName("_deleted-book_");
 
   private volatile Map<String, String> fieldValuesMap;
   private PathTemplate pathTemplate;
@@ -83,8 +83,8 @@ public class BookName implements ResourceName {
   }
 
   private BookName(String fixedValue) {
-  	this.fixedValue = fixedValue;
-  	fieldValuesMap = ImmutableMap.of("", fixedValue);
+    this.fixedValue = fixedValue;
+    fieldValuesMap = ImmutableMap.of("", fixedValue);
   }
 
   public static Builder newBuilder() {
@@ -92,19 +92,19 @@ public class BookName implements ResourceName {
   }
 
   public static Builder newProjectShelfBookBuilder() {
-  	return new Builder();
+    return new Builder();
   }
 
   public static ArchiveBookBuilder newArchiveBookBuilder() {
-  	return new ArchiveBookBuilder();
+    return new ArchiveBookBuilder();
   }
 
   public Builder toBuilder() {
-		return new Builder(this);
-	}
-		
+    return new Builder(this);
+  }
+  
   public static BookName of(String project, String shelf, String book) {
-  	return newProjectShelfBookBuilder()
+    return newProjectShelfBookBuilder()
         .setProject(project)
         .setShelf(shelf)
         .setBook(book)
@@ -130,8 +130,8 @@ public class BookName implements ResourceName {
     return DELETED_BOOK_INSTANCE;
   }
 
-	public static String format(String project, String shelf, String book) {
-  	return newBuilder()
+  public static String format(String project, String shelf, String book) {
+    return newBuilder()
         .setProject(project)
         .setShelf(shelf)
         .setBook(book)
@@ -140,7 +140,7 @@ public class BookName implements ResourceName {
   }
 
   public static String formatProjectShelfBookName(String project, String shelf, String book) {
-  	return newBuilder()
+    return newBuilder()
         .setProject(project)
         .setShelf(shelf)
         .setBook(book)
@@ -149,7 +149,7 @@ public class BookName implements ResourceName {
   }
 
   public static String formatArchiveBookName(String archive, String book) {
-  	return newArchiveBookBuilder()
+    return newArchiveBookBuilder()
         .setArchive(archive)
         .setBook(book)
         .build()
@@ -157,28 +157,28 @@ public class BookName implements ResourceName {
   }
 
   public static String formatDeletedBookName() {
-  	return DELETED_BOOK_FIXED_VALUE;
+    return DELETED_BOOK_FIXED_VALUE;
   }
 
   public static BookName parse(String formattedString) {
-  	if (formattedString.isEmpty()) {
-  		return null;
-  	}
-  	if (PROJECT_SHELF_BOOK_PATH_TEMPLATE.matches(formattedString)) {
-  		Map<String, String> matchMap = PROJECT_SHELF_BOOK_PATH_TEMPLATE.match(formattedString);
-  		return ofProjectShelfBookName(
-  		    matchMap.get("project"), 
-  		    matchMap.get("shelf"), 
-  		    matchMap.get("book"));
-  	} else if (ARCHIVE_BOOK_PATH_TEMPLATE.matches(formattedString)) {
-  		Map<String, String> matchMap = ARCHIVE_BOOK_PATH_TEMPLATE.match(formattedString);
-  		return ofArchiveBookName(
-  		    matchMap.get("archive"), 
-  		    matchMap.get("book"));
-  	} else if(DELETED_BOOK_FIXED_VALUE.equals(formattedString)) {
-  		return DELETED_BOOK_INSTANCE;
-  	}
-  	throw new ValidationException("JobName.parse: formattedString not in valid format");
+    if (formattedString.isEmpty()) {
+      return null;
+    }
+    if (PROJECT_SHELF_BOOK_PATH_TEMPLATE.matches(formattedString)) {
+      Map<String, String> matchMap = PROJECT_SHELF_BOOK_PATH_TEMPLATE.match(formattedString);
+      return ofProjectShelfBookName(
+          matchMap.get("project"), 
+          matchMap.get("shelf"), 
+          matchMap.get("book"));
+    } else if (ARCHIVE_BOOK_PATH_TEMPLATE.matches(formattedString)) {
+      Map<String, String> matchMap = ARCHIVE_BOOK_PATH_TEMPLATE.match(formattedString);
+      return ofArchiveBookName(
+          matchMap.get("archive"), 
+          matchMap.get("book"));
+    } else if(DELETED_BOOK_FIXED_VALUE.equals(formattedString)) {
+      return DELETED_BOOK_INSTANCE;
+    }
+    throw new ValidationException("JobName.parse: formattedString not in valid format");
   }
 
   @BetaApi("The method will be renamed to parseList after subclasses of this class are removed.")
@@ -204,30 +204,30 @@ public class BookName implements ResourceName {
   }
 
   public static boolean isParsableFrom(String formattedString) {
-  	return PROJECT_SHELF_BOOK_PATH_TEMPLATE.matches(formattedString)    
-  	    || ARCHIVE_BOOK_PATH_TEMPLATE.matches(formattedString)    
-  	    || DELETED_BOOK_FIXED_VALUE.equals(formattedString);
+    return PROJECT_SHELF_BOOK_PATH_TEMPLATE.matches(formattedString)    
+        || ARCHIVE_BOOK_PATH_TEMPLATE.matches(formattedString)    
+        || DELETED_BOOK_FIXED_VALUE.equals(formattedString);
   }
   
   @Override
   public Map<String, String> getFieldValuesMap() {
-  	if (fieldValuesMap == null) {
+    if (fieldValuesMap == null) {
       synchronized (this) {
         if (fieldValuesMap == null) {
-        	ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-        	if (project != null) {
-        		fieldMapBuilder.put("project", project);
-        	}
-        	if (shelf != null) {
-        		fieldMapBuilder.put("shelf", shelf);
-        	}
-        	if (book != null) {
-        		fieldMapBuilder.put("book", book);
-        	}
-        	if (archive != null) {
-        		fieldMapBuilder.put("archive", archive);
-        	}
-        	fieldValuesMap = fieldMapBuilder.build();
+          ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
+          if (project != null) {
+            fieldMapBuilder.put("project", project);
+          }
+          if (shelf != null) {
+            fieldMapBuilder.put("shelf", shelf);
+          }
+          if (book != null) {
+            fieldMapBuilder.put("book", book);
+          }
+          if (archive != null) {
+            fieldMapBuilder.put("archive", archive);
+          }
+          fieldValuesMap = fieldMapBuilder.build();
         }
       }
     }
@@ -249,6 +249,8 @@ public class BookName implements ResourceName {
     private String project;
     private String shelf;
     private String book;
+
+    protected Builder() { }
 
     public String getProject() {
       return project;
@@ -277,13 +279,11 @@ public class BookName implements ResourceName {
       return this;
     }
 
-    protected Builder() { }
-
     private Builder(BookName bookName) {
-    	  Preconditions.checkArgument(
-    	      bookName.pathTemplate == PROJECT_SHELF_BOOK_PATH_TEMPLATE,
-    		    "toBuilder is only supported when BookName has the pattern of "
-    		    + "projects/{project}/shelves/{shelf}/books/{book}.");
+        Preconditions.checkArgument(
+            bookName.pathTemplate == PROJECT_SHELF_BOOK_PATH_TEMPLATE,
+            "toBuilder is only supported when BookName has the pattern of "
+            + "projects/{project}/shelves/{shelf}/books/{book}.");
       project = bookName.project;
       shelf = bookName.shelf;
       book = bookName.book;
@@ -299,6 +299,8 @@ public class BookName implements ResourceName {
 
     private String archive;
     private String book;
+
+    private ArchiveBookBuilder() { }
 
     public String getArchive() {
       return archive;
@@ -318,8 +320,6 @@ public class BookName implements ResourceName {
       return this;
     }
 
-    private ArchiveBookBuilder() { }
-
     public BookName build() {
       return new BookName(this);
     }
@@ -330,7 +330,7 @@ public class BookName implements ResourceName {
     if (o == this) {
       return true;
     }
-    if (o instanceof BookName) {
+    if (o == null || getClass() != o.getClass()) {
       BookName that = (BookName) o;
       return (Objects.equals(this.project, that.project))
           && (Objects.equals(this.shelf, that.shelf))

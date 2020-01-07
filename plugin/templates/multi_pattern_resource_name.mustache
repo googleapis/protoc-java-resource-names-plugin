@@ -41,9 +41,9 @@ public class {{class_name}} implements ResourceName {
   {{/is_formattable}}
   {{#is_fixed}}
   private static final String {{upper_underscore}}_FIXED_VALUE =
-  		"{{pattern_string}}";
+      "{{pattern_string}}";
   private static final {{class_name}} {{upper_underscore}}_INSTANCE =
-  		new {{class_name}}("{{pattern_string}}");
+      new {{class_name}}("{{pattern_string}}");
   {{/is_fixed}}
   {{/patterns}}
 
@@ -75,8 +75,8 @@ public class {{class_name}} implements ResourceName {
   {{/patterns}}
   {{#has_fixed_patterns}}
   private {{class_name}}(String fixedValue) {
-  	this.fixedValue = fixedValue;
-  	fieldValuesMap = ImmutableMap.of("", fixedValue);
+    this.fixedValue = fixedValue;
+    fieldValuesMap = ImmutableMap.of("", fixedValue);
   }
 
   {{/has_fixed_patterns}}
@@ -91,29 +91,30 @@ public class {{class_name}} implements ResourceName {
   {{#patterns}}
   {{#is_formattable}}
   public static {{#not_first}}{{upper_camel}}{{/not_first}}Builder new{{upper_camel}}Builder() {
-  	return new {{#not_first}}{{upper_camel}}{{/not_first}}Builder();
+    return new {{#not_first}}{{upper_camel}}{{/not_first}}Builder();
   }
 
   {{/is_formattable}}
   {{/patterns}}
   {{#first_pattern.is_formattable}}
   public Builder toBuilder() {
-		return new Builder(this);
-	}
-	{{/first_pattern.is_formattable}}
-	{{#first_pattern}}{{#is_formattable}}
+    return new Builder(this);
+  }
+  {{/first_pattern.is_formattable}}
+  {{#first_pattern}}{{#is_formattable}}
   public static {{class_name}} of({{#format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/format_fields}}) {
-  	return new{{upper_camel}}Builder(){{#format_fields}}
+    return new{{upper_camel}}Builder(){{#format_fields}}
         .set{{upper_camel}}({{lower_camel_symbol}}){{/format_fields}}
         .build();
   }
+
   {{/is_formattable}}
   {{#is_fixed}}
   public static {{class_name}} of(String {{pattern_string}}) {
-  	return {{upper_underscore}}_INSTANCE;
+    return {{upper_underscore}}_INSTANCE;
   }
-
-  {{/is_fixed}}{{/first_pattern}}
+  {{/is_fixed}}
+  {{/first_pattern}}
   {{#patterns}}
   public static {{class_name}} of{{upper_camel}}Name({{#format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/format_fields}}) {
     {{#is_formattable}}return new{{upper_camel}}Builder(){{#format_fields}}
@@ -122,9 +123,9 @@ public class {{class_name}} implements ResourceName {
   }
 
   {{/patterns}}
-	{{#first_pattern.is_formattable}}
-public static String format({{#first_pattern.format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/first_pattern.format_fields}}) {
-  	return new{{upper_camel}}Builder(){{#first_pattern.format_fields}}
+  {{#first_pattern.is_formattable}}
+  public static String format({{#first_pattern.format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/first_pattern.format_fields}}) {
+    return new{{upper_camel}}Builder(){{#first_pattern.format_fields}}
         .set{{upper_camel}}({{lower_camel_symbol}}){{/first_pattern.format_fields}}
         .build()
         .toString();
@@ -133,7 +134,7 @@ public static String format({{#first_pattern.format_fields}}String {{lower_camel
   {{/first_pattern.is_formattable}}
   {{#patterns}}
   public static String format{{upper_camel}}Name({{#format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/format_fields}}) {
-  	return{{#is_formattable}} new{{#not_first}}{{upper_camel}}{{/not_first}}Builder(){{#format_fields}}
+    return{{#is_formattable}} new{{#not_first}}{{upper_camel}}{{/not_first}}Builder(){{#format_fields}}
         .set{{upper_camel}}({{lower_camel_symbol}}){{/format_fields}}
         .build()
         .toString();{{/is_formattable}}{{#is_fixed}} {{upper_underscore}}_FIXED_VALUE;{{/is_fixed}}
@@ -141,17 +142,17 @@ public static String format({{#first_pattern.format_fields}}String {{lower_camel
 
   {{/patterns}}
   public static {{class_name}} parse(String formattedString) {
-  	if (formattedString.isEmpty()) {
-  		return null;
-  	}
-  	{{#patterns}}{{#is_formattable}}{{#not_first}} else {{/not_first}}if ({{upper_underscore}}_PATH_TEMPLATE.matches(formattedString)) {
-  		Map<String, String> matchMap = {{upper_underscore}}_PATH_TEMPLATE.match(formattedString);
-  		return of{{upper_camel}}Name({{#format_fields}}
-  		    matchMap.get("{{lower_underscore}}"){{#not_last}}, {{/not_last}}{{/format_fields}});
-  	}{{/is_formattable}}{{#is_fixed}}{{#not_first}} else {{/not_first}}if({{upper_underscore}}_FIXED_VALUE.equals(formattedString)) {
-  		return {{upper_underscore}}_INSTANCE;
-  	}{{/is_fixed}}{{/patterns}}
-  	throw new ValidationException("JobName.parse: formattedString not in valid format");
+    if (formattedString.isEmpty()) {
+      return null;
+    }
+    {{#patterns}}{{#is_formattable}}{{#not_first}} else {{/not_first}}if ({{upper_underscore}}_PATH_TEMPLATE.matches(formattedString)) {
+      Map<String, String> matchMap = {{upper_underscore}}_PATH_TEMPLATE.match(formattedString);
+      return of{{upper_camel}}Name({{#format_fields}}
+          matchMap.get("{{lower_underscore}}"){{#not_last}}, {{/not_last}}{{/format_fields}});
+    }{{/is_formattable}}{{#is_fixed}}{{#not_first}} else {{/not_first}}if({{upper_underscore}}_FIXED_VALUE.equals(formattedString)) {
+      return {{upper_underscore}}_INSTANCE;
+    }{{/is_fixed}}{{/patterns}}
+    throw new ValidationException("JobName.parse: formattedString not in valid format");
   }
 
   @BetaApi("The method will be renamed to parseList after subclasses of this class are removed.")
@@ -177,20 +178,20 @@ public static String format({{#first_pattern.format_fields}}String {{lower_camel
   }
 
   public static boolean isParsableFrom(String formattedString) {
-  	return {{#patterns}}{{#is_formattable}}{{upper_underscore}}_PATH_TEMPLATE.matches(formattedString){{/is_formattable}}{{#is_fixed}}{{upper_underscore}}_FIXED_VALUE.equals(formattedString){{/is_fixed}}{{#not_last}}    
-  	    || {{/not_last}}{{/patterns}};
+    return {{#patterns}}{{#is_formattable}}{{upper_underscore}}_PATH_TEMPLATE.matches(formattedString){{/is_formattable}}{{#is_fixed}}{{upper_underscore}}_FIXED_VALUE.equals(formattedString){{/is_fixed}}{{#not_last}}    
+        || {{/not_last}}{{/patterns}};
   }
   
   @Override
   public Map<String, String> getFieldValuesMap() {
-  	if (fieldValuesMap == null) {
+    if (fieldValuesMap == null) {
       synchronized (this) {
         if (fieldValuesMap == null) {
-        	ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();{{#format_fields}}
-        	if ({{lower_camel_symbol}} != null) {
-        		fieldMapBuilder.put("{{lower_underscore}}", {{lower_camel_symbol}});
-        	}{{/format_fields}}
-        	fieldValuesMap = fieldMapBuilder.build();
+          ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();{{#format_fields}}
+          if ({{lower_camel_symbol}} != null) {
+            fieldMapBuilder.put("{{lower_underscore}}", {{lower_camel_symbol}});
+          }{{/format_fields}}
+          fieldValuesMap = fieldMapBuilder.build();
         }
       }
     }
@@ -213,6 +214,8 @@ public static String format({{#first_pattern.format_fields}}String {{lower_camel
     private String {{lower_camel_symbol}};
     {{/format_fields}}
 
+    {{#is_first}}protected{{/is_first}}{{#not_first}}private{{/not_first}} {{#not_first}}{{upper_camel}}{{/not_first}}Builder() { }
+
     {{#format_fields}}
     public String get{{upper_camel}}() {
       return {{lower_camel_symbol}};
@@ -226,14 +229,12 @@ public static String format({{#first_pattern.format_fields}}String {{lower_camel
     }
 
     {{/format_fields}}
-    {{#is_first}}protected{{/is_first}}{{#not_first}}private{{/not_first}} {{#not_first}}{{upper_camel}}{{/not_first}}Builder() { }
-
     {{#is_first}}
     private Builder({{class_name}} {{var_name}}) {
-    	  Preconditions.checkArgument(
-    	      {{var_name}}.pathTemplate == {{upper_underscore}}_PATH_TEMPLATE,
-    		    "toBuilder is only supported when {{class_name}} has the pattern of "
-    		    + "{{pattern_string}}.");
+        Preconditions.checkArgument(
+            {{var_name}}.pathTemplate == {{upper_underscore}}_PATH_TEMPLATE,
+            "toBuilder is only supported when {{class_name}} has the pattern of "
+            + "{{pattern_string}}.");
       {{#format_fields}}
       {{lower_camel_symbol}} = {{var_name}}.{{lower_camel_symbol}};
       {{/format_fields}}
@@ -250,7 +251,7 @@ public static String format({{#first_pattern.format_fields}}String {{lower_camel
     if (o == this) {
       return true;
     }
-    if (o instanceof {{class_name}}) {
+    if (o == null || getClass() != o.getClass()) {
       {{class_name}} that = ({{class_name}}) o;
       return {{#format_fields}}{{#not_first}}
           && {{/not_first}}(Objects.equals(this.{{lower_camel_symbol}}, that.{{lower_camel_symbol}})){{/format_fields}};

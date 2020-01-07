@@ -101,8 +101,8 @@ def read_from_gapic_yaml(request):
 
     # Resource name configurations between gapic yaml v1 and gapic yaml v2 +
     # proto annotations have diverged. If we got a "GAPIC v2" or no GAPIC
-    # YAML at all, we build a gapic_config from both GAPIC YAML and
-    # annotations.
+    # YAML at all, we build an instance of the GapicConfig from both GAPIC
+    # YAML and annotations.
     if not gapic_yaml or gapic_yaml.get(
             'config_schema_version', '1.0.0') != '1.0.0':
         return create_gapic_config_v2(gapic_yaml, request)

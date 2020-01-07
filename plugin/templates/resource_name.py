@@ -148,30 +148,14 @@ class ParentResourceName(ResourceNameBase):
 
         self.patterns = []
         for p in pattern_strings:
-            pattern_name_lower_underscore = \
-                get_pattern_name(p)
-            pattern_name_lower_camel = \
-                casing_utils.lower_underscore_to_lower_camel(
-                    pattern_name_lower_underscore)
-            pattern_name_upper_camel = \
-                casing_utils.lower_underscore_to_upper_camel(
-                    pattern_name_lower_underscore)
-            pattern_name_upper_underscore = \
-                casing_utils.lower_underscore_to_upper_underscore(
-                    pattern_name_lower_underscore)
-
+            pattern_name_lower_underscore = get_pattern_name(p)
             pattern_format_fields = \
                 get_format_fields_for_pattern(p,
                                               pattern_to_id_segments,
                                               segment_to_segment_symbols)
 
             self.patterns.append(
-                ResourceNamePattern(
-                    p,
-                    pattern_name_lower_camel,
-                    pattern_name_upper_camel,
-                    pattern_name_upper_underscore,
-                    pattern_format_fields))
+                ResourceNamePattern(p, pattern_format_fields))
 
         if len(self.patterns) > 0:
             self.first_pattern = self.patterns[0]
@@ -187,16 +171,15 @@ class ParentResourceName(ResourceNameBase):
 class ResourceNamePattern:
 
     def __init__(self, pattern_string,
-                 pattern_name_lower_camel,
-                 pattern_name_upper_camel,
-                 pattern_name_upper_underscore,
                  format_fields):
         self.is_fixed = len(format_fields) == 0
         self.is_formattable = not self.is_fixed
         self.pattern_string = pattern_string
-        self.upper_camel = pattern_name_upper_camel
-        self.lower_camel = pattern_name_lower_camel
-        self.upper_underscore = pattern_name_upper_underscore
+        pattern_id = get_pattern_name(pattern_string)
+        pattern_naming_styles = get_format_field(pattern_id, "")
+        self.lower_camel = pattern_naming_styles['lower_camel']
+        self.upper_camel = pattern_naming_styles['upper_camel']
+        self.upper_underscore = pattern_naming_styles['upper_underscore']
         self.format_fields = format_fields
         self.builder_name = self.upper_camel + 'Builder'
         if format_fields:
