@@ -147,11 +147,11 @@ class ParentResourceName(ResourceNameBase):
             self.format_fields[-1]['not_last'] = False
 
         self.patterns = [
-            ResourceNamePattern(pattern, 
+            ResourceNamePattern(pattern,
                                 get_format_fields_for_pattern(
-                                    pattern, 
-                                    pattern_to_id_segments, 
-                                    segment_to_segment_symbols)) 
+                                    pattern,
+                                    pattern_to_id_segments,
+                                    segment_to_segment_symbols))
             for pattern in pattern_strings]
 
         if len(self.patterns) > 0:
