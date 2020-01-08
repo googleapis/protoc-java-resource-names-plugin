@@ -135,7 +135,7 @@ public class {{class_name}} {{extension_keyword}} {{parent_interface}} {
   }
 
   /** Builder for {{class_name}}. */
-  public static class Builder {
+  public static class Builder {{#builder_parent_class}}extends {{builder_parent_class}}.Builder {{/builder_parent_class}}{
 
     {{#format_fields}}
     private String {{lower}};

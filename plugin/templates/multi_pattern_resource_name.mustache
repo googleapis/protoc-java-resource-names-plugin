@@ -1,0 +1,273 @@
+/*
+ * Copyright 2018 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package {{package}};
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.api.core.BetaApi;
+import com.google.api.pathtemplate.PathTemplate;
+import com.google.api.pathtemplate.ValidationException;
+import {{resource_name_global_package_name}}.ResourceName;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * AUTO-GENERATED DOCUMENTATION AND CLASS
+ */
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class {{class_name}} implements ResourceName {
+  
+  @Deprecated
+  protected {{class_name}}() { }
+
+  {{#patterns}}
+  {{#is_formattable}}
+  private static final PathTemplate {{upper_underscore}}_PATH_TEMPLATE =
+      PathTemplate.createWithoutUrlEncoding("{{pattern_string}}");
+  {{/is_formattable}}
+  {{#is_fixed}}
+  private static final String {{upper_underscore}}_FIXED_VALUE =
+      "{{pattern_string}}";
+  private static final {{class_name}} {{upper_underscore}}_INSTANCE =
+      new {{class_name}}("{{pattern_string}}");
+  {{/is_fixed}}
+  {{/patterns}}
+
+  private volatile Map<String, String> fieldValuesMap;
+  private PathTemplate pathTemplate;
+  private String fixedValue;
+
+  {{#format_fields}}
+  private String {{lower_camel_symbol}};
+  {{/format_fields}}
+
+  {{#format_fields}}
+  public String get{{upper_camel}}() {
+    return {{lower_camel_symbol}};
+  }
+
+  {{/format_fields}}
+
+  {{#patterns}}
+  {{#is_formattable}}
+  private {{class_name}}({{#not_first}}{{upper_camel}}{{/not_first}}Builder builder) {
+    {{#format_fields}}
+    {{lower_camel}} = Preconditions.checkNotNull(builder.get{{upper_camel}}());
+    {{/format_fields}}
+    pathTemplate = {{upper_underscore}}_PATH_TEMPLATE;
+  }
+
+  {{/is_formattable}}
+  {{/patterns}}
+  {{#has_fixed_patterns}}
+  private {{class_name}}(String fixedValue) {
+    this.fixedValue = fixedValue;
+    fieldValuesMap = ImmutableMap.of("", fixedValue);
+  }
+
+  {{/has_fixed_patterns}}
+  {{#first_pattern}}
+  {{#is_formattable}}
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  {{/is_formattable}}
+  {{/first_pattern}}
+  {{#patterns}}
+  {{#is_formattable}}
+  public static {{#not_first}}{{upper_camel}}{{/not_first}}Builder new{{upper_camel}}Builder() {
+    return new {{#not_first}}{{upper_camel}}{{/not_first}}Builder();
+  }
+
+  {{/is_formattable}}
+  {{/patterns}}
+  {{#first_pattern.is_formattable}}
+  public Builder toBuilder() {
+    return new Builder(this);
+  }
+  {{/first_pattern.is_formattable}}
+  {{#first_pattern}}{{#is_formattable}}
+  public static {{class_name}} of({{#format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/format_fields}}) {
+    return new{{upper_camel}}Builder(){{#format_fields}}
+        .set{{upper_camel}}({{lower_camel_symbol}}){{/format_fields}}
+        .build();
+  }
+
+  {{/is_formattable}}
+  {{#is_fixed}}
+  public static {{class_name}} of(String {{pattern_string}}) {
+    return {{upper_underscore}}_INSTANCE;
+  }
+  {{/is_fixed}}
+  {{/first_pattern}}
+  {{#patterns}}
+  public static {{class_name}} of{{upper_camel}}Name({{#format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/format_fields}}) {
+    {{#is_formattable}}return new{{upper_camel}}Builder(){{#format_fields}}
+        .set{{upper_camel}}({{lower_camel_symbol}}){{/format_fields}}
+        .build();{{/is_formattable}}{{#is_fixed}}return {{upper_underscore}}_INSTANCE;{{/is_fixed}}
+  }
+
+  {{/patterns}}
+  {{#first_pattern.is_formattable}}
+  public static String format({{#first_pattern.format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/first_pattern.format_fields}}) {
+    return new{{upper_camel}}Builder(){{#first_pattern.format_fields}}
+        .set{{upper_camel}}({{lower_camel_symbol}}){{/first_pattern.format_fields}}
+        .build()
+        .toString();
+  }
+
+  {{/first_pattern.is_formattable}}
+  {{#patterns}}
+  public static String format{{upper_camel}}Name({{#format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/format_fields}}) {
+    return{{#is_formattable}} new{{#not_first}}{{upper_camel}}{{/not_first}}Builder(){{#format_fields}}
+        .set{{upper_camel}}({{lower_camel_symbol}}){{/format_fields}}
+        .build()
+        .toString();{{/is_formattable}}{{#is_fixed}} {{upper_underscore}}_FIXED_VALUE;{{/is_fixed}}
+  }
+
+  {{/patterns}}
+  public static {{class_name}} parse(String formattedString) {
+    if (formattedString.isEmpty()) {
+      return null;
+    }
+    {{#patterns}}{{#is_formattable}}{{#not_first}} else {{/not_first}}if ({{upper_underscore}}_PATH_TEMPLATE.matches(formattedString)) {
+      Map<String, String> matchMap = {{upper_underscore}}_PATH_TEMPLATE.match(formattedString);
+      return of{{upper_camel}}Name({{#format_fields}}
+          matchMap.get("{{lower_underscore}}"){{#not_last}}, {{/not_last}}{{/format_fields}});
+    }{{/is_formattable}}{{#is_fixed}}{{#not_first}} else {{/not_first}}if({{upper_underscore}}_FIXED_VALUE.equals(formattedString)) {
+      return {{upper_underscore}}_INSTANCE;
+    }{{/is_fixed}}{{/patterns}}
+    throw new ValidationException("JobName.parse: formattedString not in valid format");
+  }
+
+  @BetaApi("The method will be renamed to parseList after subclasses of this class are removed.")
+  public static List<{{class_name}}> parse(List<String> formattedStrings) {
+    List<{{class_name}}> list = new ArrayList<>(formattedStrings.size());
+    for (String formattedString : formattedStrings) {
+      list.add(parse(formattedString));
+    }
+    return list;
+  }
+
+  @BetaApi("The method will be renamed to toStringList after subclasses of this class are removed.")
+  public static List<String> toStrings(List<{{class_name}}> values) {
+    List<String> list = new ArrayList<>(values.size());
+    for ({{class_name}} value : values) {
+      if (value == null) {
+        list.add("");
+      } else {
+        list.add(value.toString());
+      }
+    }
+    return list;
+  }
+
+  public static boolean isParsableFrom(String formattedString) {
+    return {{#patterns}}{{#is_formattable}}{{upper_underscore}}_PATH_TEMPLATE.matches(formattedString){{/is_formattable}}{{#is_fixed}}{{upper_underscore}}_FIXED_VALUE.equals(formattedString){{/is_fixed}}{{#not_last}}    
+        || {{/not_last}}{{/patterns}};
+  }
+  
+  @Override
+  public Map<String, String> getFieldValuesMap() {
+    if (fieldValuesMap == null) {
+      synchronized (this) {
+        if (fieldValuesMap == null) {
+          ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();{{#format_fields}}
+          if ({{lower_camel_symbol}} != null) {
+            fieldMapBuilder.put("{{lower_underscore}}", {{lower_camel_symbol}});
+          }{{/format_fields}}
+          fieldValuesMap = fieldMapBuilder.build();
+        }
+      }
+    }
+    return fieldValuesMap;
+  }
+
+  public String getFieldValue(String fieldName) {
+    return getFieldValuesMap().get(fieldName);
+  }
+
+  @Override
+  public String toString() {
+    return fixedValue != null ? fixedValue : pathTemplate.instantiate(getFieldValuesMap());
+  }
+
+  {{#patterns}}{{#is_formattable}}/** Builder for {{pattern_string}}. */
+  public static class {{#not_first}}{{upper_camel}}{{/not_first}}Builder {
+
+    {{#format_fields}}
+    private String {{lower_camel_symbol}};
+    {{/format_fields}}
+
+    {{#is_first}}protected{{/is_first}}{{#not_first}}private{{/not_first}} {{#not_first}}{{upper_camel}}{{/not_first}}Builder() { }
+
+    {{#format_fields}}
+    public String get{{upper_camel}}() {
+      return {{lower_camel_symbol}};
+    }
+
+    {{/format_fields}}
+    {{#format_fields}}
+    public {{pattern_builder_name}} set{{upper_camel}}(String {{lower_camel_symbol}}) {
+      this.{{lower_camel_symbol}} = {{lower_camel_symbol}};
+      return this;
+    }
+
+    {{/format_fields}}
+    {{#is_first}}
+    private Builder({{class_name}} {{var_name}}) {
+        Preconditions.checkArgument(
+            {{var_name}}.pathTemplate == {{upper_underscore}}_PATH_TEMPLATE,
+            "toBuilder is only supported when {{class_name}} has the pattern of "
+            + "{{pattern_string}}.");
+      {{#format_fields}}
+      {{lower_camel_symbol}} = {{var_name}}.{{lower_camel_symbol}};
+      {{/format_fields}}
+    }
+
+    {{/is_first}}
+    public {{class_name}} build() {
+      return new {{class_name}}(this);
+    }
+  }
+
+  {{/is_formattable}}{{/patterns}}@Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      {{class_name}} that = ({{class_name}}) o;
+      return {{#format_fields}}{{#not_first}}
+          && {{/not_first}}(Objects.equals(this.{{lower_camel_symbol}}, that.{{lower_camel_symbol}})){{/format_fields}};
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int h = 1;
+    h *= 1000003;
+    h ^= Objects.hashCode(fixedValue);
+    {{#format_fields}}
+    h *= 1000003;
+    h ^= Objects.hashCode({{lower_camel_symbol}});
+    {{/format_fields}}
+    return h;
+  }
+}

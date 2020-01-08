@@ -1,0 +1,358 @@
+/*
+ * Copyright 2018 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.google.example.library.v1;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.api.core.BetaApi;
+import com.google.api.pathtemplate.PathTemplate;
+import com.google.api.pathtemplate.ValidationException;
+import com.google.api.resourcenames.ResourceName;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * AUTO-GENERATED DOCUMENTATION AND CLASS
+ */
+@javax.annotation.Generated("by GAPIC protoc plugin")
+public class BookName implements ResourceName {
+  
+  @Deprecated
+  protected BookName() { }
+
+  private static final PathTemplate PROJECT_SHELF_BOOK_PATH_TEMPLATE =
+      PathTemplate.createWithoutUrlEncoding("projects/{project}/shelves/{shelf}/books/{book}");
+  private static final PathTemplate ARCHIVE_BOOK_PATH_TEMPLATE =
+      PathTemplate.createWithoutUrlEncoding("archives/{archive}/books/{book}");
+  private static final String DELETED_BOOK_FIXED_VALUE =
+      "_deleted-book_";
+  private static final BookName DELETED_BOOK_INSTANCE =
+      new BookName("_deleted-book_");
+
+  private volatile Map<String, String> fieldValuesMap;
+  private PathTemplate pathTemplate;
+  private String fixedValue;
+
+  private String project;
+  private String shelf;
+  private String book;
+  private String archive;
+
+  public String getProject() {
+    return project;
+  }
+
+  public String getShelf() {
+    return shelf;
+  }
+
+  public String getBook() {
+    return book;
+  }
+
+  public String getArchive() {
+    return archive;
+  }
+
+
+  private BookName(Builder builder) {
+    project = Preconditions.checkNotNull(builder.getProject());
+    shelf = Preconditions.checkNotNull(builder.getShelf());
+    book = Preconditions.checkNotNull(builder.getBook());
+    pathTemplate = PROJECT_SHELF_BOOK_PATH_TEMPLATE;
+  }
+
+  private BookName(ArchiveBookBuilder builder) {
+    archive = Preconditions.checkNotNull(builder.getArchive());
+    book = Preconditions.checkNotNull(builder.getBook());
+    pathTemplate = ARCHIVE_BOOK_PATH_TEMPLATE;
+  }
+
+  private BookName(String fixedValue) {
+    this.fixedValue = fixedValue;
+    fieldValuesMap = ImmutableMap.of("", fixedValue);
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public static Builder newProjectShelfBookBuilder() {
+    return new Builder();
+  }
+
+  public static ArchiveBookBuilder newArchiveBookBuilder() {
+    return new ArchiveBookBuilder();
+  }
+
+  public Builder toBuilder() {
+    return new Builder(this);
+  }
+  
+  public static BookName of(String project, String shelf, String book) {
+    return newProjectShelfBookBuilder()
+        .setProject(project)
+        .setShelf(shelf)
+        .setBook(book)
+        .build();
+  }
+
+  public static BookName ofProjectShelfBookName(String project, String shelf, String book) {
+    return newProjectShelfBookBuilder()
+        .setProject(project)
+        .setShelf(shelf)
+        .setBook(book)
+        .build();
+  }
+
+  public static BookName ofArchiveBookName(String archive, String book) {
+    return newArchiveBookBuilder()
+        .setArchive(archive)
+        .setBook(book)
+        .build();
+  }
+
+  public static BookName ofDeletedBookName() {
+    return DELETED_BOOK_INSTANCE;
+  }
+
+  public static String format(String project, String shelf, String book) {
+    return newBuilder()
+        .setProject(project)
+        .setShelf(shelf)
+        .setBook(book)
+        .build()
+        .toString();
+  }
+
+  public static String formatProjectShelfBookName(String project, String shelf, String book) {
+    return newBuilder()
+        .setProject(project)
+        .setShelf(shelf)
+        .setBook(book)
+        .build()
+        .toString();
+  }
+
+  public static String formatArchiveBookName(String archive, String book) {
+    return newArchiveBookBuilder()
+        .setArchive(archive)
+        .setBook(book)
+        .build()
+        .toString();
+  }
+
+  public static String formatDeletedBookName() {
+    return DELETED_BOOK_FIXED_VALUE;
+  }
+
+  public static BookName parse(String formattedString) {
+    if (formattedString.isEmpty()) {
+      return null;
+    }
+    if (PROJECT_SHELF_BOOK_PATH_TEMPLATE.matches(formattedString)) {
+      Map<String, String> matchMap = PROJECT_SHELF_BOOK_PATH_TEMPLATE.match(formattedString);
+      return ofProjectShelfBookName(
+          matchMap.get("project"), 
+          matchMap.get("shelf"), 
+          matchMap.get("book"));
+    } else if (ARCHIVE_BOOK_PATH_TEMPLATE.matches(formattedString)) {
+      Map<String, String> matchMap = ARCHIVE_BOOK_PATH_TEMPLATE.match(formattedString);
+      return ofArchiveBookName(
+          matchMap.get("archive"), 
+          matchMap.get("book"));
+    } else if(DELETED_BOOK_FIXED_VALUE.equals(formattedString)) {
+      return DELETED_BOOK_INSTANCE;
+    }
+    throw new ValidationException("JobName.parse: formattedString not in valid format");
+  }
+
+  @BetaApi("The method will be renamed to parseList after subclasses of this class are removed.")
+  public static List<BookName> parse(List<String> formattedStrings) {
+    List<BookName> list = new ArrayList<>(formattedStrings.size());
+    for (String formattedString : formattedStrings) {
+      list.add(parse(formattedString));
+    }
+    return list;
+  }
+
+  @BetaApi("The method will be renamed to toStringList after subclasses of this class are removed.")
+  public static List<String> toStrings(List<BookName> values) {
+    List<String> list = new ArrayList<>(values.size());
+    for (BookName value : values) {
+      if (value == null) {
+        list.add("");
+      } else {
+        list.add(value.toString());
+      }
+    }
+    return list;
+  }
+
+  public static boolean isParsableFrom(String formattedString) {
+    return PROJECT_SHELF_BOOK_PATH_TEMPLATE.matches(formattedString)    
+        || ARCHIVE_BOOK_PATH_TEMPLATE.matches(formattedString)    
+        || DELETED_BOOK_FIXED_VALUE.equals(formattedString);
+  }
+  
+  @Override
+  public Map<String, String> getFieldValuesMap() {
+    if (fieldValuesMap == null) {
+      synchronized (this) {
+        if (fieldValuesMap == null) {
+          ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
+          if (project != null) {
+            fieldMapBuilder.put("project", project);
+          }
+          if (shelf != null) {
+            fieldMapBuilder.put("shelf", shelf);
+          }
+          if (book != null) {
+            fieldMapBuilder.put("book", book);
+          }
+          if (archive != null) {
+            fieldMapBuilder.put("archive", archive);
+          }
+          fieldValuesMap = fieldMapBuilder.build();
+        }
+      }
+    }
+    return fieldValuesMap;
+  }
+
+  public String getFieldValue(String fieldName) {
+    return getFieldValuesMap().get(fieldName);
+  }
+
+  @Override
+  public String toString() {
+    return fixedValue != null ? fixedValue : pathTemplate.instantiate(getFieldValuesMap());
+  }
+
+  /** Builder for projects/{project}/shelves/{shelf}/books/{book}. */
+  public static class Builder {
+
+    private String project;
+    private String shelf;
+    private String book;
+
+    protected Builder() { }
+
+    public String getProject() {
+      return project;
+    }
+
+    public String getShelf() {
+      return shelf;
+    }
+
+    public String getBook() {
+      return book;
+    }
+
+    public Builder setProject(String project) {
+      this.project = project;
+      return this;
+    }
+
+    public Builder setShelf(String shelf) {
+      this.shelf = shelf;
+      return this;
+    }
+
+    public Builder setBook(String book) {
+      this.book = book;
+      return this;
+    }
+
+    private Builder(BookName bookName) {
+        Preconditions.checkArgument(
+            bookName.pathTemplate == PROJECT_SHELF_BOOK_PATH_TEMPLATE,
+            "toBuilder is only supported when BookName has the pattern of "
+            + "projects/{project}/shelves/{shelf}/books/{book}.");
+      project = bookName.project;
+      shelf = bookName.shelf;
+      book = bookName.book;
+    }
+
+    public BookName build() {
+      return new BookName(this);
+    }
+  }
+
+  /** Builder for archives/{archive}/books/{book}. */
+  public static class ArchiveBookBuilder {
+
+    private String archive;
+    private String book;
+
+    private ArchiveBookBuilder() { }
+
+    public String getArchive() {
+      return archive;
+    }
+
+    public String getBook() {
+      return book;
+    }
+
+    public ArchiveBookBuilder setArchive(String archive) {
+      this.archive = archive;
+      return this;
+    }
+
+    public ArchiveBookBuilder setBook(String book) {
+      this.book = book;
+      return this;
+    }
+
+    public BookName build() {
+      return new BookName(this);
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      BookName that = (BookName) o;
+      return (Objects.equals(this.project, that.project))
+          && (Objects.equals(this.shelf, that.shelf))
+          && (Objects.equals(this.book, that.book))
+          && (Objects.equals(this.archive, that.archive));
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int h = 1;
+    h *= 1000003;
+    h ^= Objects.hashCode(fixedValue);
+    h *= 1000003;
+    h ^= Objects.hashCode(project);
+    h *= 1000003;
+    h ^= Objects.hashCode(shelf);
+    h *= 1000003;
+    h ^= Objects.hashCode(book);
+    h *= 1000003;
+    h ^= Objects.hashCode(archive);
+    return h;
+  }
+}
