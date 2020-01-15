@@ -157,7 +157,7 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
         request)
     type_resource_map, pattern_resource_map = get_all_resources(request)
 
-    # Put all referenced single-pattern resources defined in protos to 
+    # Put all referenced single-pattern resources defined in protos to
     # collections and all multi-pattern resources defined in protos to
     # collection_oneofs.
     #
