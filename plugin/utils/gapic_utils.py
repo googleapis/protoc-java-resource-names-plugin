@@ -157,8 +157,9 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
         request)
     type_resource_map, pattern_resource_map = get_all_resources(request)
 
-    # Put all single-pattern resources defined in protos to collections and
-    # all multi-pattern resources defined in protos to collection_oneofs.
+    # Put all referenced single-pattern resources defined in protos to 
+    # collections and all multi-pattern resources defined in protos to
+    # collection_oneofs.
     #
     # Note we no longer need to derive entity names from patterns with the
     # new design of multi-pattern resourcs names. However, we load them from
@@ -172,6 +173,18 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
             parent_res = get_parent_resource(res, pattern_resource_map)
             if parent_res is not None:
                 update_collections(parent_res, collections, collection_oneofs)
+
+    # Collect all message-level resources regardless of whether they
+    # are referenced.
+    for proto_file in request.proto_file:
+        if proto_file.name not in request.file_to_generate:
+            continue
+
+        # Iterate over all of the messages in the file.
+        for message in proto_file.message_type:
+            res = message.options.Extensions[resource_pb2.resource]
+            if res.type:
+                update_collections(res, collections, collection_oneofs)
 
     # Load deprecated_collections.
     update_collections_with_deprecated_resources(
