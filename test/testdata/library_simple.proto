@@ -247,3 +247,12 @@ message SeriesUuid {
     string series_string = 2;
   }
 }
+
+message Archive {
+  option (google.api.resource) = {
+    type: "library.googleapis.com/Archive",
+    pattern: "projects/{project}/locations/{location}/archives/{archive}"
+  };
+
+  string name = 1;
+}
