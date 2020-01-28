@@ -2,9 +2,6 @@ type: com.google.api.codegen.ConfigProto
 #language_settings: <snip>
 #license_header: <snip>
 config_schema_version: 1.0.0
-collections:
-  - name_pattern: archives/{archive}/books/{book}
-    entity_name: archive_book
 collection_oneofs:
   - oneof_name: book_oneof
     collection_names:
@@ -12,6 +9,8 @@ collection_oneofs:
     - archive_book
     - deleted_book
 collections:
+- name_pattern: projects/{project}/locations/{location}/archives/{archive}
+  entity_name: archive
 - name_pattern: projects/{project}
   entity_name: project
   language_overrides:
