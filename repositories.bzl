@@ -11,7 +11,9 @@ py_library(
 _DEFAULT_PY3_BUILD_FILE = """
 py_library(
     name = "lib",
+    srcs = glob(["**/*.py"]),
     visibility = ["//visibility:public"],
+    srcs_version = "PY3",
 )
 """
 
@@ -65,7 +67,7 @@ def com_google_protoc_java_resource_names_plugin_repositories():
         http_archive,
         name = "pypi_py_yaml",
         url = ("https://files.pythonhosted.org/packages/4a/85/db5a2df477072b2902b0eb892feb37d88ac635d36245a72a6a69b23b383a/PyYAML-3.12.tar.gz"),
-        strip_prefix = "PyYAML-3.12/lib",
+        strip_prefix = "PyYAML-3.12/lib3",
         build_file_content = _DEFAULT_PY3_BUILD_FILE,
     )
 
