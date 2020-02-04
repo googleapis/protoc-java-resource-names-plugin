@@ -90,7 +90,8 @@ def test_get_parent_resources_single_pattern():
         "shelves/{shelf}": [shelf]
     }
     all_resources = [book, shelf]
-    assert shelf == gapic_utils.get_parent_resources(book, pattern_map, all_resources)[0]
+    assert shelf == gapic_utils.get_parent_resources(
+        book, pattern_map, all_resources)[0]
 
 
 def test_get_parent_resources_multi_pattern():
@@ -115,7 +116,33 @@ def test_get_parent_resources_multi_pattern():
         "projects/{project}": [parent]
     }
     all_resources = [parent, shelf, book]
-    assert parent == gapic_utils.get_parent_resources(book, pattern_map, all_resources)[0]
+    assert parent == gapic_utils.get_parent_resources(
+        book, pattern_map, all_resources)[0]
+
+
+def test_get_parent_resources_multi_references():
+    book = resource_pb2.ResourceDescriptor()
+    book.type = 'test/Book'
+    book.pattern.append("shelves/{shelf}/books/{book}")
+    book.pattern.append("projects/{project}/books/{book}")
+
+    shelf = resource_pb2.ResourceDescriptor()
+    shelf.type = 'test/Shelf'
+    shelf.pattern.append("shelves/{shelf}")
+
+    project = resource_pb2.ResourceDescriptor()
+    project.type = 'test/Project'
+    project.pattern.append("projects/{project}")
+
+    pattern_map = {
+        "shelves/{shelf}/books/{book}": [book],
+        "projects/{project}/books/{book}": [book],
+        "shelves/{shelf}": [shelf],
+        "projects/{project}": [project]
+    }
+    all_resources = [project, shelf, book]
+    assert [project, shelf] == gapic_utils.get_parent_resources(
+        book, pattern_map, all_resources)
 
 
 def test_get_parent_resources_multi_pattern_fail():
@@ -140,7 +167,8 @@ def test_get_parent_resources_multi_pattern_fail():
         "shelves/{shelf}": [parent],
     }
     all_resources = [book, parent]
-    assert len(gapic_utils.get_parent_resources(book, pattern_map, all_resources)) == 0
+    assert len(gapic_utils.get_parent_resources(
+        book, pattern_map, all_resources)) == 0
 
 
 def test_update_collections_with_deprecated_collections():
@@ -311,7 +339,7 @@ def test_library_gapic_v2():
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
             and r.class_name == "BookName"
-            and r.has_fixed_patterns is True 
+            and r.has_fixed_patterns is True
             and r.has_formattable_patterns is True]
 
     assert [r for r in resource_name_artifacts if

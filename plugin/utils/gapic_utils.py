@@ -298,7 +298,7 @@ def get_all_resource_references(request):
 
 def get_parent_resources(res, pattern_map, all_resources):
     """ Return the parent resources of res.
-    We consider the list of resources to be another resource Foo's parents 
+    We consider the list of resources to be another resource Foo's parents
     if the union of all patterns in the list have one-to-one parent-child
     mapping with Foo's patterns.
     """
@@ -311,12 +311,13 @@ def get_parent_resources(res, pattern_map, all_resources):
                                                    [],
                                                    len(res.pattern),
                                                    i)
-        if parent_resources != None:
+        if parent_resources is not None:
             return parent_resources
 
     return []
 
-def _match_parent_resources(parent_patterns_map, all_resources, 
+
+def _match_parent_resources(parent_patterns_map, all_resources,
                             matched_parent_resources, unmatched_count, i):
     # We make a copy to advance in the depth-first search. There won't be
     # too many patterns in a resource so performance-wise it is not a problem.
@@ -325,19 +326,24 @@ def _match_parent_resources(parent_patterns_map, all_resources,
     for pattern in resource_to_match.pattern:
         if pattern not in parent_patterns_map_copy:
             return None
-        if parent_patterns_map_copy[pattern] == False:
+        if not parent_patterns_map_copy[pattern]:
             unmatched_count -= 1;
             parent_patterns_map_copy[pattern] = True
     matched_parent_resources.append(resource_to_match)
     if unmatched_count == 0:
         return copy.copy(matched_parent_resources)
     for j in range(i + 1, len(all_resources)):
-        answer = _match_parent_resources(parent_patterns_map_copy, all_resources, matched_parent_resources, unmatched_count, j)
+        answer = _match_parent_resources(parent_patterns_map_copy,
+                                         all_resources,
+                                         matched_parent_resources,
+                                         unmatched_count,
+                                         j)
         # We stop when we find the first list of matched parent resources
         if answer is not None:
             return answer
     matched_parent_resources.pop()
     return None
+
 
 def update_collections(res, collections, collection_oneofs):
     # Determine the name.
