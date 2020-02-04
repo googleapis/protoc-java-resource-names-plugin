@@ -189,7 +189,8 @@ class TestProtocGapicPlugin(object):
 class TestProtocGapicPluginV2(object):
 
     @pytest.mark.parametrize('resource',
-                             RESOURCE_NAMES_TO_GENERATE + ["project_name", "organization_name"])
+                             RESOURCE_NAMES_TO_GENERATE +
+                             ["project_name", "organization_name"])
     def test_resource_name_generation(self, run_protoc_V2, resource):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
             resource)

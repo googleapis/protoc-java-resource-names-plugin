@@ -345,7 +345,7 @@ def test_library_gapic_v2():
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
             and r.class_name == "ArchiveName"
-            and r.has_fixed_patterns is False 
+            and r.has_fixed_patterns is False
             and r.has_formattable_patterns is True]
 
     assert [r for r in resource_name_artifacts if

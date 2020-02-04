@@ -327,7 +327,7 @@ def _match_parent_resources(parent_patterns_map, all_resources,
         if pattern not in parent_patterns_map_copy:
             return None
         if not parent_patterns_map_copy[pattern]:
-            unmatched_count -= 1;
+            unmatched_count -= 1
             parent_patterns_map_copy[pattern] = True
     matched_parent_resources.append(resource_to_match)
     if unmatched_count == 0:
