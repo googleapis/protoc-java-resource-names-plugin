@@ -89,7 +89,8 @@ def test_get_parent_resources_single_pattern():
         "shelves/{shelf}/books/{book}": [book],
         "shelves/{shelf}": [shelf]
     }
-    assert shelf == gapic_utils.get_parent_resource(book, pattern_map)
+    all_resources = [book, shelf]
+    assert shelf == gapic_utils.get_parent_resources(book, pattern_map, all_resources)[0]
 
 
 def test_get_parent_resources_multi_pattern():
@@ -113,7 +114,8 @@ def test_get_parent_resources_multi_pattern():
         "shelves/{shelf}": [parent],
         "projects/{project}": [parent]
     }
-    assert parent == gapic_utils.get_parent_resource(book, pattern_map)
+    all_resources = [parent, shelf, book]
+    assert parent == gapic_utils.get_parent_resources(book, pattern_map, all_resources)[0]
 
 
 def test_get_parent_resources_multi_pattern_fail():
@@ -137,7 +139,8 @@ def test_get_parent_resources_multi_pattern_fail():
         "projects/{project}/books/{book}": [book],
         "shelves/{shelf}": [parent],
     }
-    assert gapic_utils.get_parent_resource(book, pattern_map) is None
+    all_resources = [book, parent]
+    assert len(gapic_utils.get_parent_resources(book, pattern_map, all_resources)) == 0
 
 
 def test_update_collections_with_deprecated_collections():
@@ -305,10 +308,17 @@ def test_library_gapic_v2():
             and r.class_name == 'DeletedBook'
             and r.parent_interface == 'BookName']
 
-    for r in resource_name_artifacts:
-        if type(r) is resource_name.ParentResourceName:
-            assert r.has_fixed_patterns is True \
-                and r.has_formattable_patterns is True
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ParentResourceName
+            and r.class_name == "BookName"
+            and r.has_fixed_patterns is True 
+            and r.has_formattable_patterns is True]
+
+    assert [r for r in resource_name_artifacts if
+            type(r) is resource_name.ParentResourceName
+            and r.class_name == "ArchiveName"
+            and r.has_fixed_patterns is False 
+            and r.has_formattable_patterns is True]
 
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName

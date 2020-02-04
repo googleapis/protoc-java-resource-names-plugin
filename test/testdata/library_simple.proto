@@ -59,6 +59,17 @@ service LibraryService {
       }
     };
   }
+
+  rpc CreateArchive(CreateArchiveRequest) returns (Archive) {
+    option (google.api.http) = {
+      post: "v1/{parent=projects/*}/archives"
+      body: "archive"
+      additional_bindings: {
+        post: "/v1/{parent=projects/*locations/*}/archives"
+        body: "archives"
+      }
+    };
+  }
 }
 
 // A single book in the library.
@@ -241,6 +252,14 @@ message PublishSeriesResponse {
   SeriesUuid series_uuid = 3;
 }
 
+message CreateArchiveRequest {
+
+  string parent = 1 [
+    (google.api.resource_reference).child_type = "library.googleapis.com/Archive"];
+
+  Archive archive = 2;
+}
+
 message SeriesUuid {
   oneof source {
     bytes series_bytes = 1;
@@ -252,6 +271,7 @@ message Archive {
   option (google.api.resource) = {
     type: "library.googleapis.com/Archive",
     pattern: "projects/{project}/locations/{location}/archives/{archive}"
+    pattern: "organizations/{organization}/archives/{archive}"
   };
 
   string name = 1;

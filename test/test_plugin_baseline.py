@@ -189,14 +189,14 @@ class TestProtocGapicPlugin(object):
 class TestProtocGapicPluginV2(object):
 
     @pytest.mark.parametrize('resource',
-                             RESOURCE_NAMES_TO_GENERATE + ["project_name"])
+                             RESOURCE_NAMES_TO_GENERATE + ["project_name", "organization_name"])
     def test_resource_name_generation(self, run_protoc_V2, resource):
         generated_class = casing_utils.lower_underscore_to_upper_camel(
             resource)
         check_output(generated_class, TEST_OUTPUT_DIR_V2, PROTOC_OUTPUT_DIR,
                      TEST_DIR_GAPIC_V2, 'java_' + resource)
 
-    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
+    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE + ["archive_oneof"])
     def test_parent_resource_name_generation(self, run_protoc_V2, oneof):
         generated_parent = \
             casing_utils.get_parent_resource_name_class_name(oneof)
@@ -208,7 +208,7 @@ class TestProtocGapicPluginV2(object):
                      TEST_DIR_GAPIC_V2,
                      'java_' + parent_filename_fragment)
 
-    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
+    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE + ["archive_oneof"])
     def test_untyped_resource_name_generation(self, run_protoc_V2, oneof):
         generated_untyped = \
             casing_utils.get_untyped_resource_name_class_name(oneof)
@@ -220,7 +220,7 @@ class TestProtocGapicPluginV2(object):
                      TEST_DIR_GAPIC_V2,
                      'java_' + untyped_filename_fragment)
 
-    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE)
+    @pytest.mark.parametrize('oneof', ONEOFS_TO_GENERATE + ["archive_oneof"])
     def test_resource_name_factory_generation(self, run_protoc_V2, oneof):
         generated_parent = \
             casing_utils.get_resource_name_factory_class_name(oneof)
