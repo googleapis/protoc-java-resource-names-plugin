@@ -170,8 +170,10 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
             update_collections(res, collections, collection_oneofs)
 
         if type in types_with_child_references:
-            parent_res = get_parent_resource(res, pattern_resource_map)
-            if parent_res is not None:
+            parent_resources = \
+                get_parent_resources(res, pattern_resource_map,
+                                     list(type_resource_map.values()))
+            for parent_res in parent_resources:
                 update_collections(parent_res, collections, collection_oneofs)
 
     # Collect all message-level resources regardless of whether they
@@ -294,30 +296,53 @@ def get_all_resource_references(request):
     return types_with_ref, types_with_child_references
 
 
-def get_parent_resource(res, pattern_map):
-    """ Return the parent resource of res.
-    We consider resource Foo to be resource Bar's parent iff Foo and Bar have
-    the same number of patterns, and for each pattern 'B' in Bar, there is
-    a pattern 'F' in Foo , such that 'F' is the parent 'B'.
-    Returns None if we can't find the parent of res.
+def get_parent_resources(res, pattern_map, all_resources):
+    """ Return the parent resources of res.
+    We consider the list of resources to be another resource Foo's parents
+    if the union of all patterns in the list have one-to-one parent-child
+    mapping with Foo's patterns.
     """
-    parent_candidates = []
     parent_patterns = build_parent_patterns(res.pattern)
-    for parent_pattern in parent_patterns:
-        if parent_pattern not in pattern_map:
-            return None
-        if not parent_candidates:
-            parent_candidates = pattern_map[parent_pattern]
-        else:
-            parent_candidates = [r for r in parent_candidates
-                                 if r in pattern_map[parent_pattern]]
+    parent_patterns_map = {pattern: False for pattern in parent_patterns}
 
-    if not parent_candidates:
-        return None
-    if len(parent_candidates) == 1:
-        return parent_candidates[0]
-    raise ValueError('Found multiple parent '
-                     'resources: {}'.format(parent_candidates))
+    for i in range(0, len(all_resources)):
+        parent_resources = _match_parent_resources(parent_patterns_map,
+                                                   all_resources,
+                                                   [],
+                                                   len(res.pattern),
+                                                   i)
+        if parent_resources is not None:
+            return parent_resources
+
+    return []
+
+
+def _match_parent_resources(parent_patterns_map, all_resources,
+                            matched_parent_resources, unmatched_count, i):
+    # We make a copy to advance in the depth-first search. There won't be
+    # too many patterns in a resource so performance-wise it is not a problem.
+    parent_patterns_map_copy = copy.copy(parent_patterns_map)
+    resource_to_match = all_resources[i]
+    for pattern in resource_to_match.pattern:
+        if pattern not in parent_patterns_map_copy:
+            return None
+        if not parent_patterns_map_copy[pattern]:
+            unmatched_count -= 1
+            parent_patterns_map_copy[pattern] = True
+    matched_parent_resources.append(resource_to_match)
+    if unmatched_count == 0:
+        return copy.copy(matched_parent_resources)
+    for j in range(i + 1, len(all_resources)):
+        answer = _match_parent_resources(parent_patterns_map_copy,
+                                         all_resources,
+                                         matched_parent_resources,
+                                         unmatched_count,
+                                         j)
+        # We stop when we find the first list of matched parent resources
+        if answer is not None:
+            return answer
+    matched_parent_resources.pop()
+    return None
 
 
 def update_collections(res, collections, collection_oneofs):
@@ -449,6 +474,8 @@ def find_single_and_fixed_entities(all_resource_names):
     fixed_entities = []
 
     for collection in all_resource_names:
+        if 'name_pattern' not in collection:
+            continue
         name_pattern = collection['name_pattern']
         if isFixedPattern(name_pattern):
             fixed_entities.append(collection)

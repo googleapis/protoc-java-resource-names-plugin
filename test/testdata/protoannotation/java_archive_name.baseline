@@ -16,26 +16,37 @@ package com.google.example.library.v1;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.api.core.BetaApi;
 import com.google.api.pathtemplate.PathTemplate;
+import com.google.api.pathtemplate.ValidationException;
 import com.google.api.resourcenames.ResourceName;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * AUTO-GENERATED DOCUMENTATION AND CLASS
  */
 @javax.annotation.Generated("by GAPIC protoc plugin")
 public class ArchiveName implements ResourceName {
+  
+  @Deprecated
+  protected ArchiveName() { }
 
-  private static final PathTemplate PATH_TEMPLATE =
+  private static final PathTemplate PROJECT_LOCATION_ARCHIVE_PATH_TEMPLATE =
       PathTemplate.createWithoutUrlEncoding("projects/{project}/locations/{location}/archives/{archive}");
+  private static final PathTemplate ORGANIZATION_ARCHIVE_PATH_TEMPLATE =
+      PathTemplate.createWithoutUrlEncoding("organizations/{organization}/archives/{archive}");
 
   private volatile Map<String, String> fieldValuesMap;
+  private PathTemplate pathTemplate;
+  private String fixedValue;
 
-  private final String project;
-  private final String location;
-  private final String archive;
+  private String project;
+  private String location;
+  private String archive;
+  private String organization;
 
   public String getProject() {
     return project;
@@ -49,47 +60,110 @@ public class ArchiveName implements ResourceName {
     return archive;
   }
 
-  public static Builder newBuilder() {
-    return new Builder();
+  public String getOrganization() {
+    return organization;
   }
 
-  public Builder toBuilder() {
-    return new Builder(this);
-  }
 
   private ArchiveName(Builder builder) {
     project = Preconditions.checkNotNull(builder.getProject());
     location = Preconditions.checkNotNull(builder.getLocation());
     archive = Preconditions.checkNotNull(builder.getArchive());
+    pathTemplate = PROJECT_LOCATION_ARCHIVE_PATH_TEMPLATE;
   }
 
+  private ArchiveName(OrganizationArchiveBuilder builder) {
+    organization = Preconditions.checkNotNull(builder.getOrganization());
+    archive = Preconditions.checkNotNull(builder.getArchive());
+    pathTemplate = ORGANIZATION_ARCHIVE_PATH_TEMPLATE;
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public static Builder newProjectLocationArchiveBuilder() {
+    return new Builder();
+  }
+
+  public static OrganizationArchiveBuilder newOrganizationArchiveBuilder() {
+    return new OrganizationArchiveBuilder();
+  }
+
+  public Builder toBuilder() {
+    return new Builder(this);
+  }
+  
   public static ArchiveName of(String project, String location, String archive) {
-    return newBuilder()
-      .setProject(project)
-      .setLocation(location)
-      .setArchive(archive)
-      .build();
+    return newProjectLocationArchiveBuilder()
+        .setProject(project)
+        .setLocation(location)
+        .setArchive(archive)
+        .build();
+  }
+
+  public static ArchiveName ofProjectLocationArchiveName(String project, String location, String archive) {
+    return newProjectLocationArchiveBuilder()
+        .setProject(project)
+        .setLocation(location)
+        .setArchive(archive)
+        .build();
+  }
+
+  public static ArchiveName ofOrganizationArchiveName(String organization, String archive) {
+    return newOrganizationArchiveBuilder()
+        .setOrganization(organization)
+        .setArchive(archive)
+        .build();
   }
 
   public static String format(String project, String location, String archive) {
     return newBuilder()
-      .setProject(project)
-      .setLocation(location)
-      .setArchive(archive)
-      .build()
-      .toString();
+        .setProject(project)
+        .setLocation(location)
+        .setArchive(archive)
+        .build()
+        .toString();
+  }
+
+  public static String formatProjectLocationArchiveName(String project, String location, String archive) {
+    return newBuilder()
+        .setProject(project)
+        .setLocation(location)
+        .setArchive(archive)
+        .build()
+        .toString();
+  }
+
+  public static String formatOrganizationArchiveName(String organization, String archive) {
+    return newOrganizationArchiveBuilder()
+        .setOrganization(organization)
+        .setArchive(archive)
+        .build()
+        .toString();
   }
 
   public static ArchiveName parse(String formattedString) {
     if (formattedString.isEmpty()) {
       return null;
     }
-    Map<String, String> matchMap =
-        PATH_TEMPLATE.validatedMatch(formattedString, "ArchiveName.parse: formattedString not in valid format");
-    return of(matchMap.get("project"), matchMap.get("location"), matchMap.get("archive"));
+    if (PROJECT_LOCATION_ARCHIVE_PATH_TEMPLATE.matches(formattedString)) {
+      Map<String, String> matchMap = PROJECT_LOCATION_ARCHIVE_PATH_TEMPLATE.match(formattedString);
+      return ofProjectLocationArchiveName(
+          matchMap.get("project"), 
+          matchMap.get("location"), 
+          matchMap.get("archive"));
+    } else if (ORGANIZATION_ARCHIVE_PATH_TEMPLATE.matches(formattedString)) {
+      Map<String, String> matchMap = ORGANIZATION_ARCHIVE_PATH_TEMPLATE.match(formattedString);
+      return ofOrganizationArchiveName(
+          matchMap.get("organization"), 
+          matchMap.get("archive"));
+    }
+    throw new ValidationException("JobName.parse: formattedString not in valid format");
   }
 
-  public static List<ArchiveName> parseList(List<String> formattedStrings) {
+  @BetaApi("The method will be renamed to parseList after subclasses of this class are removed.")
+  public static List<ArchiveName> parse(List<String> formattedStrings) {
     List<ArchiveName> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
@@ -97,8 +171,9 @@ public class ArchiveName implements ResourceName {
     return list;
   }
 
-  public static List<String> toStringList(List<ArchiveName> values) {
-    List<String> list = new ArrayList<String>(values.size());
+  @BetaApi("The method will be renamed to toStringList after subclasses of this class are removed.")
+  public static List<String> toStrings(List<ArchiveName> values) {
+    List<String> list = new ArrayList<>(values.size());
     for (ArchiveName value : values) {
       if (value == null) {
         list.add("");
@@ -110,17 +185,28 @@ public class ArchiveName implements ResourceName {
   }
 
   public static boolean isParsableFrom(String formattedString) {
-    return PATH_TEMPLATE.matches(formattedString);
+    return PROJECT_LOCATION_ARCHIVE_PATH_TEMPLATE.matches(formattedString)    
+        || ORGANIZATION_ARCHIVE_PATH_TEMPLATE.matches(formattedString);
   }
-
+  
+  @Override
   public Map<String, String> getFieldValuesMap() {
     if (fieldValuesMap == null) {
       synchronized (this) {
         if (fieldValuesMap == null) {
           ImmutableMap.Builder<String, String> fieldMapBuilder = ImmutableMap.builder();
-          fieldMapBuilder.put("project", project);
-          fieldMapBuilder.put("location", location);
-          fieldMapBuilder.put("archive", archive);
+          if (project != null) {
+            fieldMapBuilder.put("project", project);
+          }
+          if (location != null) {
+            fieldMapBuilder.put("location", location);
+          }
+          if (archive != null) {
+            fieldMapBuilder.put("archive", archive);
+          }
+          if (organization != null) {
+            fieldMapBuilder.put("organization", organization);
+          }
           fieldValuesMap = fieldMapBuilder.build();
         }
       }
@@ -134,15 +220,17 @@ public class ArchiveName implements ResourceName {
 
   @Override
   public String toString() {
-    return PATH_TEMPLATE.instantiate("project", project, "location", location, "archive", archive);
+    return fixedValue != null ? fixedValue : pathTemplate.instantiate(getFieldValuesMap());
   }
 
-  /** Builder for ArchiveName. */
+  /** Builder for projects/{project}/locations/{location}/archives/{archive}. */
   public static class Builder {
 
     private String project;
     private String location;
     private String archive;
+
+    protected Builder() { }
 
     public String getProject() {
       return project;
@@ -171,13 +259,45 @@ public class ArchiveName implements ResourceName {
       return this;
     }
 
-    private Builder() {
-    }
-
     private Builder(ArchiveName archiveName) {
+        Preconditions.checkArgument(
+            archiveName.pathTemplate == PROJECT_LOCATION_ARCHIVE_PATH_TEMPLATE,
+            "toBuilder is only supported when ArchiveName has the pattern of "
+            + "projects/{project}/locations/{location}/archives/{archive}.");
       project = archiveName.project;
       location = archiveName.location;
       archive = archiveName.archive;
+    }
+
+    public ArchiveName build() {
+      return new ArchiveName(this);
+    }
+  }
+
+  /** Builder for organizations/{organization}/archives/{archive}. */
+  public static class OrganizationArchiveBuilder {
+
+    private String organization;
+    private String archive;
+
+    private OrganizationArchiveBuilder() { }
+
+    public String getOrganization() {
+      return organization;
+    }
+
+    public String getArchive() {
+      return archive;
+    }
+
+    public OrganizationArchiveBuilder setOrganization(String organization) {
+      this.organization = organization;
+      return this;
+    }
+
+    public OrganizationArchiveBuilder setArchive(String archive) {
+      this.archive = archive;
+      return this;
     }
 
     public ArchiveName build() {
@@ -190,11 +310,12 @@ public class ArchiveName implements ResourceName {
     if (o == this) {
       return true;
     }
-    if (o instanceof ArchiveName) {
+    if (o == null || getClass() != o.getClass()) {
       ArchiveName that = (ArchiveName) o;
-      return (this.project.equals(that.project))
-          && (this.location.equals(that.location))
-          && (this.archive.equals(that.archive));
+      return (Objects.equals(this.project, that.project))
+          && (Objects.equals(this.location, that.location))
+          && (Objects.equals(this.archive, that.archive))
+          && (Objects.equals(this.organization, that.organization));
     }
     return false;
   }
@@ -203,12 +324,15 @@ public class ArchiveName implements ResourceName {
   public int hashCode() {
     int h = 1;
     h *= 1000003;
-    h ^= project.hashCode();
+    h ^= Objects.hashCode(fixedValue);
     h *= 1000003;
-    h ^= location.hashCode();
+    h ^= Objects.hashCode(project);
     h *= 1000003;
-    h ^= archive.hashCode();
+    h ^= Objects.hashCode(location);
+    h *= 1000003;
+    h ^= Objects.hashCode(archive);
+    h *= 1000003;
+    h ^= Objects.hashCode(organization);
     return h;
   }
 }
-
