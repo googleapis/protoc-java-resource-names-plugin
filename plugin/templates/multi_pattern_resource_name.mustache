@@ -251,7 +251,7 @@ public class {{class_name}} implements ResourceName {
     if (o == this) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (o != null || getClass() == o.getClass()) {
       {{class_name}} that = ({{class_name}}) o;
       return {{#format_fields}}{{#not_first}}
           && {{/not_first}}(Objects.equals(this.{{lower_camel_symbol}}, that.{{lower_camel_symbol}})){{/format_fields}};
