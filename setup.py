@@ -37,7 +37,7 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-version = '0.0.21'
+version = '0.0.22'
 
 install_requires = [
     'chevron >= 0.13.1',
