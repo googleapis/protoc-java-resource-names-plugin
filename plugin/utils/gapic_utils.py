@@ -29,7 +29,6 @@
 
 from collections import OrderedDict
 import copy
-import re
 import yaml
 
 from plugin.pb2 import resource_pb2
