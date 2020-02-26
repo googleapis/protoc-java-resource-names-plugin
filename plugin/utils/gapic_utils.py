@@ -420,6 +420,7 @@ def update_collections_with_deprecated_resources(
 
             entity_name = deprecated_collection['entity_name']
             name_pattern = deprecated_collection['name_pattern']
+            deprecated_collection['deprecated'] = True
 
             if entity_name not in collections:
                 collections[entity_name] = deprecated_collection
@@ -474,6 +475,8 @@ def find_single_and_fixed_entities(all_resource_names):
     fixed_entities = []
 
     for collection in all_resource_names:
+        if 'deprecated' not in collection:
+            collection['deprecated'] = False
         if 'name_pattern' not in collection:
             continue
         name_pattern = collection['name_pattern']
@@ -512,7 +515,8 @@ def load_collection_configs(config_list, existing_configs):
         else:
             existing_configs[entity_name] = CollectionConfig(entity_name,
                                                              name_pattern,
-                                                             java_entity_name)
+                                                             java_entity_name,
+                                                             config['deprecated'])
     return existing_configs
 
 
@@ -624,10 +628,11 @@ def create_field_name(message_name, field):
 
 class CollectionConfig(object):
 
-    def __init__(self, entity_name, name_pattern, java_entity_name):
+    def __init__(self, entity_name, name_pattern, java_entity_name, deprecated):
         self.entity_name = entity_name
         self.name_pattern = name_pattern
         self.java_entity_name = java_entity_name
+        self.deprecated = deprecated
 
 
 class FixedCollectionConfig(object):

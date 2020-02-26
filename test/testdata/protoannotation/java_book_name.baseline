@@ -91,10 +91,12 @@ public class BookName implements ResourceName {
     return new Builder();
   }
 
+  @BetaApi("The per-pattern Builders are not stable yet and may be changed in the future.")
   public static Builder newProjectShelfBookBuilder() {
     return new Builder();
   }
 
+  @BetaApi("The per-pattern Builders are not stable yet and may be changed in the future.")
   public static ArchiveBookBuilder newArchiveBookBuilder() {
     return new ArchiveBookBuilder();
   }
@@ -111,6 +113,7 @@ public class BookName implements ResourceName {
         .build();
   }
 
+  @BetaApi("The static create methods are not stable yet and may be changed in the future.")
   public static BookName ofProjectShelfBookName(String project, String shelf, String book) {
     return newProjectShelfBookBuilder()
         .setProject(project)
@@ -119,6 +122,7 @@ public class BookName implements ResourceName {
         .build();
   }
 
+  @BetaApi("The static create methods are not stable yet and may be changed in the future.")
   public static BookName ofArchiveBookName(String archive, String book) {
     return newArchiveBookBuilder()
         .setArchive(archive)
@@ -126,6 +130,7 @@ public class BookName implements ResourceName {
         .build();
   }
 
+  @BetaApi("The static create methods are not stable yet and may be changed in the future.")
   public static BookName ofDeletedBookName() {
     return DELETED_BOOK_INSTANCE;
   }
@@ -139,6 +144,7 @@ public class BookName implements ResourceName {
         .toString();
   }
 
+  @BetaApi("The static format methods are not stable yet and may be changed in the future.")
   public static String formatProjectShelfBookName(String project, String shelf, String book) {
     return newBuilder()
         .setProject(project)
@@ -148,6 +154,7 @@ public class BookName implements ResourceName {
         .toString();
   }
 
+  @BetaApi("The static format methods are not stable yet and may be changed in the future.")
   public static String formatArchiveBookName(String archive, String book) {
     return newArchiveBookBuilder()
         .setArchive(archive)
@@ -156,6 +163,7 @@ public class BookName implements ResourceName {
         .toString();
   }
 
+  @BetaApi("The static format methods are not stable yet and may be changed in the future.")
   public static String formatDeletedBookName() {
     return DELETED_BOOK_FIXED_VALUE;
   }
@@ -295,6 +303,7 @@ public class BookName implements ResourceName {
   }
 
   /** Builder for archives/{archive}/books/{book}. */
+  @BetaApi("The per-pattern Builders are not stable yet and may be changed in the future.")
   public static class ArchiveBookBuilder {
 
     private String archive;

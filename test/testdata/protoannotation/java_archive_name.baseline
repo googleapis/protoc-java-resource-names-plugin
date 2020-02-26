@@ -82,10 +82,12 @@ public class ArchiveName implements ResourceName {
     return new Builder();
   }
 
+  @BetaApi("The per-pattern Builders are not stable yet and may be changed in the future.")
   public static Builder newProjectLocationArchiveBuilder() {
     return new Builder();
   }
 
+  @BetaApi("The per-pattern Builders are not stable yet and may be changed in the future.")
   public static OrganizationArchiveBuilder newOrganizationArchiveBuilder() {
     return new OrganizationArchiveBuilder();
   }
@@ -102,6 +104,7 @@ public class ArchiveName implements ResourceName {
         .build();
   }
 
+  @BetaApi("The static create methods are not stable yet and may be changed in the future.")
   public static ArchiveName ofProjectLocationArchiveName(String project, String location, String archive) {
     return newProjectLocationArchiveBuilder()
         .setProject(project)
@@ -110,6 +113,7 @@ public class ArchiveName implements ResourceName {
         .build();
   }
 
+  @BetaApi("The static create methods are not stable yet and may be changed in the future.")
   public static ArchiveName ofOrganizationArchiveName(String organization, String archive) {
     return newOrganizationArchiveBuilder()
         .setOrganization(organization)
@@ -126,6 +130,7 @@ public class ArchiveName implements ResourceName {
         .toString();
   }
 
+  @BetaApi("The static format methods are not stable yet and may be changed in the future.")
   public static String formatProjectLocationArchiveName(String project, String location, String archive) {
     return newBuilder()
         .setProject(project)
@@ -135,6 +140,7 @@ public class ArchiveName implements ResourceName {
         .toString();
   }
 
+  @BetaApi("The static format methods are not stable yet and may be changed in the future.")
   public static String formatOrganizationArchiveName(String organization, String archive) {
     return newOrganizationArchiveBuilder()
         .setOrganization(organization)
@@ -275,6 +281,7 @@ public class ArchiveName implements ResourceName {
   }
 
   /** Builder for organizations/{organization}/archives/{archive}. */
+  @BetaApi("The per-pattern Builders are not stable yet and may be changed in the future.")
   public static class OrganizationArchiveBuilder {
 
     private String organization;
