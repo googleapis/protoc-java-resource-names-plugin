@@ -188,13 +188,6 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
             if res.type:
                 update_collections(res, collections, collection_oneofs)
 
-    # Load deprecated_collections.
-    update_collections_with_deprecated_resources(
-        gapic_v2,
-        pattern_resource_map,
-        collections,
-        collection_oneofs)
-
     single_resource_names, fixed_resource_names = \
         find_single_and_fixed_entities(collections.values())
 
@@ -402,43 +395,6 @@ def _get_resource_for_deprecate_pattern(
     return resource
 
 
-def update_collections_with_deprecated_resources(
-        gapic_v2,
-        pattern_resource_map,
-        collections,
-        collection_oneofs):
-    for interface in gapic_v2.get('interfaces', ()):
-        if 'deprecated_collections' not in interface:
-            continue
-        for deprecated_collection in interface['deprecated_collections']:
-            if 'entity_name' not in deprecated_collection:
-                raise ValueError('entity_name is required '
-                                 'in a deprecated_collection.')
-            if 'name_pattern' not in deprecated_collection:
-                raise ValueError('name_pattern is required '
-                                 'in a deprecated_collection.')
-
-            entity_name = deprecated_collection['entity_name']
-            name_pattern = deprecated_collection['name_pattern']
-            deprecated_collection['deprecated'] = True
-
-            if entity_name not in collections:
-                collections[entity_name] = deprecated_collection
-            if name_pattern not in pattern_resource_map:
-                raise ValueError(
-                    'deprecated collection has '
-                    'an unknown name pattern: {}'.format(name_pattern))
-            resource = _get_resource_for_deprecate_pattern(
-                name_pattern, pattern_resource_map)
-            oneof_name = to_snake(resource.type.split('/')[-1]) + '_oneof'
-            if oneof_name not in collection_oneofs:
-                raise ValueError(
-                    'internal: multi-pattern resource not added to '
-                    'collection_oneofs: {}'.format(oneof_name))
-            collection_oneofs[oneof_name]['collection_names'].append(
-                entity_name)
-
-
 def calculate_pattern_entity_name(ptn):
 
     if isFixedPattern(ptn):
@@ -475,8 +431,6 @@ def find_single_and_fixed_entities(all_resource_names):
     fixed_entities = []
 
     for collection in all_resource_names:
-        if 'deprecated' not in collection:
-            collection['deprecated'] = False
         if 'name_pattern' not in collection:
             continue
         name_pattern = collection['name_pattern']
@@ -515,7 +469,7 @@ def load_collection_configs(config_list, existing_configs):
         else:
             existing_configs[entity_name] = \
                 CollectionConfig(entity_name, name_pattern,
-                                 java_entity_name, config['deprecated'])
+                                 java_entity_name)
     return existing_configs
 
 
@@ -627,12 +581,10 @@ def create_field_name(message_name, field):
 
 class CollectionConfig(object):
 
-    def __init__(self, entity_name, name_pattern,
-                 java_entity_name, deprecated):
+    def __init__(self, entity_name, name_pattern, java_entity_name):
         self.entity_name = entity_name
         self.name_pattern = name_pattern
         self.java_entity_name = java_entity_name
-        self.deprecated = deprecated
 
 
 class FixedCollectionConfig(object):

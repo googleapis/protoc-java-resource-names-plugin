@@ -72,7 +72,6 @@ class ResourceName(ResourceNameBase):
             collection_config.java_entity_name)
         self.type_name_upper = casing_utils.get_resource_type_from_class_name(
             self.class_name)
-        self.deprecated = collection_config.deprecated
         self.builder_parent_class = ""
         if oneof:
             self.parent_interface = \
@@ -260,11 +259,9 @@ class ResourceNameFixed(ResourceNameBase):
                 casing_utils.get_parent_resource_name_class_name(
                     oneof.oneof_name)
             self.extension_keyword = 'extends'
-            self.deprecated = True
         else:
             self.parent_interface = 'ResourceName'
             self.extension_keyword = 'implements'
-            self.deprecated = False
 
     def template_name(self):
         return "resource_name_fixed.mustache"
