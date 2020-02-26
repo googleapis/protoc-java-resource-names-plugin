@@ -125,8 +125,8 @@ RESOURCE_NAMES_TO_GENERATE = ['shelf_book_name', 'shelf_name',
                               'folder_name', 'location_name',
                               'publisher_name', "archive_name"]
 RESOURCE_NAMES_TO_GENERATE_V2 = ['shelf_name',
-                              'folder_name', 'location_name',
-                              'publisher_name', "archive_name"]
+                                 'folder_name', 'location_name',
+                                 'publisher_name', "archive_name"]
 ONEOFS_TO_GENERATE = ['book_oneof']
 ONEOFS_TO_GENERATE_V2 = ['book_oneof', 'archive_oneof']
 

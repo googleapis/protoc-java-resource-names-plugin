@@ -513,10 +513,9 @@ def load_collection_configs(config_list, existing_configs):
                     'Found collection configs with same entity name '
                     'but different patterns. Name: ' + entity_name)
         else:
-            existing_configs[entity_name] = CollectionConfig(entity_name,
-                                                             name_pattern,
-                                                             java_entity_name,
-                                                             config['deprecated'])
+            existing_configs[entity_name] = \
+                CollectionConfig(entity_name, name_pattern,
+                                 java_entity_name, config['deprecated'])
     return existing_configs
 
 
@@ -628,7 +627,8 @@ def create_field_name(message_name, field):
 
 class CollectionConfig(object):
 
-    def __init__(self, entity_name, name_pattern, java_entity_name, deprecated):
+    def __init__(self, entity_name, name_pattern,
+                 java_entity_name, deprecated):
         self.entity_name = entity_name
         self.name_pattern = name_pattern
         self.java_entity_name = java_entity_name
