@@ -369,48 +369,6 @@ def update_collections(res, collections, collection_oneofs):
     # pylint: enable=no-member
 
 
-def _get_resource_for_deprecate_pattern(
-        deprecated_collection_pattern,
-        pattern_resource_map):
-    resources = pattern_resource_map[deprecated_collection_pattern]
-    resources = [r for r in resources if len(r.pattern) > 1]
-
-    # A deprecated collection pattern belonging to multiple resources
-    # is very unlikely and cannot be nicely handled by resource
-    # name design in GAPIC v1(as the parent resource class is an
-    # abstract class rather than an interface, and Java does not
-    # have multiple inheritence).
-    if len(resources) > 1:
-        raise ValueError('Not supported: pattern of a deprecated '
-                         'collections belongs to multiple resources: '
-                         '{}'.format(deprecated_collection_pattern))
-    if not resources:
-        raise ValueError('Not supported: deprecating a single-pattern'
-                         'resource name.')
-    resource = resources[0]
-    if len(resource.pattern) <= 1:
-        raise ValueError('deprecated collection point to a '
-                         'single-pattern resource: {}'.format(
-                             resource.type))
-    return resource
-
-
-def calculate_pattern_entity_name(ptn):
-
-    if isFixedPattern(ptn):
-        start_index = next(i for (i, c) in enumerate(list(ptn)) if c.isalpha())
-        end_index = len(ptn) - next(
-            i for (i, c) in enumerate(list(ptn)[::-1]) if c.isalpha())
-        name_parts = re.split(r'[^a-zA-Z]', ptn[start_index:end_index])
-        return '_'.join(name_parts)
-    else:
-        segs = []
-        for seg in ptn.split('/'):
-            if _is_variable_segment(seg):
-                segs.append(to_snake(seg[1:-1]))
-        return '_'.join(segs)
-
-
 def build_parent_patterns(patterns):
     def _parent_pattern(pattern):
         segs = pattern.split('/')
