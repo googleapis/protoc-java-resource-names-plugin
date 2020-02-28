@@ -90,6 +90,7 @@ public class {{class_name}} implements ResourceName {
   {{/first_pattern}}
   {{#patterns}}
   {{#is_formattable}}
+  @BetaApi("The per-pattern Builders are not stable yet and may be changed in the future.")
   public static {{#not_first}}{{upper_camel}}{{/not_first}}Builder new{{upper_camel}}Builder() {
     return new {{#not_first}}{{upper_camel}}{{/not_first}}Builder();
   }
@@ -116,6 +117,7 @@ public class {{class_name}} implements ResourceName {
   {{/is_fixed}}
   {{/first_pattern}}
   {{#patterns}}
+  @BetaApi("The static create methods are not stable yet and may be changed in the future.")
   public static {{class_name}} of{{upper_camel}}Name({{#format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/format_fields}}) {
     {{#is_formattable}}return new{{upper_camel}}Builder(){{#format_fields}}
         .set{{upper_camel}}({{lower_camel_symbol}}){{/format_fields}}
@@ -133,6 +135,7 @@ public class {{class_name}} implements ResourceName {
 
   {{/first_pattern.is_formattable}}
   {{#patterns}}
+  @BetaApi("The static format methods are not stable yet and may be changed in the future.")
   public static String format{{upper_camel}}Name({{#format_fields}}String {{lower_camel_symbol}}{{#not_last}}, {{/not_last}}{{/format_fields}}) {
     return{{#is_formattable}} new{{#not_first}}{{upper_camel}}{{/not_first}}Builder(){{#format_fields}}
         .set{{upper_camel}}({{lower_camel_symbol}}){{/format_fields}}
@@ -207,7 +210,8 @@ public class {{class_name}} implements ResourceName {
     return fixedValue != null ? fixedValue : pathTemplate.instantiate(getFieldValuesMap());
   }
 
-  {{#patterns}}{{#is_formattable}}/** Builder for {{pattern_string}}. */
+  {{#patterns}}{{#is_formattable}}/** Builder for {{pattern_string}}. */{{#not_first}}
+  @BetaApi("The per-pattern Builders are not stable yet and may be changed in the future."){{/not_first}}
   public static class {{#not_first}}{{upper_camel}}{{/not_first}}Builder {
 
     {{#format_fields}}

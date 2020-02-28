@@ -78,7 +78,6 @@ class ResourceName(ResourceNameBase):
                 casing_utils.get_parent_resource_name_class_name(
                     oneof.oneof_name)
             self.extension_keyword = 'extends'
-            self.deprecated = True
             # TODO: Remove builder_parent_class after we delete the deprecated
             # per-pattern resource name subclasses
             if oneof.pattern_strings:
@@ -86,7 +85,6 @@ class ResourceName(ResourceNameBase):
         else:
             self.parent_interface = 'ResourceName'
             self.extension_keyword = 'implements'
-            self.deprecated = False
         self.parameter_list = [{
             'parameter': symbol_table.getNewSymbol(
                 casing_utils.lower_underscore_to_lower_camel(lit)),
@@ -261,11 +259,9 @@ class ResourceNameFixed(ResourceNameBase):
                 casing_utils.get_parent_resource_name_class_name(
                     oneof.oneof_name)
             self.extension_keyword = 'extends'
-            self.deprecated = True
         else:
             self.parent_interface = 'ResourceName'
             self.extension_keyword = 'implements'
-            self.deprecated = False
 
     def template_name(self):
         return "resource_name_fixed.mustache"
