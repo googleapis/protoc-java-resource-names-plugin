@@ -212,8 +212,8 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
 
     # Construct multi-pattern resource (a.k.a collection oneof) configs
     oneof_configs = load_collection_oneofs(collection_oneofs.values(),
-                                         collections_configs,
-                                         fixed_collection_configs)
+                                           collections_configs,
+                                           fixed_collection_configs)
 
     return GapicConfig(collections_configs,
                        fixed_collection_configs,
