@@ -211,13 +211,13 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
         "name_pattern")
 
     # Construct multi-pattern resource (a.k.a collection oneof) configs
-    one_configs = load_collection_oneofs(collection_oneofs.values(),
-                                         collections_configs,
-                                         fixed_collection_configs)
+    oneof_configs = load_collection_oneofs(collection_oneofs.values(),
+                                           collections_configs,
+                                           fixed_collection_configs)
 
     return GapicConfig(collections_configs,
                        fixed_collection_configs,
-                       one_configs)
+                       oneof_configs)
 
 
 # Populate pattern_resource_map and type_resource_map with this resource.
@@ -514,8 +514,11 @@ def collect_resource_name_types(gapic_config, java_package):
         resource_factory = resource_name.ResourceNameFactory(
             oneof_config, java_package)
         resources.append(parent_resource)
-        resources.append(untyped_resource)
-        resources.append(resource_factory)
+        # Only generate untyped resource class and factory class
+        # when generating libraries from gapic config
+        if len(resource_factory.single_resource_types) > 0:
+            resources.append(untyped_resource)
+            resources.append(resource_factory)
 
     return resources
 
