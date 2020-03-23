@@ -208,26 +208,13 @@ def test_update_collections_with_deprecated_collections():
     }
 
     gapic_utils.update_collections_with_deprecated_resources(
-        gapic_v2, pattern_map, collections, collection_oneofs)
+        gapic_v2, pattern_map, collection_oneofs)
 
     assert collection_oneofs == {
         'book_oneof': {
             'oneof_name': 'book_oneof',
-            'collection_names': [
-                'some_archive_book', 'my_shelf_book']
-        }
-    }
-    assert collections == {
-        'some_archive_book': {
-            'entity_name': 'some_archive_book',
-            'name_pattern': "archives/{archive}/books/{book}"
-        },
-        'my_shelf_book': {
-            'entity_name': 'my_shelf_book',
-            'name_pattern': "shelves/{shelf}/books/{book}",
-            'language_overrides': [
-                {'language': 'java',
-                 'entity_name': 'shelf_book'}]
+            'collection_names': [],
+            'has_deprecated_collections': True
         }
     }
 
@@ -316,25 +303,9 @@ def test_library_gapic_v2():
             gapic_config, "com.google.example.library.v1")
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ResourceName
-            and r.format_string ==
-            'projects/{project}/shelves/{shelf}/books/{book}'
-            and r.format_name_lower == 'shelfBookName'
-            and r.parent_interface == 'BookName']
-    assert [r for r in resource_name_artifacts if
-            type(r) is resource_name.ResourceName
-            and r.format_string == 'archives/{archive}/books/{book}'
-            and r.format_name_lower == 'archivedBookName'
-            and r.parent_interface == 'BookName']
-    assert [r for r in resource_name_artifacts if
-            type(r) is resource_name.ResourceName
             and r.format_string == 'projects/{project}/shelves/{shelf}'
             and r.format_name_lower == 'shelfName'
             and r.parent_interface == 'ResourceName']
-    assert [r for r in resource_name_artifacts if
-            type(r) is resource_name.ResourceNameFixed
-            and r.fixed_value == '_deleted-book_'
-            and r.class_name == 'DeletedBook'
-            and r.parent_interface == 'BookName']
 
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
@@ -351,6 +322,3 @@ def test_library_gapic_v2():
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
             and r.class_name == 'BookName']
-    assert [r for r in resource_name_artifacts if
-            type(r) is resource_name.ResourceNameFactory
-            and r.class_name == 'BookNames']

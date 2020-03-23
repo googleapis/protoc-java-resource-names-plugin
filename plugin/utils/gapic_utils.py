@@ -187,6 +187,11 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
             if res.type:
                 update_collections(res, collections, collection_oneofs)
 
+    update_collections_with_deprecated_resources(
+        gapic_v2,
+        pattern_resource_map, 
+        collection_oneofs)
+
     single_resource_names, fixed_resource_names = \
         find_single_and_fixed_entities(collections.values())
 
@@ -368,6 +373,68 @@ def update_collections(res, collections, collection_oneofs):
     # pylint: enable=no-member
 
 
+def _get_resource_for_deprecate_pattern(
+        deprecated_collection_pattern,
+        pattern_resource_map):
+    resources = pattern_resource_map[deprecated_collection_pattern]
+    resources = [r for r in resources if len(r.pattern) > 1]
+
+    # A deprecated collection pattern belonging to multiple resources
+    # is very unlikely and cannot be nicely handled by resource
+    # name design in GAPIC v1(as the parent resource class is an
+    # abstract class rather than an interface, and Java does not
+    # have multiple inheritence).
+    if len(resources) > 1:
+        raise ValueError('Not supported: pattern of a deprecated '
+                         'collections belongs to multiple resources: '
+                         '{}'.format(deprecated_collection_pattern))
+    if not resources:
+        raise ValueError('Not supported: deprecating a single-pattern'
+                         'resource name.')
+    resource = resources[0]
+    if len(resource.pattern) <= 1:
+        raise ValueError('deprecated collection point to a '
+                         'single-pattern resource: {}'.format(
+                             resource.type))
+    return resource
+
+
+def update_collections_with_deprecated_resources(
+        gapic_v2,
+        pattern_resource_map,
+        collection_oneofs):
+    for interface in gapic_v2.get('interfaces', ()):
+        if 'deprecated_collections' not in interface:
+            continue
+        for deprecated_collection in interface['deprecated_collections']:
+            if 'entity_name' not in deprecated_collection:
+                raise ValueError('entity_name is required '
+                                 'in a deprecated_collection.')
+            if 'name_pattern' not in deprecated_collection:
+                raise ValueError('name_pattern is required '
+                                 'in a deprecated_collection.')
+
+            entity_name = deprecated_collection['entity_name']
+            name_pattern = deprecated_collection['name_pattern']
+
+            if name_pattern not in pattern_resource_map:
+                raise ValueError(
+                    'deprecated collection has '
+                    'an unknown name pattern: {}'.format(name_pattern))
+
+            resource = _get_resource_for_deprecate_pattern(
+                name_pattern, pattern_resource_map)
+            oneof_name = to_snake(resource.type.split('/')[-1]) + '_oneof'
+            if oneof_name not in collection_oneofs:
+                raise ValueError(
+                    'internal: multi-pattern resource not added to '
+                    'collection_oneofs: {}'.format(oneof_name))
+            # Note Gapic config does not actually have the
+            # `has_deprecated_collections` field.
+            # This field is here to turn off generating `parseList`
+            # and `toStringList` methods to avoid naming collisions.
+            collection_oneofs[oneof_name]['has_deprecated_collections'] = True
+
 def build_parent_patterns(patterns):
     def _parent_pattern(pattern):
         segs = pattern.split('/')
@@ -485,9 +552,12 @@ def load_collection_oneofs(config_list, existing_collections,
         pattern_strings = []
         if 'pattern_strings' in config:
             pattern_strings = config['pattern_strings']
+        has_deprecated_collections = False
+        if 'has_deprecated_collections' in config:
+            has_deprecated_collections = config['has_deprecated_collections']
         existing_oneofs[root_type_name] = CollectionOneof(
             root_type_name, resources, fixed_resources, collection_names,
-            pattern_strings)
+            pattern_strings, has_deprecated_collections)
     return existing_oneofs
 
 
@@ -558,12 +628,14 @@ class FixedCollectionConfig(object):
 class CollectionOneof(object):
 
     def __init__(self, oneof_name, legacy_resources, legacy_fixed_resources,
-                 legacy_collection_names, pattern_strings):
+                 legacy_collection_names, pattern_strings,
+                 has_deprecated_collections):
         self.oneof_name = oneof_name
         self.legacy_resource_list = legacy_resources
         self.legacy_fixed_resource_list = legacy_fixed_resources
         self.legacy_collection_names = legacy_collection_names
         self.pattern_strings = pattern_strings
+        self.has_deprecated_collections = has_deprecated_collections
 
 
 class GapicConfig(object):
