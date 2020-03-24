@@ -201,7 +201,6 @@ def test_update_collections_with_deprecated_collections():
             'collection_names': []
         }
     }
-    collections = {}
     pattern_map = {
         "archives/{archive}/books/{book}": [book],
         "shelves/{shelf}/books/{book}": [book]

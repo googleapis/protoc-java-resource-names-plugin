@@ -189,7 +189,7 @@ def create_gapic_config_v2(gapic_v2, request):  # noqa: C901
 
     update_collections_with_deprecated_resources(
         gapic_v2,
-        pattern_resource_map, 
+        pattern_resource_map,
         collection_oneofs)
 
     single_resource_names, fixed_resource_names = \
@@ -414,9 +414,7 @@ def update_collections_with_deprecated_resources(
                 raise ValueError('name_pattern is required '
                                  'in a deprecated_collection.')
 
-            entity_name = deprecated_collection['entity_name']
             name_pattern = deprecated_collection['name_pattern']
-
             if name_pattern not in pattern_resource_map:
                 raise ValueError(
                     'deprecated collection has '
@@ -434,6 +432,7 @@ def update_collections_with_deprecated_resources(
             # This field is here to turn off generating `parseList`
             # and `toStringList` methods to avoid naming collisions.
             collection_oneofs[oneof_name]['has_deprecated_collections'] = True
+
 
 def build_parent_patterns(patterns):
     def _parent_pattern(pattern):
