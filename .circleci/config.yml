@@ -79,11 +79,7 @@ jobs:
           cd /usr/src/protoc/
           unzip protoc-3.11.2.zip
           ln -s /usr/src/protoc/bin/protoc /bin/protoc
-      - run:
-        name: Run tests.
-        command: |
-          pwd
-          ls
-          ls googleapis
-          pytest test/
+    - run:
+      name: Run tests.
+      command: pytest test/
 
