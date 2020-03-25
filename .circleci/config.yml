@@ -78,14 +78,12 @@ jobs:
           curl --location https://github.com/google/protobuf/releases/download/v3.11.2/protoc-3.11.2-linux-x86_64.zip --output /usr/src/protoc/protoc-3.11.2.zip
           cd /usr/src/protoc/
           unzip protoc-3.11.2.zip
-          echo $PATH
-          ln -s /usr/src/protoc/bin/protoc/ /bin/protoc
+          ln -s /usr/src/protoc/bin/protoc /bin/protoc
     - run:
         name: Run as shell.
         command: |
           echo $PATH
           ls -l /bin/protoc
-          which protoc
           protoc --java_resource_name_out=test/testdata/test_output/gapic --java_resource_name_opt=test/testdata/library_gapic.yaml --proto_path=. --proto_path=./googleapis test/testdata/library_simple.proto
     - run:
         name: Run tests.
