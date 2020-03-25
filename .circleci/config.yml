@@ -54,7 +54,7 @@ jobs:
           mkdir -p /usr/src/protoc/
           curl --location https://github.com/google/protobuf/releases/download/v3.11.2/protoc-3.11.2-linux-x86_64.zip --output /usr/src/protoc/protoc-3.11.2.zip
           cd /usr/src/protoc/
-          unzip protoc-3.11.1.zip
+          unzip protoc-3.11.2.zip
           ln -s /usr/src/protoc/bin/protoc/ usr/local/bin/protoc
     - run:
         name: Run tests.
@@ -78,7 +78,7 @@ jobs:
           mkdir -p /usr/src/protoc/
           curl --location https://github.com/google/protobuf/releases/download/v3.11.2/protoc-3.11.2-linux-x86_64.zip --output /usr/src/protoc/protoc-3.11.2.zip
           cd /usr/src/protoc/
-          unzip protoc-3.11.1.zip
+          unzip protoc-3.11.2.zip
           ln -s /usr/src/protoc/bin/protoc/ usr/local/bin/protoc
     - run:
         name: Run tests.
