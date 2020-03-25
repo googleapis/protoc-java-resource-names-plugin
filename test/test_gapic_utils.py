@@ -17,6 +17,8 @@ from plugin.pb2 import resource_pb2
 from plugin.utils import gapic_utils
 from plugin.templates import resource_name
 
+import os
+import shutil
 import yaml
 
 from google.protobuf.compiler import plugin_pb2
@@ -229,6 +231,8 @@ def test_library_gapic_v1():
         gapic_yaml = yaml.load(f, Loader=yaml.SafeLoader)
 
     file_descriptor_set_file = "test/testdata/test_output/library.desc"
+    shutil.rmtree("test/testdata/test_output", True)
+    os.mkdir("test/testdata/test_output/")
     subprocess.check_call(
         ['protoc',
          '-o',
@@ -280,6 +284,8 @@ def test_library_gapic_v2():
         gapic_yaml = yaml.load(f, Loader=yaml.SafeLoader)
 
     file_descriptor_set_file = "test/testdata/test_output/library.desc"
+    shutil.rmtree("test/testdata/test_output", True)
+    os.mkdir("test/testdata/test_output/")
     subprocess.check_call(
         ['protoc',
          '-o',
