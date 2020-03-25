@@ -82,5 +82,7 @@ jobs:
           ln -s /usr/src/protoc/bin/protoc/ /bin/protoc
     - run:
         name: Run tests.
-        command: pytest test/
+        command: |
+          ls
+          pytest test/
 
