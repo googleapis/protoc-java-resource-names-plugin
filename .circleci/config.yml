@@ -38,9 +38,6 @@ jobs:
     steps:
     - checkout
     - run:
-        name: Install git.
-        command: apt install git-all
-    - run:
         name: Install Python dependencies.
         command: |
           pip install -r requirements.txt
@@ -55,7 +52,7 @@ jobs:
           curl --location https://github.com/google/protobuf/releases/download/v3.11.2/protoc-3.11.2-linux-x86_64.zip --output /usr/src/protoc/protoc-3.11.2.zip
           cd /usr/src/protoc/
           unzip protoc-3.11.2.zip
-          ln -s /usr/src/protoc/bin/protoc/ usr/local/bin/protoc
+          ln -s /usr/src/protoc/bin/protoc/ usr/bin/protoc
     - run:
         name: Run tests.
         command: pytest /test
@@ -79,7 +76,7 @@ jobs:
           curl --location https://github.com/google/protobuf/releases/download/v3.11.2/protoc-3.11.2-linux-x86_64.zip --output /usr/src/protoc/protoc-3.11.2.zip
           cd /usr/src/protoc/
           unzip protoc-3.11.2.zip
-          ln -s /usr/src/protoc/bin/protoc/ usr/local/bin/protoc
+          ln -s /usr/src/protoc/bin/protoc/ usr/bin/protoc
     - run:
         name: Run tests.
         command: pytest /test
