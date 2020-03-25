@@ -79,12 +79,7 @@ jobs:
           cd /usr/src/protoc/
           unzip protoc-3.11.2.zip
           ln -s /usr/src/protoc/bin/protoc /bin/protoc
-    - run:
-        name: Run as shell.
-        command: |
-          mkdir -p test/testdata/test_output/gapic
-          protoc --java_resource_names_out=test/testdata/test_output/gapic --java_resource_names_opt=test/testdata/library_gapic.yaml --proto_path=. --proto_path=./googleapis test/testdata/library_simple.proto
-    - run:
+      - run:
         name: Run tests.
         command: |
           pwd
