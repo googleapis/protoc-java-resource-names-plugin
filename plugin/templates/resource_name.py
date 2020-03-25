@@ -152,6 +152,9 @@ class ParentResourceName(ResourceNameBase):
                                     segment_to_segment_symbols))
             for pattern in pattern_strings]
 
+        self.has_no_single_pattern_subclasses = \
+            not oneof.has_deprecated_collections
+
         if len(self.patterns) > 0:
             self.first_pattern = self.patterns[0]
             self.patterns[0].set_first()
