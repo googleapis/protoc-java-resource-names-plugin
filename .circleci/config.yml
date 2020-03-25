@@ -82,7 +82,9 @@ jobs:
           ln -s /usr/src/protoc/bin/protoc/ /bin/protoc
     - run:
         name: Run as shell.
-        command: protoc --java_resource_name_out=test/testdata/test_output/gapic --java_resource_name_opt=test/testdata/library_gapic.yaml --proto_path=. --proto_path=./googleapis test/testdata/library_simple.proto
+        command: |
+          ls /bin
+          /bin/protoc --java_resource_name_out=test/testdata/test_output/gapic --java_resource_name_opt=test/testdata/library_gapic.yaml --proto_path=. --proto_path=./googleapis test/testdata/library_simple.proto
     - run:
         name: Run tests.
         command: |
