@@ -158,8 +158,8 @@ public class {{class_name}} implements ResourceName {
     throw new ValidationException("JobName.parse: formattedString not in valid format");
   }
 
-  @BetaApi("The method will be renamed to parseList after subclasses of this class are removed.")
-  public static List<{{class_name}}> parse(List<String> formattedStrings) {
+  {{#has_no_single_pattern_subclasses}}
+  public static List<{{class_name}}> parseList(List<String> formattedStrings) {
     List<{{class_name}}> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
@@ -167,8 +167,7 @@ public class {{class_name}} implements ResourceName {
     return list;
   }
 
-  @BetaApi("The method will be renamed to toStringList after subclasses of this class are removed.")
-  public static List<String> toStrings(List<{{class_name}}> values) {
+  public static List<String> toStringList(List<{{class_name}}> values) {
     List<String> list = new ArrayList<>(values.size());
     for ({{class_name}} value : values) {
       if (value == null) {
@@ -179,6 +178,7 @@ public class {{class_name}} implements ResourceName {
     }
     return list;
   }
+  {{/has_no_single_pattern_subclasses}}
 
   public static boolean isParsableFrom(String formattedString) {
     return {{#patterns}}{{#is_formattable}}{{upper_underscore}}_PATH_TEMPLATE.matches(formattedString){{/is_formattable}}{{#is_fixed}}{{upper_underscore}}_FIXED_VALUE.equals(formattedString){{/is_fixed}}{{#not_last}}    
