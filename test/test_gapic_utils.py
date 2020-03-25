@@ -286,7 +286,7 @@ def test_library_gapic_v2():
          file_descriptor_set_file,
          '--include_imports',
          '--proto_path=.',
-         '--proto_path=../googleapis'] +
+         '--proto_path=./googleapis'] +
         proto_files)
     with open(file_descriptor_set_file, 'rb') as f:
         file_descriptor_set = descriptor_pb2.FileDescriptorSet.FromString(
