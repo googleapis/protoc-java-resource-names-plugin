@@ -22,6 +22,11 @@ jobs:
     steps:
     - checkout
     - run:
+        name: Install Python dependencies.
+        command: |
+          pip install -r requirements.txt
+          pip install -r test-requirements.txt
+    - run:
         name: Install pylint.
         command: pip install pylint
     - run:
@@ -36,7 +41,7 @@ jobs:
         name: Install Python dependencies.
         command: |
           pip install -r requirements.txt
-          pip install -r test-requirements.text
+          pip install -r test-requirements.txt
     - run:
         name: Checkout googleapis/googleapis.
         command: git clone git@github.com:googleapis/googleapis.git
