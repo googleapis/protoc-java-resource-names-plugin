@@ -35,37 +35,33 @@ jobs:
   test-3.6:
     docker:
     - image: python:3.6-stretch
-    << : *run_python_tests
+    steps: &run_python_tests
+    - checkout
+    - run:
+        name: Install Python dependencies.
+        command: |
+          pip install -r requirements.txt
+          pip install -r test-requirements.txt
+          pip install -e .
+    - run:
+        name: Checkout googleapis/googleapis.
+        command: git clone git@github.com:googleapis/googleapis.git
+    - run:
+        name: Install protoc.
+        command: |
+          mkdir -p /usr/src/protoc/
+          curl --location https://github.com/google/protobuf/releases/download/v3.11.2/protoc-3.11.2-linux-x86_64.zip --output /usr/src/protoc/protoc-3.11.2.zip
+          cd /usr/src/protoc/
+          unzip protoc-3.11.2.zip
+          ln -s /usr/src/protoc/bin/protoc /bin/protoc
+    - run:
+        name: Run tests.
+        command: pytest test/
   test-3.5:
     docker:
     - image: python:3.5-stretch
-    << : *run_python_tests
+    steps: *run_python_tests
   test-2.7:
     docker:
     - image: python:2.7-stretch
-    << : *run_python_tests
-
-
-run_python_tests: &run_python_tests
-  steps:
-  - checkout
-  - run:
-      name: Install Python dependencies.
-      command: |
-        pip install -r requirements.txt
-        pip install -r test-requirements.txt
-        pip install -e .
-  - run:
-      name: Checkout googleapis/googleapis.
-      command: git clone git@github.com:googleapis/googleapis.git
-  - run:
-      name: Install protoc.
-      command: |
-        mkdir -p /usr/src/protoc/
-        curl --location https://github.com/google/protobuf/releases/download/v3.11.2/protoc-3.11.2-linux-x86_64.zip --output /usr/src/protoc/protoc-3.11.2.zip
-        cd /usr/src/protoc/
-        unzip protoc-3.11.2.zip
-        ln -s /usr/src/protoc/bin/protoc /bin/protoc
-  - run:
-      name: Run tests.
-      command: pytest test/
+    steps: *run_python_tests
