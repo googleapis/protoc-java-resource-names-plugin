@@ -11,6 +11,10 @@ workflows:
           filters:
             tags:
               only: /^v\d+\.\d+\.\d+$/
+      - test-3.5:
+          filters:
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
       - test-2.7:
           filters:
             tags:
