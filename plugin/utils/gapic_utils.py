@@ -436,14 +436,19 @@ def update_collections_with_deprecated_resources(
 
 def build_parent_patterns(patterns):
     def _parent_pattern(pattern):
+        if pattern == "":
+            return ""
         segs = pattern.split('/')
         last_index = len(segs) - 1
         if _is_variable_segment(segs[last_index]):
             last_index -= 2
         else:
             last_index -= 1
+        if last_index < 0:
+            return ""
         return '/'.join(segs[:last_index + 1])
-    return [_parent_pattern(p) for p in patterns if not(isFixedPattern(p))]
+    patterns = [_parent_pattern(p) for p in patterns if not(isFixedPattern(p))]
+    return patterns
 
 
 def _is_variable_segment(segment):
