@@ -437,11 +437,12 @@ def update_collections_with_deprecated_resources(
 def build_parent_patterns(patterns):
     def _parent_pattern(pattern):
         segs = pattern.split('/')
-        last_index = len(segs) - 2
-        while last_index >= 0 and not _is_variable_segment(segs[last_index]):
+        last_index = len(segs) - 1
+        if _is_variable_segment(segs[last_index]):
+            last_index -= 2
+        else:
             last_index -= 1
-        last_index += 1
-        return '/'.join(segs[:last_index])
+        return '/'.join(segs[:last_index + 1])
     return [_parent_pattern(p) for p in patterns if not(isFixedPattern(p))]
 
 

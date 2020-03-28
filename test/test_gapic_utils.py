@@ -34,7 +34,7 @@ def test_build_parent_patterns():
     ]
     expected_parents = [
         "foos/{foo}",
-        "foos/{foo}",
+        "foos/{foo}/busy",
         "foos/{foo}/bars/{bar}",
         "",
     ]
