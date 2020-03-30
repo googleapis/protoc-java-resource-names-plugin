@@ -437,7 +437,9 @@ def update_collections_with_deprecated_resources(
 def build_parent_patterns(patterns):
     def _parent_pattern(pattern):
         if pattern == "":
-            return ""
+            raise ValueError("resource name pattern can't be an empty string")
+        if pattern == "*":
+            return "*"
         segs = pattern.split('/')
         last_index = len(segs) - 1
         if _is_variable_segment(segs[last_index]):

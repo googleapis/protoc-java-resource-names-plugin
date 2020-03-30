@@ -31,12 +31,14 @@ def test_build_parent_patterns():
         "foos/{foo}/busy/bars/{bar}",
         "foos/{foo}/bars/{bar}/bang",
         "foos/{foo}",
+        "*",
     ]
     expected_parents = [
         "foos/{foo}",
         "foos/{foo}/busy",
         "foos/{foo}/bars/{bar}",
         "",
+        "*",
     ]
     assert gapic_utils.build_parent_patterns(patterns) == expected_parents
 
