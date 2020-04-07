@@ -303,11 +303,9 @@ def get_parent_resources(res, pattern_map, all_resources):
     parent_patterns_map = {pattern: False for pattern in parent_patterns}
 
     for i in range(0, len(all_resources)):
-        parent_resources = _match_parent_resources(parent_patterns_map,
-                                                   all_resources,
-                                                   [],
-                                                   len(res.pattern),
-                                                   i)
+        parent_resources = _match_parent_resources(
+            parent_patterns_map, all_resources, [],
+            len(res.pattern), i)
         if parent_resources is not None:
             return parent_resources
 
@@ -350,6 +348,8 @@ def update_collections(res, collections, collection_oneofs):
     if len(res.pattern) == 0:
         raise ValueError('patterns not found for resource {}'.format(res.type))
     elif len(res.pattern) == 1:
+        if res.pattern[0] == "*":
+            return
         # for a single-pattern resource name, the unqualified
         # name of the resource is the collection entity name in gapic v1
         collections.setdefault(name, {}).update({
@@ -368,7 +368,7 @@ def update_collections(res, collections, collection_oneofs):
             'oneof_name':
             oneof_name,
             'collection_names': [],
-            'pattern_strings': res.pattern
+            'pattern_strings': [p for p in res.pattern if p != "*"]
         })
     # pylint: enable=no-member
 
