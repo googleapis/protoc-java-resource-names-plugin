@@ -16,6 +16,11 @@ option (google.api.resource_definition) = {
   pattern: "projects/{project}/locations/{location}/publishers/{publisher}"
 };
 
+option (google.api.resource_definition) = {
+  type: "library.googleapis.com/Property",
+  pattern: "*"
+};
+
 service LibraryService {
 
   // Creates a shelf, and returns the new Shelf.
@@ -149,6 +154,8 @@ message GetBookRequest {
 
   string folder = 3 [
     (google.api.resource_reference).type = "cloudresourcemanager.googleapis.com/Folder"];
+
+  string property = 4 [(google.api.resource_reference).type = "library.googleapis.com/Property"];
 }
 
 // Request message for LibraryService.ListBooks.
