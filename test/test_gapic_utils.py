@@ -222,6 +222,20 @@ def test_update_collections_with_deprecated_collections():
     }
 
 
+def test_get_pattern_name():
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/bars/{bar}') == 'foo_bar'
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/bar') == 'foo_bar'
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/bar/bazs/{baz}') == 'foo_baz'
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/barBaz') == 'foo_bar_baz'
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/barBazs/{bar_baz}') == 'foo_bar_baz'
+
+
+
 def test_library_gapic_v1():
 
     request = plugin_pb2.CodeGeneratorRequest()
