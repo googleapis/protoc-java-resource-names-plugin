@@ -50,3 +50,11 @@ License
 BSD - See `LICENSE`_ for more information.
 
 .. _`LICENSE`: https://github.com/googleapis/proto-compiler-plugin/blob/master/LICENSE
+
+Development
+-----------
+
+Install the dependencies below, and test a given file with ``pytest``.
+* ``pip install ply``
+* ``pip install pytest``
+
