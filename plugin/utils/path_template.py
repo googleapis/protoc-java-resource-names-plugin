@@ -28,11 +28,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """Implements a utility for parsing and formatting path templates."""
-
 from __future__ import absolute_import
 from collections import namedtuple
 
 from ply import lex, yacc
+
+import re
 
 _BINDING = 1
 _END_BINDING = 2
@@ -125,7 +126,8 @@ class PathTemplate(object):
             ValidationException: If path can't be matched to the template.
         """
         this = self.segments
-        that = path.split('/')
+        that = re.split(r'[/~_\-\.]', path)
+
         current_var = None
         bindings = {}
         segment_count = self.segment_count
@@ -162,6 +164,7 @@ class PathTemplate(object):
 class _Parser(object):
     tokens = (
         'FORWARD_SLASH',
+        'NON_SLASH_SEPARATOR',
         'LEFT_BRACE',
         'RIGHT_BRACE',
         'EQUALS',
@@ -171,12 +174,13 @@ class _Parser(object):
     )
 
     t_FORWARD_SLASH = r'/'
+    t_NON_SLASH_SEPARATOR = r'[~_\-\.]'
     t_LEFT_BRACE = r'\{'
     t_RIGHT_BRACE = r'\}'
     t_EQUALS = r'='
     t_WILDCARD = r'\*'
     t_PATH_WILDCARD = r'\*\*'
-    t_LITERAL = r'[^*=}{\/]+'
+    t_LITERAL = r'(_deleted-topic_|[A-Za-z0-9]+([\-\_][A-Za-z0-9]+)*)'
 
     t_ignore = ' \t'
 
@@ -218,6 +222,7 @@ class _Parser(object):
 
     def p_bound_segments(self, p):
         """bound_segments : bound_segment FORWARD_SLASH bound_segments
+                          | bound_segment NON_SLASH_SEPARATOR bound_segments
                           | bound_segment"""
         p[0] = p[1]
         if len(p) > 2:
