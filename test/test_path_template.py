@@ -59,6 +59,14 @@ class PathTemplateTest(TestCase):
     self.assertEqual(bindings["far-away"], "away")
     self.assertEqual(bindings["boo"], "ghost")
 
+  def test_actual_ads_use_case(self):
+    path_template = PathTemplate("customers/{customer_id}/adParameters/{ad_group_id}~{criterion_id}~{param_index}")
+    bindings = path_template.match("customers/alice/adParameters/group1~criteria~0")
+    self.assertEqual(bindings["customer_id"], "alice")
+    self.assertEqual(bindings["ad_group_id"], "group1")
+    self.assertEqual(bindings["criterion_id"], "criteria")
+    self.assertEqual(bindings["param_index"], "0")
+
 
 if __name__ == "__main__":
   unittest.main()

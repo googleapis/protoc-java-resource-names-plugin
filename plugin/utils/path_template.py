@@ -180,7 +180,7 @@ class _Parser(object):
     t_EQUALS = r'='
     t_WILDCARD = r'\*'
     t_PATH_WILDCARD = r'\*\*'
-    t_LITERAL = r'(_deleted-topic_|[A-Za-z0-9]+([\-\_][A-Za-z0-9]+)?)'
+    t_LITERAL = r'(_deleted-topic_|[A-Za-z0-9]+([\-\_][A-Za-z0-9]+)*)'
 
     t_ignore = ' \t'
 
