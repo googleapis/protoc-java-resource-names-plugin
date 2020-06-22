@@ -254,6 +254,7 @@ def test_library_gapic_v1():
          '-o',
          file_descriptor_set_file,
          '--include_imports',
+         '--experimental_allow_proto3_optional',
          '--proto_path=test/testdata',
          '--proto_path=.',
          '--proto_path=./googleapis'] +
@@ -307,6 +308,7 @@ def test_library_gapic_v2():
          '-o',
          file_descriptor_set_file,
          '--include_imports',
+         '--experimental_allow_proto3_optional',
          '--proto_path=.',
          '--proto_path=./googleapis'] +
         proto_files)

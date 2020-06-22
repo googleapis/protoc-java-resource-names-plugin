@@ -81,10 +81,11 @@ def main(data):
     gapic_config = gapic_utils.read_from_gapic_yaml(request)
     # Generate output
     response = plugin.CodeGeneratorResponse()
-    response.supported_features = plugin.CodeGeneratorResponse.FEATURE_PROTO3_OPTIONAL
 
     for java_package in java_packages:
         generate_resource_name_types(response, gapic_config, java_package)
+
+    response.supported_features = plugin.CodeGeneratorResponse.FEATURE_PROTO3_OPTIONAL
 
     # Serialise response message
     output = response.SerializeToString()
