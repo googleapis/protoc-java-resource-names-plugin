@@ -65,7 +65,6 @@ def diff(expected_output, actual_output, fromfile, tofile):
 def run_protoc_gapic_plugin(output_dir, gapic_yaml, include_dirs, proto_files,
                             lang_out=None):
     args = ['protoc']
-    args.append('--experimental_allow_proto3_optional')
 
     # If there is a language being called first (e.g. --java_out), add that.
     if lang_out is not None:
