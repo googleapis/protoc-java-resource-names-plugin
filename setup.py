@@ -41,7 +41,7 @@ version = '0.0.25'
 
 install_requires = [
     'chevron >= 0.13.1',
-    'protobuf >= 3.7.1',
+    'protobuf >= 3.12.2',
     'pyyaml >= 3.12',
 ]
 
