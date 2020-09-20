@@ -1,11 +1,10 @@
-rebaseMergeAllowed: false
+rebaseMergeAllowed: true
 squashMergeAllowed: true
 mergeCommitAllowed: false
 branchProtectionRules:
 - pattern: master
   isAdminEnforced: true
   requiredStatusCheckContexts:
-    - 'Kokoro'
     - 'ci/circleci: format'
     - 'ci/circleci: test-2.7'
     - 'ci/circleci: test-3.5'
