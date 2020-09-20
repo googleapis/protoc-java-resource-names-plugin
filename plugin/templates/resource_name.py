@@ -152,6 +152,9 @@ class ParentResourceName(ResourceNameBase):
                                     segment_to_segment_symbols))
             for pattern in pattern_strings]
 
+        self.has_no_single_pattern_subclasses = \
+            not oneof.has_deprecated_collections
+
         if len(self.patterns) > 0:
             self.first_pattern = self.patterns[0]
             self.patterns[0].set_first()
@@ -315,4 +318,12 @@ def get_pattern_name(pattern):
         name_parts = re.split(r'[^a-zA-Z]', pattern[start_index:end_index])
         return '_'.join(name_parts)
     else:
-        return '_'.join(get_id_segments(pattern))
+        name = '_'.join(get_id_segments(pattern))
+        last_segment = pattern.split('/')[-1]
+        if last_segment.startswith('{') and last_segment.endswith('}'):
+            return name
+        elif last_segment.startswith('{') or last_segment.endswith('}'):
+            raise ValueError('segment {} of pattern {} has unmatching braces'
+                             .format(last_segment, pattern))
+        else:
+            return name + '_' + casing_utils.to_snake(last_segment)

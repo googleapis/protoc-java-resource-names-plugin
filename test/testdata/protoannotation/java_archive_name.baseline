@@ -168,8 +168,7 @@ public class ArchiveName implements ResourceName {
     throw new ValidationException("JobName.parse: formattedString not in valid format");
   }
 
-  @BetaApi("The method will be renamed to parseList after subclasses of this class are removed.")
-  public static List<ArchiveName> parse(List<String> formattedStrings) {
+  public static List<ArchiveName> parseList(List<String> formattedStrings) {
     List<ArchiveName> list = new ArrayList<>(formattedStrings.size());
     for (String formattedString : formattedStrings) {
       list.add(parse(formattedString));
@@ -177,8 +176,7 @@ public class ArchiveName implements ResourceName {
     return list;
   }
 
-  @BetaApi("The method will be renamed to toStringList after subclasses of this class are removed.")
-  public static List<String> toStrings(List<ArchiveName> values) {
+  public static List<String> toStringList(List<ArchiveName> values) {
     List<String> list = new ArrayList<>(values.size());
     for (ArchiveName value : values) {
       if (value == null) {

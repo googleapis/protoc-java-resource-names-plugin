@@ -50,3 +50,23 @@ License
 BSD - See `LICENSE`_ for more information.
 
 .. _`LICENSE`: https://github.com/googleapis/proto-compiler-plugin/blob/master/LICENSE
+
+Development
+-----------
+
+Install the dependencies below.
+* ``pip install ply pytest tox``
+
+Set up the ``googleapis`` directory.
+* ``REPO_PATH=`pwd```
+* ``cd ~/development``
+* ``git clone git@github.com:googleapis/googleapis.git``
+* ``cd $REPO_PATH``
+* ``ln -s ~/development/googleapis ./googleapis``
+
+Testing
+-------
+Please ensure that there are no ``bazel-*`` directories in this repo or
+in the ``googleapis`` repo. These can be removed by running ``bazel clean``.
+
+Testing is as simple as running ``tox``.

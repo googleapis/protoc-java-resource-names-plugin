@@ -17,6 +17,8 @@ from plugin.pb2 import resource_pb2
 from plugin.utils import gapic_utils
 from plugin.templates import resource_name
 
+import os
+import shutil
 import yaml
 
 from google.protobuf.compiler import plugin_pb2
@@ -29,12 +31,14 @@ def test_build_parent_patterns():
         "foos/{foo}/busy/bars/{bar}",
         "foos/{foo}/bars/{bar}/bang",
         "foos/{foo}",
+        "*",
     ]
     expected_parents = [
         "foos/{foo}",
-        "foos/{foo}",
+        "foos/{foo}/busy",
         "foos/{foo}/bars/{bar}",
         "",
+        "*",
     ]
     assert gapic_utils.build_parent_patterns(patterns) == expected_parents
 
@@ -201,35 +205,35 @@ def test_update_collections_with_deprecated_collections():
             'collection_names': []
         }
     }
-    collections = {}
     pattern_map = {
         "archives/{archive}/books/{book}": [book],
         "shelves/{shelf}/books/{book}": [book]
     }
 
     gapic_utils.update_collections_with_deprecated_resources(
-        gapic_v2, pattern_map, collections, collection_oneofs)
+        gapic_v2, pattern_map, collection_oneofs)
 
     assert collection_oneofs == {
         'book_oneof': {
             'oneof_name': 'book_oneof',
-            'collection_names': [
-                'some_archive_book', 'my_shelf_book']
+            'collection_names': [],
+            'has_deprecated_collections': True
         }
     }
-    assert collections == {
-        'some_archive_book': {
-            'entity_name': 'some_archive_book',
-            'name_pattern': "archives/{archive}/books/{book}"
-        },
-        'my_shelf_book': {
-            'entity_name': 'my_shelf_book',
-            'name_pattern': "shelves/{shelf}/books/{book}",
-            'language_overrides': [
-                {'language': 'java',
-                 'entity_name': 'shelf_book'}]
-        }
-    }
+
+
+def test_get_pattern_name():
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/bars/{bar}') == 'foo_bar'
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/bar') == 'foo_bar'
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/bar/bazs/{baz}') == 'foo_baz'
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/barBaz') == 'foo_bar_baz'
+    assert resource_name.get_pattern_name(
+        'foos/{foo}/barBazs/{bar_baz}') == 'foo_bar_baz'
+
 
 
 def test_library_gapic_v1():
@@ -243,6 +247,8 @@ def test_library_gapic_v1():
         gapic_yaml = yaml.load(f, Loader=yaml.SafeLoader)
 
     file_descriptor_set_file = "test/testdata/test_output/library.desc"
+    shutil.rmtree("test/testdata/test_output", True)
+    os.mkdir("test/testdata/test_output/")
     subprocess.check_call(
         ['protoc',
          '-o',
@@ -294,13 +300,15 @@ def test_library_gapic_v2():
         gapic_yaml = yaml.load(f, Loader=yaml.SafeLoader)
 
     file_descriptor_set_file = "test/testdata/test_output/library.desc"
+    shutil.rmtree("test/testdata/test_output", True)
+    os.mkdir("test/testdata/test_output/")
     subprocess.check_call(
         ['protoc',
          '-o',
          file_descriptor_set_file,
          '--include_imports',
          '--proto_path=.',
-         '--proto_path=../googleapis'] +
+         '--proto_path=./googleapis'] +
         proto_files)
     with open(file_descriptor_set_file, 'rb') as f:
         file_descriptor_set = descriptor_pb2.FileDescriptorSet.FromString(
@@ -316,25 +324,9 @@ def test_library_gapic_v2():
             gapic_config, "com.google.example.library.v1")
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ResourceName
-            and r.format_string ==
-            'projects/{project}/shelves/{shelf}/books/{book}'
-            and r.format_name_lower == 'shelfBookName'
-            and r.parent_interface == 'BookName']
-    assert [r for r in resource_name_artifacts if
-            type(r) is resource_name.ResourceName
-            and r.format_string == 'archives/{archive}/books/{book}'
-            and r.format_name_lower == 'archivedBookName'
-            and r.parent_interface == 'BookName']
-    assert [r for r in resource_name_artifacts if
-            type(r) is resource_name.ResourceName
             and r.format_string == 'projects/{project}/shelves/{shelf}'
             and r.format_name_lower == 'shelfName'
             and r.parent_interface == 'ResourceName']
-    assert [r for r in resource_name_artifacts if
-            type(r) is resource_name.ResourceNameFixed
-            and r.fixed_value == '_deleted-book_'
-            and r.class_name == 'DeletedBook'
-            and r.parent_interface == 'BookName']
 
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
@@ -351,6 +343,3 @@ def test_library_gapic_v2():
     assert [r for r in resource_name_artifacts if
             type(r) is resource_name.ParentResourceName
             and r.class_name == 'BookName']
-    assert [r for r in resource_name_artifacts if
-            type(r) is resource_name.ResourceNameFactory
-            and r.class_name == 'BookNames']
