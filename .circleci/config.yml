@@ -22,7 +22,7 @@ workflows:
 jobs:
   format:
     docker:
-    - image: python:3.6-slim
+    - image: python:3.9-slim
     steps:
     - checkout
     - run:
@@ -38,7 +38,7 @@ jobs:
         command: pylint -f colorized -E plugin --ignore plugin/cli,plugin/pb2
   test-3.6:
     docker:
-    - image: python:3.6-stretch
+    - image: python:3.7-stretch
     steps: &run_python_tests
     - checkout
     - run:
@@ -63,7 +63,7 @@ jobs:
         command: pytest test/
   test-3.5:
     docker:
-    - image: python:3.5-stretch
+    - image: python:3.7-stretch
     steps: *run_python_tests
   test-2.7:
     docker:
